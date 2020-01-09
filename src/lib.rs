@@ -1,3 +1,8 @@
+#[macro_use]
+extern crate failure;
+
+pub mod error;
+pub mod extractor;
 pub mod models;
 
 #[cfg(test)]
@@ -13,24 +18,15 @@ mod tests {
         chapter.push_page(p1);
         chapter.push_page(p2);
 
-        let mut comic = Comic::new("一拳超人");
+        let mut comic = Comic::new("一拳超人", "https//libmanga.com/commins/1");
         comic.push_chapter(chapter);
     }
 
-    #[test]
-    fn test_scrap_data() {
-        let resp = reqwest::blocking::get("https://www.bing.com").unwrap();
-        assert_eq!(reqwest::StatusCode::OK, resp.status());
-        let html = resp.text().unwrap();
-        let document = scraper::Html::parse_document(&html);
-        let selector = scraper::Selector::parse("title").unwrap();
-        let title = document
-            .select(&selector)
-            .next()
-            .unwrap()
-            .text()
-            .collect::<Vec<_>>()[0];
+    use crate::extractor::*;
 
-        assert_eq!(true, title.contains("Bing"))
+    #[test]
+    fn test_extractor() {
+        let comics = Dmzj {}.index(0).unwrap();
+        assert_eq!(20, comics.len());
     }
 }

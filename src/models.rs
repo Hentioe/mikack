@@ -6,14 +6,16 @@ pub struct Page {
 
 #[derive(Debug)]
 pub struct Chapter {
-    pub name: String,
+    pub title: String,
     pub which: u32,
     pub pages: Vec<Page>,
+    current_p: u32,
 }
 
 #[derive(Debug)]
 pub struct Comic {
-    pub name: String,
+    pub title: String,
+    pub url: String,
     pub chapters: Vec<Chapter>,
 }
 
@@ -27,11 +29,12 @@ impl Page {
 }
 
 impl Chapter {
-    pub fn new(name: &str, which: u32) -> Self {
+    pub fn new(title: &str, which: u32) -> Self {
         Self {
-            name: name.into(),
+            title: title.into(),
             which,
             pages: vec![],
+            current_p: 0,
         }
     }
 
@@ -41,9 +44,10 @@ impl Chapter {
 }
 
 impl Comic {
-    pub fn new(name: &str) -> Self {
+    pub fn new(title: &str, url: &str) -> Self {
         Self {
-            name: name.into(),
+            title: title.into(),
+            url: url.into(),
             chapters: vec![],
         }
     }
