@@ -1,18 +1,19 @@
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub struct Page {
     pub n: u32,
     pub address: String,
 }
 
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub struct Chapter {
     pub title: String,
+    pub url: String,
     pub which: u32,
     pub pages: Vec<Page>,
     current_p: u32,
 }
 
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub struct Comic {
     pub title: String,
     pub url: String,
@@ -29,9 +30,10 @@ impl Page {
 }
 
 impl Chapter {
-    pub fn new(title: &str, which: u32) -> Self {
+    pub fn new<S: Into<String>>(title: S, url: S, which: u32) -> Self {
         Self {
             title: title.into(),
+            url: url.into(),
             which,
             pages: vec![],
             current_p: 0,
@@ -44,7 +46,7 @@ impl Chapter {
 }
 
 impl Comic {
-    pub fn new(title: &str, url: &str) -> Self {
+    pub fn new<S: Into<String>>(title: S, url: S) -> Self {
         Self {
             title: title.into(),
             url: url.into(),
@@ -54,5 +56,21 @@ impl Comic {
 
     pub fn push_chapter(&mut self, chapter: Chapter) {
         self.chapters.push(chapter);
+    }
+}
+
+pub trait FromLink {
+    fn from_link<S: Into<String>>(text: S, href: S) -> Self;
+}
+
+impl FromLink for Comic {
+    fn from_link<S: Into<String>>(text: S, href: S) -> Self {
+        Self::new(text, href)
+    }
+}
+
+impl FromLink for Chapter {
+    fn from_link<S: Into<String>>(text: S, href: S) -> Self {
+        Self::new(text, href, 0)
     }
 }
