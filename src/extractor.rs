@@ -1,4 +1,7 @@
+use regex::Regex;
+
 use crate::error::*;
+use crate::jsrt;
 use crate::models::*;
 
 pub trait Extractor {
@@ -105,7 +108,8 @@ macro_rules! urlgen {
 }
 
 lazy_static! {
-    pub static ref DEFAULT_URL: String = "".to_string();
+    pub static ref DEFAULT_STRING: String = "".to_string();
+    pub static ref DEFAULT_REGEX: Regex = Regex::new("^_n_o_r_e_$").unwrap();
 }
 
 macro_rules! itemsgen {
@@ -116,7 +120,7 @@ macro_rules! itemsgen {
                 keyword.insert(stringify!($name), $value);
             )*
 
-            let url = keyword_fetch!(keyword, "url", String, &*DEFAULT_URL);
+            let url = keyword_fetch!(keyword, "url", String, &*DEFAULT_STRING);
             let selector = keyword_fetch!(keyword, "selector", &str, &"");
             let find = keyword_fetch!(keyword, "find", &str, &"a");
 
@@ -127,6 +131,41 @@ macro_rules! itemsgen {
         }
     };
 }
+
+macro_rules! def_regex {
+    ( $( $name:ident => $expr:expr ),* ) => {
+        $(
+            lazy_static! {
+                static ref $name: Regex = Regex::new($expr).unwrap();
+            }
+        )*
+    };
+}
+
+macro_rules! match_code {
+    ( $( :$name:ident => $value:expr ),* ) => {
+        {
+            let mut keyword = keyword_list![];
+            $(
+                keyword.insert(stringify!($name), $value);
+            )*
+
+            let html = keyword_fetch!(keyword, "html", String, &*DEFAULT_STRING);
+            let re = keyword_fetch!(keyword, "regex", Regex, &*DEFAULT_REGEX);
+            let group = keyword_fetch!(keyword, "group", usize, &1);
+            let caps = re.captures(html)
+                .ok_or(err_msg("No crypro code found"))?;
+
+            caps.get(*group)
+                .ok_or(err_msg("No crypro code found"))?
+                .as_str()
+        }
+    };
+}
+
+def_regex![
+    DMZJ_CTYPTO_RE => r#"<script type="text/javascript">([\s\S]+)var res_type"#
+];
 
 def_exctractor!(Dmzj => { 
     fn index(&self, page: u32) -> Result<Vec<Comic>> {
@@ -155,6 +194,18 @@ def_exctractor!(Dmzj => {
             comic.push_chapter(chapter);
         };
 
+        Ok(())
+    }
+
+    fn fetch_pages(&self, chapter: &mut Chapter) -> Result<()> {
+        let html = get(&chapter.url)?.text()?;
+        let  code = match_code![
+            :html   => &html,
+            :regex  => &*DMZJ_CTYPTO_RE
+        ];
+        
+        let wrapper_code = format!("{}\n{}", &code, "console.log(JSON.stringify({title: `${g_comic_name} ${g_chapter_name}`, pages: eval(pages)}));");
+        let _output = jsrt::eval(&wrapper_code)?; 
         Ok(())
     }
 });

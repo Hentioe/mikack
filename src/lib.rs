@@ -22,5 +22,11 @@ mod tests {
         let mut comic = Comic::from_link("极主夫道", "http://manhua.dmzj.com/jizhufudao/");
         dmjz.fetch_chapters(&mut comic).unwrap();
         assert_eq!(47, comic.chapters.len());
+
+        let mut chapter = Chapter::from_link(
+            "极主夫道 第01话",
+            "http://manhua.dmzj.com/jizhufudao/73104.shtml",
+        );
+        dmjz.fetch_pages(&mut chapter).unwrap();
     }
 }
