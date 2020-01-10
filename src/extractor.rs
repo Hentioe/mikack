@@ -62,52 +62,99 @@ macro_rules! def_exctractor {
     };
 }
 
-macro_rules! urlgen {
-    (:first => $first:expr, :next => $next:expr, :page => $page:expr, :seed => $seed:expr) => {
-        if $page > 0 {
-            format!($next, $page + $seed)
-        } else {
-            format!($first)
+macro_rules! keyword_list {
+    ( $( :$name:ident => $value:expr ),* ) => {
+        {
+            let keyword: std::collections::HashMap<&str, &dyn std::any::Any> = std::collections::HashMap::new();
+            $(
+                keyword.insert(stringify!($name), $value);
+            )*
+            keyword
         }
     };
 }
 
+macro_rules! keyword_fetch {
+    ($keyword:expr, $key:expr, $t:ty, $default:expr) => {
+        if let Some(v) = $keyword.get($key) {
+            v.downcast_ref::<$t>().unwrap_or($default)
+        } else {
+            $default
+        }
+    };
+}
+
+macro_rules! urlgen {
+    ( $( :$name:ident => $value:expr ),* ) => {
+        {
+            let mut keyword = keyword_list![];
+            $(
+                keyword.insert(stringify!($name), $value);
+            )*
+            let first = keyword_fetch!(keyword, "first", &str, &"");
+            let next = keyword_fetch!(keyword, "next", &str, &"");
+            let page = keyword_fetch!(keyword, "page", u32, &0_u32);
+
+            if *page > 0 {
+                next.replace("{}", &page.to_string())
+            } else {
+                first.to_string()
+            }
+        }
+    };
+}
+
+lazy_static! {
+    pub static ref DEFAULT_URL: String = "".to_string();
+}
+
 macro_rules! itemsgen {
-    (:entry => $entry:ident, :url => $url:expr, :selector => $selector:expr, :find => $find:expr) => {
-        simple_fetch_index($url, $selector, &|element: ElementRef| {
-            let (title, url) = simple_parse_link(element, $find)?;
-            Ok($entry::from_link(title, url))
-        })
+    ( :entry => $entry:tt, $( :$name:ident => $value:expr ),* ) => {
+        {
+            let mut keyword = keyword_list![];
+            $(
+                keyword.insert(stringify!($name), $value);
+            )*
+
+            let url = keyword_fetch!(keyword, "url", String, &*DEFAULT_URL);
+            let selector = keyword_fetch!(keyword, "selector", &str, &"");
+            let find = keyword_fetch!(keyword, "find", &str, &"a");
+
+            println!("url:{}, selector:{}, find:{}", url, selector, find);
+
+            simple_fetch_index(url, selector, &|element: ElementRef| {
+                let (title, url) = simple_parse_link(element, find)?;
+                Ok($entry::from_link(title, url))
+            })
+        }
     };
 }
 
 def_exctractor!(Dmzj => { 
     fn index(&self, page: u32) -> Result<Vec<Comic>> {
         let url = urlgen![
-            :first  => "https://manhua.dmzj.com/rank/",
-            :next   => "https://manhua.dmzj.com/rank/total-block-{}.shtml",
-            :page   => page,
-            :seed   => 1
+            :first  => &"https://manhua.dmzj.com/rank/",
+            :next   => &"https://manhua.dmzj.com/rank/total-block-{}.shtml",
+            :page   => &page
         ];
 
         itemsgen![
             :entry      => Comic,
             :url        => &url,
-            :selector   => ".middleright-right > .middlerighter",
-            :find       => ".title > a"
+            :selector   => &".middleright-right > .middlerighter",
+            :find       => &".title > a"
         ]
     }
 
     fn fetch_chapters(&self, comic: &mut Comic) -> Result<()> {
-        for (i, chapter) in itemsgen![
+        for (i, mut chapter) in itemsgen![
             :entry      => Chapter,
             :url        => &comic.url,
-            :selector   => ".cartoon_online_border > ul > li",
-            :find       => "a"
-        ]?.iter_mut().enumerate(){
+            :selector   => &".cartoon_online_border > ul > li"
+        ]?.into_iter().enumerate(){
             chapter.which = (i as u32) + 1;
             chapter.title = format!("{} {}", &comic.title, &chapter.title);
-            comic.push_chapter(chapter.clone());
+            comic.push_chapter(chapter);
         };
 
         Ok(())
