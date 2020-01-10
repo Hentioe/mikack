@@ -120,8 +120,6 @@ macro_rules! itemsgen {
             let selector = keyword_fetch!(keyword, "selector", &str, &"");
             let find = keyword_fetch!(keyword, "find", &str, &"a");
 
-            println!("url:{}, selector:{}, find:{}", url, selector, find);
-
             simple_fetch_index(url, selector, &|element: ElementRef| {
                 let (title, url) = simple_parse_link(element, find)?;
                 Ok($entry::from_link(title, url))
