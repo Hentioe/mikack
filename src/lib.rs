@@ -5,6 +5,7 @@ extern crate failure;
 
 pub mod error;
 pub mod extractor;
+pub mod jsrt;
 pub mod models;
 
 #[cfg(test)]
