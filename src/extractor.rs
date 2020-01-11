@@ -1,7 +1,8 @@
+use quick_js::{Context, JsValue};
 use regex::Regex;
+use std::collections::HashMap;
 
 use crate::error::*;
-use crate::jsrt;
 use crate::models::*;
 
 pub trait Extractor {
@@ -55,6 +56,87 @@ fn simple_parse_link(element: ElementRef, selector: &str) -> Result<(String, Str
 
     Ok((title.to_string(), url.to_string()))
 }
+
+pub fn eval_value(code: &str) -> Result<JsValue> {
+    let context = Context::new()?;
+    Ok(context.eval(code)?)
+}
+
+pub fn eval_as<R>(code: &str) -> Result<R>
+where
+    R: std::convert::TryFrom<JsValue>,
+    R::Error: std::convert::Into<quick_js::ValueError>,
+{
+    let context = Context::new()?;
+    Ok(context.eval_as::<R>(code)?)
+}
+
+type JsObject = HashMap<String, JsValue>;
+
+pub fn eval_as_obj(code: &str) -> Result<JsObject> {
+    match eval_value(code)? {
+        JsValue::Object(obj) => Ok(obj),
+        _ => Err(err_msg("Not a JS Object")),
+    }
+}
+
+macro_rules! def_js_helper {
+    ( to_object: [$( {:name => $name:ident, :js_t => $js_t:path, :result_t => $result_t:ty} ),*] ) => {
+        trait JsObjectGetAndAs {
+            $(
+                fn $name(&self, key: &str) -> Result<&$result_t>;
+            )*
+        }
+        impl JsObjectGetAndAs for JsObject {
+            $(
+                fn $name(&self, key: &str) -> Result<&$result_t> {
+                    let value = self
+                                .get(key)
+                                .ok_or(err_msg(format!("Object property not found: {}", key)))?;
+                    match value {
+                        $js_t(v) => Ok(v),
+                        _ => Err(err_msg(format!("Object property `{}` is not of type `{}`", key, stringify!($js_t))))
+                    }
+                }
+            )*
+        }
+    };
+    ( to_value: [$( {:name => $name:ident, :js_t => $js_t:path, :result_t => $result_t:ty} ),*] ) => {
+        trait JsValueAs {
+            $(
+                fn $name(&self) -> Result<&$result_t>;
+            )*
+        }
+        impl JsValueAs for JsValue {
+            $(
+                fn $name(&self) -> Result<&$result_t> {
+                    match self {
+                        $js_t(v) => Ok(v),
+                        _ => Err(err_msg(format!("Object property is not of type `{}`", stringify!($js_t))))
+                    }
+                }
+            )*
+        }
+    };
+}
+
+def_js_helper!(to_object: [
+    {:name => get_as_string, :js_t => JsValue::String, :result_t => String},
+    {:name => get_as_bool, :js_t => JsValue::Bool, :result_t => bool},
+    {:name => get_as_int, :js_t => JsValue::Int, :result_t => i32},
+    {:name => get_as_float, :js_t => JsValue::Float, :result_t => f64},
+    {:name => get_as_array, :js_t => JsValue::Array, :result_t => Vec<JsValue>},
+    {:name => get_as_object, :js_t => JsValue::Object, :result_t => JsObject}
+]);
+
+def_js_helper!(to_value: [
+    {:name => as_string, :js_t => JsValue::String, :result_t => String},
+    {:name => as_bool, :js_t => JsValue::Bool, :result_t => bool},
+    {:name => as_int, :js_t => JsValue::Int, :result_t => i32},
+    {:name => as_float, :js_t => JsValue::Float, :result_t => f64},
+    {:name => as_array, :js_t => JsValue::Array, :result_t => Vec<JsValue>},
+    {:name => as_object, :js_t => JsValue::Object, :result_t => JsObject}
+]);
 
 macro_rules! def_exctractor {
     ($name:ident => { $($tt:tt)* }) => {
@@ -189,6 +271,7 @@ def_exctractor!(Dmzj => {
             :url        => &comic.url,
             :selector   => &".cartoon_online_border > ul > li"
         ]?.into_iter().enumerate(){
+            chapter.url = format!("http://manhua.dmzj.com{}", chapter.url);
             chapter.which = (i as u32) + 1;
             chapter.title = format!("{} {}", &comic.title, &chapter.title);
             comic.push_chapter(chapter);
@@ -199,13 +282,26 @@ def_exctractor!(Dmzj => {
 
     fn fetch_pages(&self, chapter: &mut Chapter) -> Result<()> {
         let html = get(&chapter.url)?.text()?;
-        let  code = match_code![
+        let code = match_code![
             :html   => &html,
             :regex  => &*DMZJ_CTYPTO_RE
         ];
         
-        let wrapper_code = format!("{}\n{}", &code, "console.log(JSON.stringify({title: `${g_comic_name} ${g_chapter_name}`, pages: eval(pages)}));");
-        let _output = jsrt::eval(&wrapper_code)?; 
+        let wrapper_code = format!("{}\n{}", &code, "
+            var obj = {
+                title: `${g_comic_name} ${g_chapter_name}`,
+                pages: eval(pages)
+            };
+            obj
+        ");
+        let obj = eval_as_obj(&wrapper_code)?;
+        if chapter.title.is_empty(){
+            chapter.title = obj.get_as_string("title")?.clone();
+        }
+        for (i, page) in obj.get_as_array("pages")?.into_iter().enumerate() {
+            let url = format!("https://images.dmzj.com/{}", page.as_string()?);
+            chapter.push_page(Page::new(i, url));
+        }
         Ok(())
     }
 });

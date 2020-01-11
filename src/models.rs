@@ -1,6 +1,6 @@
 #[derive(Debug, Clone)]
 pub struct Page {
-    pub n: u32,
+    pub n: usize,
     pub address: String,
 }
 
@@ -21,7 +21,7 @@ pub struct Comic {
 }
 
 impl Page {
-    pub fn new(n: u32, address: &str) -> Self {
+    pub fn new<S: Into<String>>(n: usize, address: S) -> Self {
         Self {
             n,
             address: address.into(),

@@ -1,3 +1,3 @@
 # libmanga
 
-New universal cross-platform manga library.
+New universal cross-platform manga library
