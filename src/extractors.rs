@@ -5,7 +5,7 @@ use std::collections::HashMap;
 use crate::error::*;
 use crate::models::*;
 
-pub trait Extractor {
+trait Extractor {
     fn index(&self, page: u32) -> Result<Vec<Comic>>;
     fn fetch_chapters(&self, _comic: &mut Comic) -> Result<()> {
         Ok(())
@@ -139,10 +139,18 @@ def_js_helper!(to_value: [
 ]);
 
 macro_rules! def_exctractor {
-    ($name:ident => { $($tt:tt)* }) => {
-        pub struct $name;
-        impl Extractor for $name {
+    ( $( $tt:tt )* ) => {
+        pub struct Extr;
+        impl Extractor for Extr {
             $($tt)*
+        }
+        impl Extr {
+            fn new() -> Self {
+                Self {}
+            }
+        }
+        pub fn new_extr() -> Extr {
+            Extr::new()
         }
     };
 }
@@ -245,63 +253,45 @@ macro_rules! match_code {
     };
 }
 
-def_regex![
-    DMZJ_CTYPTO_RE => r#"<script type="text/javascript">([\s\S]+)var res_type"#
-];
-
-def_exctractor!(Dmzj => { 
-    fn index(&self, page: u32) -> Result<Vec<Comic>> {
-        let url = urlgen![
-            :first  => &"https://manhua.dmzj.com/rank/",
-            :next   => &"https://manhua.dmzj.com/rank/total-block-{}.shtml",
-            :page   => &page
-        ];
-
-        itemsgen![
-            :entry      => Comic,
-            :url        => &url,
-            :selector   => &".middleright-right > .middlerighter",
-            :find       => &".title > a"
-        ]
+#[test]
+fn test_eval_as() {
+    match eval_as::<String>("1 + 1") {
+        Ok(_) => assert!(false),
+        Err(_e) => assert!(true),
     }
+    let result = eval_as::<String>("(1 + 1).toString()").unwrap();
+    assert_eq!("2", result);
+}
 
-    fn fetch_chapters(&self, comic: &mut Comic) -> Result<()> {
-        for (i, mut chapter) in itemsgen![
-            :entry      => Chapter,
-            :url        => &comic.url,
-            :selector   => &".cartoon_online_border > ul > li"
-        ]?.into_iter().enumerate(){
-            chapter.url = format!("http://manhua.dmzj.com{}", chapter.url);
-            chapter.which = (i as u32) + 1;
-            chapter.title = format!("{} {}", &comic.title, &chapter.title);
-            comic.push_chapter(chapter);
+#[test]
+fn test_eval_value() {
+    let value = eval_value("1 + 1").unwrap();
+    assert_eq!(JsValue::Int(2), value);
+}
+
+#[test]
+fn test_eval_obj() {
+    let code = r#"
+        var obj = {
+            a: 1,
+            b: "b",
+            c: {
+                c1: true
+            },
+            d: ["d1"]
         };
+        obj
+    "#;
+    let obj = eval_as_obj(&code).unwrap();
+    assert_eq!(1, *obj.get_as_int("a").unwrap());
+    assert_eq!(String::from("b"), *obj.get_as_string("b").unwrap());
 
-        Ok(())
-    }
+    let c = obj.get_as_object("c").unwrap();
+    assert_eq!(true, *c.get_as_bool("c1").unwrap());
 
-    fn fetch_pages(&self, chapter: &mut Chapter) -> Result<()> {
-        let html = get(&chapter.url)?.text()?;
-        let code = match_code![
-            :html   => &html,
-            :regex  => &*DMZJ_CTYPTO_RE
-        ];
-        
-        let wrapper_code = format!("{}\n{}", &code, "
-            var obj = {
-                title: `${g_comic_name} ${g_chapter_name}`,
-                pages: eval(pages)
-            };
-            obj
-        ");
-        let obj = eval_as_obj(&wrapper_code)?;
-        if chapter.title.is_empty(){
-            chapter.title = obj.get_as_string("title")?.clone();
-        }
-        for (i, page) in obj.get_as_array("pages")?.into_iter().enumerate() {
-            let url = format!("https://images.dmzj.com/{}", page.as_string()?);
-            chapter.push_page(Page::new(i, url));
-        }
-        Ok(())
-    }
-});
+    let d = obj.get_as_array("d").unwrap();
+    assert_eq!(1, d.len());
+    assert_eq!(String::from("d1"), *d[0].as_string().unwrap());
+}
+
+pub mod dmjz;
