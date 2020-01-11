@@ -27,6 +27,50 @@ fn parse_document(html: &str) -> Html {
     Html::parse_document(html)
 }
 
+trait HtmlHelper {
+    fn dom_text(&self, selector: &str) -> Result<String>;
+    fn dom_attrs(&self, selector: &str, attr: &str) -> Result<Vec<String>>;
+    fn dom_attr(&self, selector: &str, attr: &str) -> Result<String> {
+        let attrs = self.dom_attrs(selector, attr)?;
+        if attrs.len() == 0 {
+            Err(err_msg(format!("DOM node not found: {}", selector)))
+        } else {
+            Ok(attrs[0].clone())
+        }
+    }
+}
+
+impl HtmlHelper for Html {
+    fn dom_text(&self, selector: &str) -> Result<String> {
+        let st = parse_selector(selector)?;
+        let dom = self
+            .select(&st)
+            .next()
+            .ok_or(err_msg(format!("DOM node not found: {}", selector)))?;
+        let text = dom
+            .text()
+            .next()
+            .ok_or(err_msg(format!("DOM text not found: {}", selector)))?
+            .to_string();
+
+        Ok(text)
+    }
+
+    fn dom_attrs(&self, selector: &str, attr: &str) -> Result<Vec<String>> {
+        let mut attrs = vec![];
+
+        for element in self.select(&parse_selector(selector)?) {
+            let attr_s = element.value().attr(&attr).ok_or(err_msg(format!(
+                "Attribute `{}` not found in `{}`",
+                attr, selector
+            )))?;
+            attrs.push(attr_s.to_string());
+        }
+
+        Ok(attrs)
+    }
+}
+
 fn simple_fetch_index<T: FromLink>(
     url: &str,
     selector: &str,
@@ -232,7 +276,7 @@ macro_rules! def_regex {
     };
 }
 
-macro_rules! match_code {
+macro_rules! match_content {
     ( $( :$name:ident => $value:expr ),* ) => {
         {
             let mut keyword = keyword_list![];
@@ -240,10 +284,10 @@ macro_rules! match_code {
                 keyword.insert(stringify!($name), $value);
             )*
 
-            let html = keyword_fetch!(keyword, "html", String, &*DEFAULT_STRING);
+            let text = keyword_fetch!(keyword, "text", String, &*DEFAULT_STRING);
             let re = keyword_fetch!(keyword, "regex", Regex, &*DEFAULT_REGEX);
             let group = keyword_fetch!(keyword, "group", usize, &1);
-            let caps = re.captures(html)
+            let caps = re.captures(text)
                 .ok_or(err_msg("No crypro code found"))?;
 
             caps.get(*group)
@@ -295,3 +339,4 @@ fn test_eval_obj() {
 }
 
 pub mod dmjz;
+pub mod ehentai;

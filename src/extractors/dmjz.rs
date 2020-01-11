@@ -37,8 +37,8 @@ def_exctractor! {
 
     fn fetch_pages(&self, chapter: &mut Chapter) -> Result<()> {
         let html = get(&chapter.url)?.text()?;
-        let code = match_code![
-            :html   => &html,
+        let code = match_content![
+            :text   => &html,
             :regex  => &*CTYPTO_RE
         ];
         let wrapper_code = format!("{}\n{}", &code, "
