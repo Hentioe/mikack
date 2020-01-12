@@ -1,3 +1,4 @@
+use encoding_rs::*;
 use quick_js::{Context, JsValue};
 use regex::Regex;
 use std::collections::HashMap;
@@ -73,11 +74,10 @@ impl HtmlHelper for Html {
 }
 
 fn simple_fetch_index<T: FromLink>(
-    url: &str,
+    html: String,
     selector: &str,
     parse_elem: &dyn Fn(ElementRef) -> Result<T>,
 ) -> Result<Vec<T>> {
-    let html = get(url)?.text()?;
     let document = parse_document(&html);
     let mut list = Vec::new();
 
@@ -88,16 +88,23 @@ fn simple_fetch_index<T: FromLink>(
     Ok(list)
 }
 
-fn simple_parse_link(element: ElementRef, selector: &str) -> Result<(String, String)> {
-    let link_elem = element
-        .select(&parse_selector(selector)?)
+fn simple_parse_link(element: ElementRef, selector: Option<&str>) -> Result<(String, String)> {
+    let link_elem = if let Some(selector) = selector {
+        element
+            .select(&parse_selector(selector)?)
+            .next()
+            .ok_or(err_msg("No link found"))?
+    } else {
+        element
+    };
+    let title = link_elem
+        .text()
         .next()
-        .ok_or(err_msg("No link found"))?;
-    let title = link_elem.text().next().ok_or(err_msg("No title found"))?;
+        .ok_or(err_msg("No link text found"))?;
     let url = link_elem
         .value()
         .attr("href")
-        .ok_or(err_msg("No href found"))?;
+        .ok_or(err_msg("No link href found"))?;
 
     Ok((title.to_string(), url.to_string()))
 }
@@ -203,7 +210,7 @@ macro_rules! def_exctractor {
 macro_rules! keyword_list {
     ( $( :$name:ident => $value:expr ),* ) => {
         {
-            let keyword: std::collections::HashMap<&str, &dyn std::any::Any> = std::collections::HashMap::new();
+            let keyword: HashMap<&str, &dyn std::any::Any> = std::collections::HashMap::new();
             $(
                 keyword.insert(stringify!($name), $value);
             )*
@@ -220,6 +227,25 @@ macro_rules! keyword_fetch {
             $default
         }
     };
+}
+
+trait Keyword {
+    fn get_as<T>(&self, key: &str) -> Option<&T>
+    where
+        T: 'static;
+}
+
+impl Keyword for HashMap<&str, &dyn std::any::Any> {
+    fn get_as<T>(&self, key: &str) -> Option<&T>
+    where
+        T: 'static,
+    {
+        if let Some(v) = self.get(key) {
+            v.downcast_ref::<T>()
+        } else {
+            None
+        }
+    }
 }
 
 macro_rules! urlgen {
@@ -259,15 +285,40 @@ macro_rules! itemsgen {
             let selector = keyword_fetch!(keyword, "selector", &str, &"");
             let find = keyword_fetch!(keyword, "find", &str, &"a");
             let href_prefix = keyword_fetch!(keyword, "href_prefix", &str, &"");
+            let encoding = keyword.get_as::<&Encoding>("encoding");
 
-            simple_fetch_index(url, selector, &|element: ElementRef| {
-                let (mut title, mut url) = simple_parse_link(element, find)?;
-                if !href_prefix.is_empty() {
-                    url = format!("{}{}", href_prefix, url)
-                }
-                title = title.trim().to_string();
-                Ok($entry::from_link(title, url))
-            })
+            let mut resp = get(url)?;
+            let html = if let Some(encoding) = encoding {
+                let mut buf: Vec<u8> = vec![];
+                resp.copy_to(&mut buf)?;
+                let (cow, _encoding_used, _had_errors) =
+                        encoding.decode(&buf);
+                cow[..].to_string()
+            }else{
+                resp.text()?
+            };
+
+            if let Some(target) = keyword.get_as::<&str>("target") {
+                simple_fetch_index(html, target, &|element: ElementRef| {
+                    let (mut title, mut url) = simple_parse_link(element, None)?;
+                    if !href_prefix.is_empty() {
+                        url = format!("{}{}", href_prefix, url)
+                    }
+                    title = title.trim().to_string();
+                    Ok($entry::from_link(title, url))
+                })
+
+            }else{
+                simple_fetch_index(html, selector, &|element: ElementRef| {
+                    let (mut title, mut url) = simple_parse_link(element, Some(find))?;
+                    if !href_prefix.is_empty() {
+                        url = format!("{}{}", href_prefix, url)
+                    }
+                    title = title.trim().to_string();
+                    Ok($entry::from_link(title, url))
+                })
+            }
+
         }
     };
 }
@@ -363,6 +414,12 @@ fn test_eval_obj() {
     assert_eq!(String::from("d1"), *d[0].as_string().unwrap());
 }
 
-pub mod dm5;
-pub mod dmjz;
-pub mod ehentai;
+macro_rules! def_impl_mods {
+    ( $($module:ident),* ) => {
+        $(
+            pub mod $module;
+        )*
+    };
+}
+
+def_impl_mods![dm5, dmjz, cartoonmad, ehentai];

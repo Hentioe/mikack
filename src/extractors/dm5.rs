@@ -1,5 +1,5 @@
 use super::*;
-use reqwest::header::{COOKIE, HOST};
+use reqwest::header::REFERER;
 use url::form_urlencoded;
 
 def_regex![
@@ -35,7 +35,8 @@ def_exctractor! {
     }
 
     fn fetch_pages(&self, chapter: &mut Chapter) -> Result<()> {
-        let html = get(&chapter.url)?.text()?;
+        let resp = get(&chapter.url)?;
+        let html = resp.text()?;
         let document = parse_document(&html);
 
         if chapter.title.is_empty() {
@@ -61,24 +62,14 @@ def_exctractor! {
         let dt = obj.get_as_string("dt")?;
         let sign = obj.get_as_string("sign")?;
 
+        let referer = &chapter.url.clone();
         let page_get = |url: &str| -> Result<reqwest::blocking::Response> {
             let client = reqwest::blocking::Client::new();
             let resp = client.get(url)
-                .header(HOST, "www.dm5.com")
-                .header(COOKIE, "SERVERID=node2;")
+                .header(REFERER, referer)
                 .send()?;
             Ok(resp)
         };
-
-        // let history_query_params: String = form_urlencoded::Serializer::new(String::new())
-        //         .append_pair("cid", &cid)
-        //         .append_pair("page", "1")
-        //         .append_pair("mid", &mid)
-        //         .append_pair("uid", "0")
-        //         .append_pair("language", "1")
-        //         .finish();
-        // let _history_url = format!("{}history.ashx?{}", &chapter.url, history_query_params);
-        // let _ = page_get(&history_url)?;
 
         for page in 1..page_count+1{
             let query_params: String = form_urlencoded::Serializer::new(String::new())
