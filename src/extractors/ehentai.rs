@@ -19,6 +19,7 @@ def_exctractor! {
             :selector   => &"tbody > tr > td.gl3c.glname"
         ]
     }
+
     fn fetch_chapters(&self, comic: &mut Comic) -> Result<()> {
         comic.push_chapter(Chapter::from_link(&comic.title, &comic.url));
         Ok(())
@@ -65,7 +66,7 @@ def_exctractor! {
 }
 
 #[test]
-fn text_extr() {
+fn test_extr() {
     let extr = new_extr();
     let comics = extr.index(0).unwrap();
     assert_eq!(25, comics.len());

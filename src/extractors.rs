@@ -51,6 +51,7 @@ impl HtmlHelper for Html {
             .text()
             .next()
             .ok_or(err_msg(format!("DOM text not found: {}", selector)))?
+            .trim()
             .to_string();
 
         Ok(text)
@@ -257,13 +258,31 @@ macro_rules! itemsgen {
             let url = keyword_fetch!(keyword, "url", String, &*DEFAULT_STRING);
             let selector = keyword_fetch!(keyword, "selector", &str, &"");
             let find = keyword_fetch!(keyword, "find", &str, &"a");
+            let href_prefix = keyword_fetch!(keyword, "href_prefix", &str, &"");
 
             simple_fetch_index(url, selector, &|element: ElementRef| {
-                let (title, url) = simple_parse_link(element, find)?;
+                let (mut title, mut url) = simple_parse_link(element, find)?;
+                if !href_prefix.is_empty() {
+                    url = format!("{}{}", href_prefix, url)
+                }
+                title = title.trim().to_string();
                 Ok($entry::from_link(title, url))
             })
         }
     };
+}
+
+trait AttachTo<T> {
+    fn attach_to(self, target: &mut T);
+}
+
+impl AttachTo<Comic> for Vec<Chapter> {
+    fn attach_to(self, target: &mut Comic) {
+        for (i, mut chapter) in self.into_iter().enumerate() {
+            chapter.which = (i as u32) + 1;
+            target.push_chapter(chapter);
+        }
+    }
 }
 
 macro_rules! def_regex {
@@ -294,6 +313,12 @@ macro_rules! match_content {
                 .ok_or(err_msg("No crypro code found"))?
                 .as_str()
         }
+    };
+}
+
+macro_rules! wrap_code {
+    ($code:expr, $custom:expr, :end) => {
+        format!("{}\n{}", $code, $custom);
     };
 }
 
@@ -338,5 +363,6 @@ fn test_eval_obj() {
     assert_eq!(String::from("d1"), *d[0].as_string().unwrap());
 }
 
+pub mod dm5;
 pub mod dmjz;
 pub mod ehentai;

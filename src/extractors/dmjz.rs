@@ -21,16 +21,12 @@ def_exctractor! {
     }
 
     fn fetch_chapters(&self, comic: &mut Comic) -> Result<()> {
-        for (i, mut chapter) in itemsgen![
-            :entry      => Chapter,
-            :url        => &comic.url,
-            :selector   => &".cartoon_online_border > ul > li"
-        ]?.into_iter().enumerate(){
-            chapter.url = format!("http://manhua.dmzj.com{}", chapter.url);
-            chapter.which = (i as u32) + 1;
-            chapter.title = format!("{} {}", &comic.title, &chapter.title);
-            comic.push_chapter(chapter);
-        };
+        itemsgen![
+            :entry          => Chapter,
+            :url            => &comic.url,
+            :href_prefix    => &"http://manhua.dmzj.com",
+            :selector       => &".cartoon_online_border > ul > li"
+        ]?.attach_to(comic);
 
         Ok(())
     }
@@ -61,7 +57,7 @@ def_exctractor! {
 }
 
 #[test]
-fn text_extr() {
+fn test_extr() {
     let extr = new_extr();
     let comics = extr.index(0).unwrap();
     assert_eq!(20, comics.len());
@@ -71,6 +67,7 @@ fn text_extr() {
     assert_eq!(47, comic.chapters.len());
 
     let chapter1 = &mut comic.chapters[0];
+    chapter1.title = "".to_string();
     extr.fetch_pages(chapter1).unwrap();
     assert_eq!("极主夫道 第01话", chapter1.title);
     assert_eq!(16, chapter1.pages.len());
