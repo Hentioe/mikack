@@ -2,7 +2,7 @@ use super::*;
 use url::Url;
 
 lazy_static! {
-    static ref DEFAULT_DOMAIN_NO: String = "".to_string();
+    static ref DEFAULT_DOMAIN_NO: String = "0".to_string();
 }
 
 def_exctractor! {
