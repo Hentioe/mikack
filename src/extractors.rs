@@ -123,6 +123,19 @@ where
     Ok(context.eval_as::<R>(code)?)
 }
 
+trait Decode {
+    fn decode_text(&mut self, encoding: &'static Encoding) -> Result<String>;
+}
+
+impl Decode for reqwest::blocking::Response {
+    fn decode_text(&mut self, encoding: &'static Encoding) -> Result<String> {
+        let mut buf: Vec<u8> = vec![];
+        self.copy_to(&mut buf)?;
+        let (cow, _encoding_used, _had_errors) = encoding.decode(&buf);
+        Ok(cow[..].to_string())
+    }
+}
+
 type JsObject = HashMap<String, JsValue>;
 
 pub fn eval_as_obj(code: &str) -> Result<JsObject> {
@@ -289,11 +302,7 @@ macro_rules! itemsgen {
 
             let mut resp = get(url)?;
             let html = if let Some(encoding) = encoding {
-                let mut buf: Vec<u8> = vec![];
-                resp.copy_to(&mut buf)?;
-                let (cow, _encoding_used, _had_errors) =
-                        encoding.decode(&buf);
-                cow[..].to_string()
+                resp.decode_text(encoding)?
             }else{
                 resp.text()?
             };
