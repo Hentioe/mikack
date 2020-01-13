@@ -37,14 +37,14 @@ def_exctractor! {
             :text   => &html,
             :regex  => &*CTYPTO_RE
         ];
-        let wrapper_code = format!("{}\n{}", &code, "
+        let wrap_code = format!("{}\n{}", &code, "
             var obj = {
                 title: `${g_comic_name} ${g_chapter_name}`,
                 pages: eval(pages)
             };
             obj
         ");
-        let obj = eval_as_obj(&wrapper_code)?;
+        let obj = eval_as_obj(&wrap_code)?;
         if chapter.title.is_empty(){
             chapter.title = obj.get_as_string("title")?.clone();
         }
