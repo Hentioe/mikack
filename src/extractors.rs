@@ -423,7 +423,7 @@ fn test_eval_obj() {
     assert_eq!(String::from("d1"), *d[0].as_string().unwrap());
 }
 
-macro_rules! def_impl_mods {
+macro_rules! import_impl_mods {
     ( $($module:ident),* ) => {
         $(
             pub mod $module;
@@ -431,4 +431,4 @@ macro_rules! def_impl_mods {
     };
 }
 
-def_impl_mods![dm5, dmjz, cartoonmad, ehentai];
+import_impl_mods![dm5, dmjz, cartoonmad, ehentai, veryim];

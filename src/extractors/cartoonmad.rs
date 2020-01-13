@@ -5,7 +5,7 @@ use super::*;
 /// - 复用 fetch_pages 方法的第一个 URL 内容
 /// - 过滤 fetch_pages 方法的 URL（因为被 CSS 选择器依赖，需要纯净地址）
 def_exctractor! {
-    fn index(&self, page: u32) -> Result<Vec<Comic>>{
+    fn index(&self, page: u32) -> Result<Vec<Comic>> {
         let url = if page > 9 {
             format!("https://www.cartoonmad.com/endcm.0{}.html", page)
         }else{
@@ -20,6 +20,7 @@ def_exctractor! {
             :encoding       => &BIG5
         ]
     }
+
     fn fetch_chapters(&self, comic: &mut Comic) -> Result<()> {
         itemsgen![
             :entry          => Chapter,
