@@ -431,4 +431,4 @@ macro_rules! import_impl_mods {
     };
 }
 
-import_impl_mods![dm5, dmjz, cartoonmad, ehentai, hhimm, kukudm, manhuagui, veryim];
+import_impl_mods![dm5, dmjz, cartoonmad, ehentai, hhimm, kukudm, manhuagui, manhuaren, veryim];

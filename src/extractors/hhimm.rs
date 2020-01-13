@@ -56,8 +56,8 @@ def_exctractor! {
             let html = get(&url)?.text()?;
             let document = parse_document(&html);
             let img_name_attr = document.dom_attr("#iBodyQ img", "name")?;
-            let decrypy_code = include_str!("../../scripts/hhimm.js");
-            let wrap_code = wrap_code!(decrypy_code, format!("
+            let runtime = include_str!("../../runtime/hhimm.js");
+            let wrap_code = wrap_code!(runtime, format!("
                 var location = {{ hostname: '{}' }};
                 unsuan('{}')
             ", "www.hhimm.com", img_name_attr), :end);

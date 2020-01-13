@@ -33,7 +33,7 @@ def_exctractor! {
 
     fn fetch_pages(&self, chapter: &mut Chapter) -> Result<()> {
         let html = get(&chapter.url)?.text()?;
-        let runtime = include_str!("../../scripts/manhuagui.js");
+        let runtime = include_str!("../../runtime/manhuagui.js");
         let crypty_code = match_content![
             :text   => &html,
             :regex  => &*CTYPTO_RE
