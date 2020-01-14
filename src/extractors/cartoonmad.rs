@@ -61,7 +61,7 @@ def_exctractor! {
 #[test]
 fn test_extr() {
     let extr = new_extr();
-    let mut comics = extr.index(0).unwrap();
+    let mut comics = extr.index(1).unwrap();
     assert_eq!(60, comics.len());
 
     let mut comic = &mut comics[0];

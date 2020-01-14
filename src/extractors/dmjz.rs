@@ -59,7 +59,7 @@ def_exctractor! {
 #[test]
 fn test_extr() {
     let extr = new_extr();
-    let comics = extr.index(0).unwrap();
+    let comics = extr.index(1).unwrap();
     assert_eq!(20, comics.len());
 
     let mut comic = Comic::from_link("极主夫道", "http://manhua.dmzj.com/jizhufudao/");

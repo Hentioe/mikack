@@ -272,7 +272,7 @@ macro_rules! urlgen {
             let next = keyword_fetch!(keyword, "next", &str, &"");
             let page = keyword_fetch!(keyword, "page", u32, &0_u32);
 
-            if *page > 0 {
+            if *page > 1 {
                 next.replace("{}", &page.to_string())
             } else {
                 first.to_string()
@@ -431,4 +431,6 @@ macro_rules! import_impl_mods {
     };
 }
 
-import_impl_mods![dm5, dmjz, cartoonmad, ehentai, hhimm, kukudm, manhuagui, manhuaren, veryim];
+import_impl_mods![
+    dm5, dmjz, cartoonmad, ehentai, hhimm, kukudm, manhuagui, manhuaren, veryim, xinxinmh
+];

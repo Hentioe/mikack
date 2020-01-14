@@ -96,7 +96,7 @@ def_exctractor! {
 #[test]
 fn test_extr() {
     let extr = new_extr();
-    let comics = extr.index(0).unwrap();
+    let comics = extr.index(1).unwrap();
     assert_eq!(297, comics.len());
 
     let mut comic = Comic::from_link("风云全集", "https://www.dm5.com/manhua-fengyunquanji/");
