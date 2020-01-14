@@ -17,8 +17,74 @@ pub trait Extractor {
         Ok(())
     }
 
-    fn fetch_pages(&self, _chapter: &mut Chapter) -> Result<()> {
+    fn pages_iter<'a>(&'a self, chapter: &'a mut Chapter) -> Result<ChapterPages> {
+        Ok(ChapterPages::new(chapter, 0, vec![], Box::new(|_| vec![])))
+    }
+
+    fn fetch_pages(&self, chapter: &mut Chapter) -> Result<()> {
+        self.pages_iter(chapter)?.for_each(drop);
         Ok(())
+    }
+}
+
+pub struct ChapterPages<'a> {
+    chapter: &'a mut Chapter,
+    current_page: usize,
+    fetch: Box<dyn Fn(usize) -> Vec<Page>>,
+    total: i32,
+}
+
+impl<'a> ChapterPages<'a> {
+    fn new(
+        chapter: &'a mut Chapter,
+        total: i32,
+        init_addresses: Vec<String>,
+        fetch: Box<dyn Fn(usize) -> Vec<Page>>,
+    ) -> Self {
+        for (i, address) in init_addresses.iter().enumerate() {
+            chapter.pages.push(Page::new(i as usize, address));
+        }
+        ChapterPages {
+            chapter,
+            current_page: 0,
+            fetch,
+            total,
+        }
+    }
+
+    fn full(chapter: &'a mut Chapter, addresses: Vec<String>) -> Self {
+        Self::new(
+            chapter,
+            addresses.len() as i32,
+            addresses,
+            Box::new(move |_| vec![]),
+        )
+    }
+}
+
+impl<'a> Iterator for ChapterPages<'a> {
+    type Item = Page;
+
+    fn next(&mut self) -> Option<Self::Item> {
+        self.current_page += 1;
+        if self.total == 0 || (self.total > 0 && (self.total as usize) < self.current_page) {
+            return None;
+        }
+        let page_index = self.current_page - 1;
+        if ((self.chapter.pages.len() as i32) - 1) >= page_index as i32 {
+            return Some(self.chapter.pages[page_index].clone());
+        }
+
+        let mut pages = (self.fetch)(self.current_page);
+        let count = pages.len();
+        self.chapter.pages.append(&mut pages);
+        let current_len = self.chapter.pages.len();
+
+        if count > 0 {
+            Some(self.chapter.pages[current_len - count + 1].clone())
+        } else {
+            None
+        }
     }
 }
 
@@ -290,6 +356,8 @@ macro_rules! urlgen {
 lazy_static! {
     pub static ref DEFAULT_STRING: String = "".to_string();
     pub static ref DEFAULT_REGEX: Regex = Regex::new("^_n_o_r_e_$").unwrap();
+    pub static ref DEFAULT_FETCHING_FN: Box<dyn Fn(usize) -> Vec<String> + Sync + Send> =
+        Box::new(|_| vec![]);
 }
 
 macro_rules! itemsgen {
