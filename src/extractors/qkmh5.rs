@@ -8,7 +8,7 @@ def_regex![
 
 /// 对 www.qkmh5.com 内容的抓取实现
 def_exctractor! {
-    fn is_usable(&self) -> bool { false }
+    fn is_usable(&self) -> bool { true }
     fn index(&self, _page: u32) -> Result<Vec<Comic>> {
         let url = "http://www.qkmh5.com/mall/".to_string();
 

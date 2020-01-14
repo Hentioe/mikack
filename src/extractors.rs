@@ -585,7 +585,7 @@ fn test_usable() {
     assert!(get_extr("comic.kukudm.com").unwrap().is_usable());
     assert!(get_extr("www.manhuagui.com").unwrap().is_usable());
     assert!(get_extr("www.manhuaren.com").unwrap().is_usable());
-    assert!(!get_extr("www.qkmh5.com").unwrap().is_usable());
+    assert!(get_extr("www.qkmh5.com").unwrap().is_usable());
     assert!(!get_extr("comic.veryim.com").unwrap().is_usable());
     assert!(get_extr("www.177mh.net").unwrap().is_usable());
 }
