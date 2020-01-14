@@ -18,7 +18,12 @@ pub trait Extractor {
     }
 
     fn pages_iter<'a>(&'a self, chapter: &'a mut Chapter) -> Result<ChapterPages> {
-        Ok(ChapterPages::new(chapter, 0, vec![], Box::new(|_| vec![])))
+        Ok(ChapterPages::new(
+            chapter,
+            0,
+            vec![],
+            Box::new(|_| Ok(vec![])),
+        ))
     }
 
     fn fetch_pages(&self, chapter: &mut Chapter) -> Result<()> {
@@ -30,7 +35,7 @@ pub trait Extractor {
 pub struct ChapterPages<'a> {
     chapter: &'a mut Chapter,
     current_page: usize,
-    fetch: Box<dyn Fn(usize) -> Vec<Page>>,
+    fetch: Box<dyn Fn(usize) -> Result<Vec<Page>>>,
     total: i32,
 }
 
@@ -39,7 +44,7 @@ impl<'a> ChapterPages<'a> {
         chapter: &'a mut Chapter,
         total: i32,
         init_addresses: Vec<String>,
-        fetch: Box<dyn Fn(usize) -> Vec<Page>>,
+        fetch: Box<dyn Fn(usize) -> Result<Vec<Page>>>,
     ) -> Self {
         for (i, address) in init_addresses.iter().enumerate() {
             chapter.pages.push(Page::new(i as usize, address));
@@ -57,7 +62,7 @@ impl<'a> ChapterPages<'a> {
             chapter,
             addresses.len() as i32,
             addresses,
-            Box::new(move |_| vec![]),
+            Box::new(move |_| Ok(vec![])),
         )
     }
 }
@@ -75,13 +80,15 @@ impl<'a> Iterator for ChapterPages<'a> {
             return Some(self.chapter.pages[page_index].clone());
         }
 
-        let mut pages = (self.fetch)(self.current_page);
-        let count = pages.len();
-        self.chapter.pages.append(&mut pages);
-        let current_len = self.chapter.pages.len();
-
-        if count > 0 {
-            Some(self.chapter.pages[current_len - count + 1].clone())
+        if let Ok(mut pages) = (self.fetch)(self.current_page) {
+            let count = pages.len();
+            self.chapter.pages.append(&mut pages);
+            let current_len = self.chapter.pages.len();
+            if count > 0 {
+                Some(self.chapter.pages[current_len - count].clone())
+            } else {
+                None
+            }
         } else {
             None
         }

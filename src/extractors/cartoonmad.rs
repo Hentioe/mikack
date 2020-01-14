@@ -33,28 +33,28 @@ def_exctractor! {
         Ok(())
     }
 
-    fn fetch_pages(&self, chapter: &mut Chapter) -> Result<()> {
+    fn pages_iter<'a>(&'a self, chapter: &'a mut Chapter) -> Result<ChapterPages> {
         let html = get(&chapter.url)?.decode_text(BIG5)?;
         let document = parse_document(&html);
-        let page_url_list = document
+        let page_url_list: Vec<String> = document
             .dom_attrs(r#"select[name="jump"] > option[value]"#, "value")?
             .iter()
             .map(|path| format!("http://www.cartoonmad.com/comic/{}", path))
-            .collect::<Vec<_>>();
+            .collect::<Vec<String>>();
         if chapter.title.is_empty(){
             let name = document.dom_text(r#"td[width="600"] li > a:first-child"#)?;
             let chapter_text = document.dom_text(format!("a[href=\"{}\"]", &chapter.url).as_str())?;
             chapter.title = format!("{} - {}", name.replace("漫畫", ""), chapter_text);
         }
-
-        for (i, page_url) in page_url_list.iter().enumerate() {
-            let html = get(page_url)?.text()?;
+        let len = page_url_list.len() as i32;
+        let fetch = Box::new(move |current_page| {
+            let html = get(&page_url_list[current_page - 1])?.text()?;
             let page_document = parse_document(&html);
-            let url = page_document.dom_attr(r#"a > img[oncontextmenu="return false"]"#, "src")?;
-            chapter.push_page(Page::new(i, url));
-        }
+            let address = page_document.dom_attr(r#"a > img[oncontextmenu="return false"]"#, "src")?;
+            Ok(vec![Page::new(current_page - 1, address)])
+        });
 
-        Ok(())
+        Ok(ChapterPages::new(chapter, len, vec![], fetch))
     }
 }
 

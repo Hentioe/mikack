@@ -34,8 +34,9 @@ def_exctractor! {
         Ok(())
     }
 
-    fn fetch_pages(&self, chapter: &mut Chapter) -> Result<()> {
-        let resp = get(&chapter.url)?;
+    fn pages_iter<'a>(&'a self, chapter: &'a mut Chapter) -> Result<ChapterPages> {
+        let url = chapter.url.clone();
+        let resp = get(&url)?;
         let html = resp.text()?;
         let document = parse_document(&html);
 
@@ -59,37 +60,30 @@ def_exctractor! {
         let obj = eval_as_obj(&warp_params_code)?;
         let cid = obj.get_as_int("cid")?.to_string();
         let mid = obj.get_as_int("mid")?.to_string();
-        let dt = obj.get_as_string("dt")?;
-        let sign = obj.get_as_string("sign")?;
 
-        let referer = &chapter.url.clone();
-        let page_get = |url: &str| -> Result<reqwest::blocking::Response> {
-            let client = reqwest::blocking::Client::new();
-            let resp = client.get(url)
-                .header(REFERER, referer)
-                .send()?;
-            Ok(resp)
-        };
-
-        for page in 1..page_count+1{
+        let fetch = Box::new(move |current_page: usize| {
             let query_params: String = form_urlencoded::Serializer::new(String::new())
                 .append_pair("cid", &cid)
-                .append_pair("page", &page.to_string())
+                .append_pair("page", &current_page.to_string())
                 .append_pair("_cid", &cid)
                 .append_pair("_mid", &mid)
-                .append_pair("_dt", &dt)
-                .append_pair("_sign", &sign)
+                .append_pair("_dt", obj.get_as_string("dt")?)
+                .append_pair("_sign", obj.get_as_string("sign")?)
                 .finish();
 
-            let api_url = format!("{}chapterfun.ashx?{}", &chapter.url, query_params);
-            let eval_code = page_get(&api_url)?.text()?;
+            let api_url = format!("{}chapterfun.ashx?{}", url, query_params);
+            let client = reqwest::blocking::Client::new();
+            let eval_code = client.get(&api_url)
+                                .header(REFERER, &url)
+                                .send()?
+                                .text()?;
             let wrap_eval_code = format!("var pages = {}; pages", eval_code);
             let eval_r = eval_value(&wrap_eval_code)?;
             let pages = eval_r.as_array()?;
-            chapter.push_page(Page::new((page-1) as usize , pages[0].as_string()?))
-        }
+            Ok(vec![Page::new(current_page - 1, pages[0].as_string()?)])
+        });
 
-        Ok(())
+        Ok(ChapterPages::new(chapter, page_count, vec![], fetch))
     }
 }
 
