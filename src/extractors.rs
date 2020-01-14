@@ -6,11 +6,17 @@ use std::collections::HashMap;
 use crate::error::*;
 use crate::models::*;
 
-trait Extractor {
+pub trait Extractor {
+    fn is_usable(&self) -> bool {
+        true
+    }
+
     fn index(&self, page: u32) -> Result<Vec<Comic>>;
+
     fn fetch_chapters(&self, _comic: &mut Comic) -> Result<()> {
         Ok(())
     }
+
     fn fetch_pages(&self, _chapter: &mut Chapter) -> Result<()> {
         Ok(())
     }
@@ -423,14 +429,95 @@ fn test_eval_obj() {
     assert_eq!(String::from("d1"), *d[0].as_string().unwrap());
 }
 
+type ExtractorObject = Box<dyn Extractor + Sync + Send>;
+
 macro_rules! import_impl_mods {
-    ( $($module:ident),* ) => {
+    ( $($module:ident: {:domain => $domain:expr, :name => $name:expr}),* ) => {
         $(
             pub mod $module;
         )*
-    };
+        lazy_static!{
+            pub static ref PLATFORMS: HashMap<String, String> = {
+                let mut platforms = HashMap::new();
+                $(
+                    platforms.insert($domain.to_string(), $name.to_string());
+                )*
+                platforms
+            };
+
+            pub static ref EXTRACTORS: HashMap<String, ExtractorObject> = {
+                let mut extractros: HashMap<String, ExtractorObject> = HashMap::new();
+                $(
+                    extractros.insert($domain.to_string(), Box::new($module::new_extr()));
+                )*
+                extractros
+            };
+        }
+    }
 }
 
 import_impl_mods![
-    dm5, dmjz, cartoonmad, ehentai, hhimm, kukudm, manhuagui, manhuaren, veryim, xinxinmh
+    cartoonmad: {
+        :domain => "www.cartoonmad.com",
+        :name   => "動漫狂"
+    },
+    dm5: {
+        :domain => "www.dm5.com",
+        :name   => "动漫屋"
+    },
+    dmjz: {
+        :domain => "manhua.dmzj.com",
+        :name   => "动漫之家"
+    },
+    ehentai: {
+        :domain => "e-hentai.org",
+        :name   => "E-Hentai"
+    },
+    hhimm: {
+        :domain => "www.hhimm.com",
+        :name   => "汗汗酷漫"
+    },
+    kukudm: {
+        :domain => "comic.kukudm.com",
+        :name   => "KuKu动漫"
+    },
+    manhuagui: {
+        :domain => "www.manhuagui.com",
+        :name   => "看漫画"
+    },
+    manhuaren: {
+        :domain => "www.manhuaren.com",
+        :name   => "漫画人"
+    },
+    qkmh5: {
+        :domain => "www.qkmh5.com",
+        :name   => "青空漫画"
+    },
+    veryim: {
+        :domain => "comic.veryim.com",
+        :name   => "非常爱漫"
+    },
+    xinxinmh: {
+        :domain => "www.177mh.net",
+        :name   => "新新漫画网"
+    }
 ];
+
+pub fn get_extr<S: Into<String>>(domain: S) -> Option<&'static ExtractorObject> {
+    EXTRACTORS.get(&domain.into())
+}
+
+#[test]
+fn test_usable() {
+    assert!(get_extr("www.cartoonmad.com").unwrap().is_usable());
+    assert!(get_extr("www.dm5.com").unwrap().is_usable());
+    assert!(get_extr("manhua.dmzj.com").unwrap().is_usable());
+    assert!(get_extr("e-hentai.org").unwrap().is_usable());
+    assert!(get_extr("www.hhimm.com").unwrap().is_usable());
+    assert!(get_extr("comic.kukudm.com").unwrap().is_usable());
+    assert!(get_extr("www.manhuagui.com").unwrap().is_usable());
+    assert!(get_extr("www.manhuaren.com").unwrap().is_usable());
+    assert!(!get_extr("www.qkmh5.com").unwrap().is_usable());
+    assert!(!get_extr("comic.veryim.com").unwrap().is_usable());
+    assert!(get_extr("www.177mh.net").unwrap().is_usable());
+}
