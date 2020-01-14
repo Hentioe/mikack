@@ -22,6 +22,10 @@ impl Item {
     }
 }
 
+def_regex! {
+    DECRYPT_RE => r#"(eval\(.+\))[\s\S]*</script>"#
+}
+
 def_exctractor! {
     fn index(&self, page: u32) -> Result<Vec<Comic>> {
         let client = Client::new();
@@ -61,9 +65,28 @@ def_exctractor! {
         Ok(())
     }
 
-    // fn fetch_pages(&self, chapter: &mut Chapter) -> Result<()> {
-    //     Ok(())
-    // }
+    fn fetch_pages(&self, chapter: &mut Chapter) -> Result<()> {
+        let html = get(&chapter.url)?.text()?;
+        let document = parse_document(&html);
+        if chapter.title.is_empty() {
+            let title = document.dom_text("p.view-fix-top-bar-title")?;
+            chapter.title =  title[0..(title.len() - 1)].to_string();
+        }
+
+        let decrypt_code = match_content![
+            :text   =>  &html,
+            :regex  => &*DECRYPT_RE
+        ];
+        let wrap_code = wrap_code!(&decrypt_code, format!("
+            eval({})
+        ", "newImgs"), :end);
+
+        for (i, img) in eval_value(&wrap_code)?.as_array()?.iter().enumerate() {
+            chapter.push_page(Page::new(i, img.as_string()?));
+        }
+
+        Ok(())
+    }
 }
 
 #[test]
@@ -77,12 +100,11 @@ fn test_extr() {
         "http://www.manhuaren.com/manhua-xiamumengjizhang-can/",
     );
     extr.fetch_chapters(&mut comic).unwrap();
-    println!("{:?}", comic);
     assert_eq!(1, comic.chapters.len());
 
-    // let chapter1 = &mut comic.chapters[0];
-    // chapter1.title = "".to_string();
-    // extr.fetch_pages(chapter1).unwrap();
-    // assert_eq!("夏目萌记帐 参 第1话", chapter1.title);
-    // assert_eq!(21, chapter1.pages.len());
+    let chapter1 = &mut comic.chapters[0];
+    chapter1.title = "".to_string();
+    extr.fetch_pages(chapter1).unwrap();
+    assert_eq!("夏目萌记帐 参第1话", chapter1.title);
+    assert_eq!(21, chapter1.pages.len());
 }
