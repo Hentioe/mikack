@@ -1,4 +1,6 @@
 use std::collections::HashMap;
+use std::ffi::OsStr;
+use std::path::Path;
 
 #[derive(Debug, Clone)]
 pub struct Page {
@@ -22,12 +24,23 @@ pub struct Comic {
     pub chapters: Vec<Chapter>,
 }
 
+static DEFAULT_EXT: &'static str = "jpg";
+
 impl Page {
     pub fn new<S: Into<String>>(n: usize, address: S) -> Self {
         Self {
             n,
             address: address.into(),
         }
+    }
+
+    pub fn name(&self) -> String {
+        let extension = Path::new(&self.address)
+            .extension()
+            .unwrap_or(OsStr::new(DEFAULT_EXT));
+        let extension = extension.to_str().unwrap_or(DEFAULT_EXT);
+        let params_marker_index = extension.find("?").unwrap_or(extension.len());
+        extension[0..params_marker_index].to_string()
     }
 }
 
