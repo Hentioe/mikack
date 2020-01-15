@@ -65,6 +65,11 @@ impl<'a> ChapterPages<'a> {
             Box::new(move |_| Ok(vec![])),
         )
     }
+
+    #[allow(dead_code)]
+    pub fn chapter_title_clone(&self) -> String {
+        self.chapter.title.clone()
+    }
 }
 
 impl<'a> Iterator for ChapterPages<'a> {
