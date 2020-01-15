@@ -1,3 +1,3 @@
-# libmanga
+# manga-rs
 
-New universal cross-platform manga library
+New universal cross-platform manga library, documentation has not been written (WIP).
