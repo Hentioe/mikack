@@ -36,7 +36,7 @@ pub struct ChapterPages<'a> {
     chapter: &'a mut Chapter,
     current_page: usize,
     fetch: Box<dyn Fn(usize) -> Result<Vec<Page>>>,
-    total: i32,
+    pub total: i32,
 }
 
 impl<'a> ChapterPages<'a> {
