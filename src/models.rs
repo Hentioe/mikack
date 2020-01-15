@@ -1,3 +1,5 @@
+use std::collections::HashMap;
+
 #[derive(Debug, Clone)]
 pub struct Page {
     pub n: usize,
@@ -10,7 +12,7 @@ pub struct Chapter {
     pub url: String,
     pub which: u32,
     pub pages: Vec<Page>,
-    current_p: u32,
+    pub page_headers: HashMap<String, String>,
 }
 
 #[derive(Debug, Clone)]
@@ -31,17 +33,24 @@ impl Page {
 
 impl Chapter {
     pub fn new<S: Into<String>>(title: S, url: S, which: u32) -> Self {
+        let mut page_headers = HashMap::new();
+        let url = url.into();
+        page_headers.insert(String::from("Referer"), url.clone());
         Self {
             title: title.into(),
-            url: url.into(),
+            url: url.clone(),
             which,
             pages: vec![],
-            current_p: 0,
+            page_headers,
         }
     }
 
     pub fn push_page(&mut self, page: Page) {
         self.pages.push(page);
+    }
+
+    pub fn push_page_header<S: Into<String>>(&mut self, key: S, value: S) {
+        self.page_headers.insert(key.into(), value.into());
     }
 }
 
