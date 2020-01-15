@@ -34,13 +34,17 @@ impl Page {
         }
     }
 
-    pub fn name(&self) -> String {
+    pub fn fname(&self) -> String {
         let extension = Path::new(&self.address)
             .extension()
             .unwrap_or(OsStr::new(DEFAULT_EXT));
         let extension = extension.to_str().unwrap_or(DEFAULT_EXT);
         let params_marker_index = extension.find("?").unwrap_or(extension.len());
-        extension[0..params_marker_index].to_string()
+        format!(
+            "{}.{}",
+            self.n,
+            extension[0..params_marker_index].to_string()
+        )
     }
 }
 
