@@ -25,7 +25,7 @@ def_exctractor! {
         Ok(())
     }
 
-    fn fetch_pages(&self, chapter: &mut Chapter) -> Result<()> {
+    fn pages_iter<'a>(&'a self, chapter: &'a mut Chapter) -> Result<ChapterPages> {
         let html = get(&chapter.url)?.text()?;
         let document = parse_document(&html);
 
@@ -34,11 +34,11 @@ def_exctractor! {
         }
 
         let count_text = document.dom_text("div.gtb > p.gpc")?;
-        let count = match_content![
+        let total = match_content![
             :text   => &count_text,
             :regex  => &*COUNT_RE
         ].parse::<f64>()?;
-        let page_count = (count / 40.0).ceil() as u32;
+        let page_count = (total / 40.0).ceil() as u32;
 
         let url = match_content![
             :text   => &chapter.url,
@@ -54,14 +54,14 @@ def_exctractor! {
             view_url_list.append(&mut href_list);
         }
 
-        for (i, view_url) in view_url_list.iter().enumerate() {
-            let view_html = get(view_url)?.text()?;
+        let fetch = Box::new(move |current_page| {
+            let view_html = get(&view_url_list[current_page - 1])?.text()?;
             let view_docuement = parse_document(&view_html);
-            let src = view_docuement.dom_attr("#img", "src")?;
-            chapter.push_page(Page::new(i as usize, src));
-        }
+            let address = view_docuement.dom_attr("#img", "src")?;
+            Ok(vec![Page::new(current_page - 1, address)])
+        });
 
-        Ok(())
+        Ok(ChapterPages::new(chapter, total as i32, vec![], fetch))
     }
 }
 

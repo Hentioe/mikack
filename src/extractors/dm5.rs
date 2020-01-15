@@ -73,10 +73,7 @@ def_exctractor! {
 
             let api_url = format!("{}chapterfun.ashx?{}", url, query_params);
             let client = reqwest::blocking::Client::new();
-            let eval_code = client.get(&api_url)
-                                .header(REFERER, &url)
-                                .send()?
-                                .text()?;
+            let eval_code = client.get(&api_url).header(REFERER, &url).send()?.text()?;
             let wrap_eval_code = format!("var pages = {}; pages", eval_code);
             let eval_r = eval_value(&wrap_eval_code)?;
             let pages = eval_r.as_array()?;

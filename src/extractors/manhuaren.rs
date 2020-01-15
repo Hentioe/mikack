@@ -65,7 +65,7 @@ def_exctractor! {
         Ok(())
     }
 
-    fn fetch_pages(&self, chapter: &mut Chapter) -> Result<()> {
+    fn pages_iter<'a>(&'a self, chapter: &'a mut Chapter) -> Result<ChapterPages> {
         let html = get(&chapter.url)?.text()?;
         let document = parse_document(&html);
         if chapter.title.is_empty() {
@@ -81,11 +81,12 @@ def_exctractor! {
             eval({})
         ", "newImgs"), :end);
 
-        for (i, img) in eval_value(&wrap_code)?.as_array()?.iter().enumerate() {
-            chapter.push_page(Page::new(i, img.as_string()?));
+        let mut addresses = vec![];
+        for img in eval_value(&wrap_code)?.as_array()? {
+            addresses.push(img.as_string()?.clone());
         }
 
-        Ok(())
+        Ok(ChapterPages::full(chapter, addresses))
     }
 }
 

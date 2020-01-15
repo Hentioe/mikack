@@ -35,7 +35,7 @@ def_exctractor! {
         Ok(())
     }
 
-    fn fetch_pages(&self, chapter: &mut Chapter) -> Result<()> {
+    fn pages_iter<'a>(&'a self, chapter: &'a mut Chapter) -> Result<ChapterPages> {
         let html = get(&chapter.url)?.decode_text(GBK)?;
         let document = parse_document(&html);
         if chapter.title.is_empty(){
@@ -51,20 +51,19 @@ def_exctractor! {
             :text   => &chapter.url,
             :regex  => &*URL_RE
         ];
-        let pure_url = &chapter.url.replace(page_path, "");
-
-        for i in 0..page_counut {
-            let page_url = format!("{}{}.htm", pure_url, i + 1);
+        let pure_url = chapter.url.replace(page_path, "");
+        let fetch = Box::new(move |current_page| {
+            let page_url = format!("{}{}.htm", pure_url, current_page);
             let page_html = get(&page_url)?.decode_text(GBK)?;
             let img_path = match_content![
                 :text   => &page_html,
                 :regex  => &*IMGS_RE
             ];
             let address = format!("https://s2.kukudm.com/{}", img_path);
-            chapter.push_page(Page::new(i, address));
-        }
+            Ok(vec![Page::new(current_page - 1, address)])
+        });
 
-        Ok(())
+        Ok(ChapterPages::new(chapter, page_counut as i32, vec![], fetch))
     }
 }
 

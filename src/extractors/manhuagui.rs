@@ -31,7 +31,7 @@ def_exctractor! {
         Ok(())
     }
 
-    fn fetch_pages(&self, chapter: &mut Chapter) -> Result<()> {
+    fn pages_iter<'a>(&'a self, chapter: &'a mut Chapter) -> Result<ChapterPages> {
         let html = get(&chapter.url)?.text()?;
         let runtime = include_str!("../../runtime/manhuagui.js");
         let crypty_code = match_content![
@@ -56,18 +56,23 @@ def_exctractor! {
             DATA
         ", &crypty_code));
         let obj = eval_as_obj(&wrap_code)?;
-        let cid = obj.get_as_int("cid")?;
-        let md5 = obj.get_as_string("md5")?;
-        let name = obj.get_as_string("name")?;
-        let path = obj.get_as_string("path")?;
-        for (i, file) in obj.get_as_array("files")?.iter().enumerate() {
-            let address = format!("https://i.hamreus.com{}{}?cid={}&md5={}", path, file.as_string()?, cid, md5);
-            chapter.push_page(Page::new(i, address));
-        }
+        let cid = obj.get_as_int("cid")?.clone();
+        let md5 = obj.get_as_string("md5")?.clone();
+        let name = obj.get_as_string("name")?.clone();
+        let path = obj.get_as_string("path")?.clone();
+        let files = obj.get_as_array("files")?.clone();
+        let total = files.len() as i32;
         if chapter.title.is_empty(){
-            chapter.title = name.clone();
+            chapter.title = name;
         }
-        Ok(())
+
+        let fetch = Box::new(move |current_page: usize| {
+            let file = files[current_page - 1].as_string()?;
+            let address = format!("https://i.hamreus.com{}{}?cid={}&md5={}", path, file, cid, md5);
+            Ok(vec![Page::new(current_page - 1, address)])
+        });
+
+        Ok(ChapterPages::new(chapter, total, vec![], fetch))
     }
 }
 

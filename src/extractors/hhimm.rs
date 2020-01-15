@@ -28,18 +28,18 @@ def_exctractor! {
         Ok(())
     }
 
-    fn fetch_pages(&self, chapter: &mut Chapter) -> Result<()> {
+    fn pages_iter<'a>(&'a self, chapter: &'a mut Chapter) -> Result<ChapterPages> {
         let query_params: HashMap<_, _> = Url::parse(&chapter.url)?
                                 .query_pairs()
                                 .map(|(name, value)| (name.to_string(), value.to_string()))
                                 .collect();
-        let domain_no = query_params.get("d").unwrap_or(&*DEFAULT_DOMAIN_NO);
+        let domain_no = query_params.get("d").unwrap_or(&*DEFAULT_DOMAIN_NO).clone();
         let html = get(&chapter.url)?.text()?;
         let document = parse_document(&html);
         let hd_domain_value = document.dom_attr("#hdDomain", "value")?;
         let hd_domain_list = hd_domain_value.split("|").collect::<Vec<_>>();
         let hd_domain = if hd_domain_list.len() > 0 {
-            hd_domain_list[0]
+            hd_domain_list[0].to_string()
         }else{
             return Err(err_msg("No `hdDomain` found"))
         };
@@ -49,11 +49,12 @@ def_exctractor! {
         if chapter.title.is_empty(){
             chapter.title = document.dom_text("title")?.replace(" - HH漫画 汗汗酷漫", "");
         }
-        for i in 0..page_count {
-            let url = format!("http://www.hhimm.com/cool{s_id}/{i}.html?s={s}&d={domain_no}",
-                s_id=s_id, i=(i+1), s=s, domain_no=domain_no
+
+        let fetch = Box::new(move |current_page| {
+            let page_url = format!("http://www.hhimm.com/cool{s_id}/{i}.html?s={s}&d={domain_no}",
+                s_id=s_id, i=current_page, s=s, domain_no=domain_no
             );
-            let html = get(&url)?.text()?;
+            let html = get(&page_url)?.text()?;
             let document = parse_document(&html);
             let img_name_attr = document.dom_attr("#iBodyQ img", "name")?;
             let runtime = include_str!("../../runtime/hhimm.js");
@@ -62,10 +63,12 @@ def_exctractor! {
                 unsuan('{}')
             ", "www.hhimm.com", img_name_attr), :end);
             let path = eval_as::<String>(&wrap_code)?;
-            chapter.push_page(Page::new(i, format!("{}{}", hd_domain, path)))
-        }
+            let address = format!("{}{}", hd_domain, path);
 
-        Ok(())
+            Ok(vec![Page::new(current_page - 1, address)])
+        });
+
+        Ok(ChapterPages::new(chapter, page_count as i32, vec![], fetch))
     }
 }
 

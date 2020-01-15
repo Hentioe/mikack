@@ -31,7 +31,7 @@ def_exctractor! {
         Ok(())
     }
 
-    fn fetch_pages(&self, chapter: &mut Chapter) -> Result<()> {
+    fn pages_iter<'a>(&'a self, chapter: &'a mut Chapter) -> Result<ChapterPages> {
         let html = get(&chapter.url)?.text()?;
         let code = match_content![
             :text   => &html,
@@ -48,11 +48,13 @@ def_exctractor! {
         if chapter.title.is_empty(){
             chapter.title = obj.get_as_string("title")?.clone();
         }
-        for (i, page) in obj.get_as_array("pages")?.into_iter().enumerate() {
-            let url = format!("https://images.dmzj.com/{}", page.as_string()?);
-            chapter.push_page(Page::new(i, url));
+        let mut addresses = vec![];
+        for path in obj.get_as_array("pages")? {
+            let address = format!("https://images.dmzj.com/{}", path.as_string()?);
+            addresses.push(address);
         }
-        Ok(())
+
+        Ok(ChapterPages::full(chapter, addresses))
     }
 }
 
