@@ -596,3 +596,183 @@ fn test_usable() {
     assert!(!get_extr("comic.veryim.com").unwrap().is_usable());
     assert!(get_extr("www.177mh.net").unwrap().is_usable());
 }
+
+type Routes = Vec<(String, (Regex, Regex))>;
+
+macro_rules! def_routes {
+    ( $({:domain => $domain:expr, :comic_re => $comic_re:expr, :chapter_re => $chapter_re:expr}),* ) => {
+        lazy_static!{
+            static ref ROUTES: Routes = {
+                let mut routes: Routes = Vec::new();
+                $(
+                    routes.push(($domain.to_string(), (Regex::new($comic_re).unwrap(), Regex::new($chapter_re).unwrap())));
+                )*
+                routes
+            };
+        }
+    };
+}
+
+#[derive(Debug, PartialEq)]
+pub enum DomainRoute {
+    Comic(String),
+    Chapter(String),
+}
+
+pub fn domain_route(url: &str) -> Option<DomainRoute> {
+    for (domain, (comic_re, chapter_re)) in &*ROUTES {
+        if chapter_re.is_match(url) {
+            return Some(DomainRoute::Chapter(domain.clone()));
+        }
+        if comic_re.is_match(url) {
+            return Some(DomainRoute::Comic(domain.clone()));
+        }
+    }
+    None
+}
+
+def_routes![
+    {
+        :domain     => "www.cartoonmad.com",
+        :comic_re   => r#"^https?://www\.cartoonmad\.com/comic/\d{1,5}\.html"#,
+        :chapter_re => r#"^https?://www\.cartoonmad\.com/comic/\d{11,}.html"#
+    },
+    {
+        :domain     => "www.dm5.com",
+        :comic_re   => r#"^https?://www\.dm5\.com/[^/]+/"#,
+        :chapter_re => r#"^https?://www\.dm5\.com/m\d+/"#
+    },
+    {
+        :domain     => "manhua.dmzj.com",
+        :comic_re   => r#"^https?://manhua\.dmzj\.com/[^/]+/"#,
+        :chapter_re => r#"^https?://manhua\.dmzj\.com/[^/]+/\d+\.shtml"#
+    },
+    {
+        :domain     => "e-hentai.org",
+        :comic_re   => r#"^-NONE-$"#,
+        :chapter_re => r#"^https?://e-hentai\.org/g/\d+/[^/]+/"#
+    },
+    {
+        :domain     => "www.hhimm.com",
+        :comic_re   => r#"^https?://www\.hhimm\.com/manhua/\d+\.html"#,
+        :chapter_re => r#"^https?://www\.hhimm\.com/cool\d+/\d+\.html"#
+    },
+    {
+        :domain     => "comic.kukudm.com",
+        :comic_re   => r#"^https?://comic\.kukudm\.com/comiclist/\d+/index.htm"#,
+        :chapter_re => r#"^https?://comic\.kukudm\.com/comiclist/\d+/\d+/\d+.htm"#
+    },
+    {
+        :domain     => "www.manhuagui.com",
+        :comic_re   => r#"^https?://www\.manhuagui\.com/comic/\d+/"#,
+        :chapter_re => r#"^https?://www\.manhuagui\.com/comic/\d+/\d+\.html"#
+    },
+    {
+        :domain     => "www.manhuaren.com",
+        :comic_re   => r#"^https?://www\.manhuaren\.com/manhua-[^/]+/"#,
+        :chapter_re => r#"^https?://www\.manhuaren\.com/m\d+/"#
+    },
+    {
+        :domain     => "www.qkmh5.com",
+        :comic_re   => r#"^https?://www\.qkmh5\.com/mh/[^\.]+\.html"#,
+        :chapter_re => r#"^https?://www\.qkmh5\.com/mm/\d+/\d+\.html"#
+    },
+    {
+        :domain     => "comic.veryim.com",
+        :comic_re   => r#"^https?://comic\.veryim\.com/[^/]+/\d+/"#,
+        :chapter_re => r#"^https?://comic\.veryim\.com/[^/]+/\d+/\d+\.html"#
+    },
+    {
+        :domain     => "www.177mh.net",
+        :comic_re   => r#"^https?://www\.177mh\.net/colist_\d+\.html"#,
+        :chapter_re => r#"^https?://www.177mh.net/\d+/\d+\.html"#
+    }
+];
+
+#[test]
+fn test_routes() {
+    assert_eq!(
+        DomainRoute::Comic(String::from("www.cartoonmad.com")),
+        domain_route("https://www.cartoonmad.com/comic/8460.html").unwrap()
+    );
+    assert_eq!(
+        DomainRoute::Chapter(String::from("www.cartoonmad.com")),
+        domain_route("https://www.cartoonmad.com/comic/846000012038001.html").unwrap()
+    );
+    assert_eq!(
+        DomainRoute::Comic(String::from("www.dm5.com")),
+        domain_route("http://www.dm5.com/manhua-yuanzun/").unwrap()
+    );
+    assert_eq!(
+        DomainRoute::Chapter(String::from("www.dm5.com")),
+        domain_route("http://www.dm5.com/m578500/").unwrap()
+    );
+    assert_eq!(
+        DomainRoute::Comic(String::from("manhua.dmzj.com")),
+        domain_route("http://manhua.dmzj.com/yifuyaozhemechuan/").unwrap()
+    );
+    assert_eq!(
+        DomainRoute::Chapter(String::from("manhua.dmzj.com")),
+        domain_route("http://manhua.dmzj.com/yifuyaozhemechuan/56275.shtml#@page=1").unwrap()
+    );
+    assert_eq!(
+        DomainRoute::Chapter(String::from("e-hentai.org")),
+        domain_route("https://e-hentai.org/g/1552929/c9f7a6ad71/").unwrap()
+    );
+    assert_eq!(
+        DomainRoute::Comic(String::from("www.hhimm.com")),
+        domain_route("http://www.hhimm.com/manhua/40325.html").unwrap()
+    );
+    assert_eq!(
+        DomainRoute::Chapter(String::from("www.hhimm.com")),
+        domain_route("http://www.hhimm.com/cool373925/1.html?s=3").unwrap()
+    );
+    assert_eq!(
+        DomainRoute::Comic(String::from("comic.kukudm.com")),
+        domain_route("https://comic.kukudm.com/comiclist/2555/index.htm").unwrap()
+    );
+    assert_eq!(
+        DomainRoute::Chapter(String::from("comic.kukudm.com")),
+        domain_route("https://comic.kukudm.com/comiclist/2555/66929/1.htm").unwrap()
+    );
+    assert_eq!(
+        DomainRoute::Comic(String::from("www.manhuagui.com")),
+        domain_route("https://www.manhuagui.com/comic/20515/").unwrap()
+    );
+    assert_eq!(
+        DomainRoute::Chapter(String::from("www.manhuagui.com")),
+        domain_route("https://www.manhuagui.com/comic/20515/469245.html").unwrap()
+    );
+    assert_eq!(
+        DomainRoute::Comic(String::from("www.manhuaren.com")),
+        domain_route("https://www.manhuaren.com/manhua-fengyunquanji/").unwrap()
+    );
+    assert_eq!(
+        DomainRoute::Chapter(String::from("www.manhuaren.com")),
+        domain_route("https://www.manhuaren.com/m188947/").unwrap()
+    );
+    assert_eq!(
+        DomainRoute::Comic(String::from("www.qkmh5.com")),
+        domain_route("http://www.qkmh5.com/mh/yaojingdeweiba.html").unwrap()
+    );
+    assert_eq!(
+        DomainRoute::Chapter(String::from("www.qkmh5.com")),
+        domain_route("http://www.qkmh5.com/mm/1807/461806.html").unwrap()
+    );
+    assert_eq!(
+        DomainRoute::Comic(String::from("comic.veryim.com")),
+        domain_route("http://comic.veryim.com/qihuan/57238/").unwrap()
+    );
+    assert_eq!(
+        DomainRoute::Chapter(String::from("comic.veryim.com")),
+        domain_route("http://comic.veryim.com/qihuan/57238/883902.html").unwrap()
+    );
+    assert_eq!(
+        DomainRoute::Comic(String::from("www.177mh.net")),
+        domain_route("https://www.177mh.net/colist_244241.html").unwrap()
+    );
+    assert_eq!(
+        DomainRoute::Chapter(String::from("www.177mh.net")),
+        domain_route("https://www.177mh.net/202001/437290.html").unwrap()
+    );
+}
