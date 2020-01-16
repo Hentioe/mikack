@@ -665,7 +665,7 @@ def_routes![
     {
         :domain     => "comic.kukudm.com",
         :comic_re   => r#"^https?://comic\.kukudm\.com/comiclist/\d+/index.htm"#,
-        :chapter_re => r#"^https?://comic\.kukudm\.com/comiclist/\d+/\d+/\d+.htm"#
+        :chapter_re => r#"^https?://comic\d?\.kukudm\.com/comiclist/\d+/\d+/\d+.htm"#
     },
     {
         :domain     => "www.manhuagui.com",
@@ -739,6 +739,10 @@ fn test_routes() {
     assert_eq!(
         DomainRoute::Chapter(String::from("comic.kukudm.com")),
         domain_route("https://comic.kukudm.com/comiclist/2555/66929/1.htm").unwrap()
+    );
+    assert_eq!(
+        DomainRoute::Chapter(String::from("comic.kukudm.com")),
+        domain_route("https://comic2.kukudm.com/comiclist/2555/66929/1.htm").unwrap()
     );
     assert_eq!(
         DomainRoute::Comic(String::from("www.manhuagui.com")),
