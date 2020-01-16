@@ -46,9 +46,7 @@ def_exctractor! {
         let s_id = document.dom_attr("#hdVolID", "value")?;
         let s = document.dom_attr("#hdS", "value")?;
         let page_count = document.dom_attr("#hdPageCount", "value")?.parse::<usize>()?;
-        if chapter.title.is_empty(){
-            chapter.title = document.dom_text("title")?.replace(" - HH漫画 汗汗酷漫", "");
-        }
+        chapter.title = document.dom_text("title")?.replace(" - HH漫画 汗汗酷漫", "");
 
         let fetch = Box::new(move |current_page| {
             let page_url = format!("http://www.hhimm.com/cool{s_id}/{i}.html?s={s}&d={domain_no}",

@@ -29,10 +29,7 @@ def_exctractor! {
         let html = get(&chapter.url)?.text()?;
         let document = parse_document(&html);
 
-        if chapter.title.is_empty() {
-            chapter.title = document.dom_text("#gn")?;
-        }
-
+        chapter.title = document.dom_text("#gn")?;
         let count_text = document.dom_text("div.gtb > p.gpc")?;
         let total = match_content![
             :text   => &count_text,

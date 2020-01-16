@@ -62,9 +62,7 @@ def_exctractor! {
         let path = obj.get_as_string("path")?.clone();
         let files = obj.get_as_array("files")?.clone();
         let total = files.len() as i32;
-        if chapter.title.is_empty(){
-            chapter.title = name;
-        }
+        chapter.title = name;
 
         let fetch = Box::new(move |current_page: usize| {
             let file = files[current_page - 1].as_string()?;

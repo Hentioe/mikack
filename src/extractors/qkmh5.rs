@@ -34,9 +34,7 @@ def_exctractor! {
     fn pages_iter<'a>(&'a self, chapter: &'a mut Chapter) -> Result<ChapterPages> {
         let html = get(&chapter.url)?.decode_text(GBK)?;
         let document = parse_document(&html);
-        if chapter.title.is_empty() {
-            chapter.title = document.dom_text(r#"a[name="lookpic"] + h1"#)?;
-        }
+        chapter.title = document.dom_text(r#"a[name="lookpic"] + h1"#)?;
         let encode_text = match_content![
             :text   => &html,
             :regex  => &*ENCODE_TEXT_RE

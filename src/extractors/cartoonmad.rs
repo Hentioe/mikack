@@ -41,11 +41,9 @@ def_exctractor! {
             .iter()
             .map(|path| format!("http://www.cartoonmad.com/comic/{}", path))
             .collect::<Vec<String>>();
-        if chapter.title.is_empty(){
-            let name = document.dom_text(r#"td[width="600"] li > a:first-child"#)?;
-            let chapter_text = document.dom_text(format!("a[href=\"{}\"]", &chapter.url).as_str())?;
-            chapter.title = format!("{} - {}", name.replace("漫畫", ""), chapter_text);
-        }
+        let name = document.dom_text(r#"td[width="600"] li > a:first-child"#)?;
+        let chapter_text = document.dom_text(format!("a[href=\"{}\"]", &chapter.url).as_str())?;
+        chapter.title = format!("{} - {}", name.replace("漫畫", ""), chapter_text);
         let len = page_url_list.len() as i32;
         let fetch = Box::new(move |current_page| {
             let html = get(&page_url_list[current_page - 1])?.text()?;

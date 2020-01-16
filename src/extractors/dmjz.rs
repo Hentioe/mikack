@@ -45,9 +45,7 @@ def_exctractor! {
             obj
         ");
         let obj = eval_as_obj(&wrap_code)?;
-        if chapter.title.is_empty(){
-            chapter.title = obj.get_as_string("title")?.clone();
-        }
+        chapter.title = obj.get_as_string("title")?.clone();
         let mut addresses = vec![];
         for path in obj.get_as_array("pages")? {
             let address = format!("https://images.dmzj.com/{}", path.as_string()?);

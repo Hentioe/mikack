@@ -40,11 +40,9 @@ def_exctractor! {
         let html = resp.text()?;
         let document = parse_document(&html);
 
-        if chapter.title.is_empty() {
-            chapter.title = format!("{} {}",
-                document.dom_text(".title > span.right-arrow")?,
-                document.dom_text(".title > span.right-arrow:last-child")?);
-        }
+       chapter.title = format!("{} {}",
+            document.dom_text(".title > span.right-arrow")?,
+            document.dom_text(".title > span.right-arrow:last-child")?);
 
         let page_count = document.dom_text("#chapterpager > a:last-child")?.parse::<i32>()?;
 

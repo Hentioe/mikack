@@ -1,14 +1,17 @@
+use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
 use std::ffi::OsStr;
 use std::path::Path;
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct Page {
     pub n: usize,
     pub address: String,
+    pub fname: String,
+    pub fmime: String,
 }
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct Chapter {
     pub title: String,
     pub url: String,
@@ -17,7 +20,7 @@ pub struct Chapter {
     pub page_headers: HashMap<String, String>,
 }
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct Comic {
     pub title: String,
     pub url: String,
@@ -25,26 +28,27 @@ pub struct Comic {
 }
 
 static DEFAULT_EXT: &'static str = "jpg";
+static DEFAULT_MIME: &'static str = "*/*";
 
 impl Page {
     pub fn new<S: Into<String>>(n: usize, address: S) -> Self {
+        let address = address.into();
+        let fname = Page::fname(&address.clone(), &n);
         Self {
             n,
-            address: address.into(),
+            address: address,
+            fname,
+            fmime: DEFAULT_MIME.to_string(),
         }
     }
 
-    pub fn fname(&self) -> String {
-        let extension = Path::new(&self.address)
+    pub fn fname(address: &str, n: &usize) -> String {
+        let extension = Path::new(address)
             .extension()
             .unwrap_or(OsStr::new(DEFAULT_EXT));
         let extension = extension.to_str().unwrap_or(DEFAULT_EXT);
         let params_marker_index = extension.find("?").unwrap_or(extension.len());
-        format!(
-            "{}.{}",
-            self.n,
-            extension[0..params_marker_index].to_string()
-        )
+        format!("{}.{}", n, extension[0..params_marker_index].to_string())
     }
 }
 

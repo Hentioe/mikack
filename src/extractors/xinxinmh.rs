@@ -35,9 +35,7 @@ def_exctractor! {
     fn pages_iter<'a>(&'a self, chapter: &'a mut Chapter) -> Result<ChapterPages> {
         let html = get(&chapter.url)?.text()?;
         let document = parse_document(&html);
-        if chapter.title.is_empty() {
-            chapter.title = document.dom_text("#tab_srv + h1 > a")?;
-        }
+        chapter.title = document.dom_text("#tab_srv + h1 > a")?;
         let decrypt_code = match_content![
             :text   => &html,
             :regex  => &*DECRYPT_RE
