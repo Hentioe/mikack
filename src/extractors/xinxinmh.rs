@@ -27,7 +27,7 @@ def_exctractor! {
             :url            => &comic.url,
             :href_prefix    => &"https://www.177mh.net",
             :target         => &"ul.ar_list_col > li > a"
-        ]?.attach_to(comic);
+        ]?.reversed_attach_to(comic);
 
         Ok(())
     }

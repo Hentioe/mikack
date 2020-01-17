@@ -26,7 +26,7 @@ def_exctractor! {
             :url            => &comic.url,
             :href_prefix    => &"https://www.manhuagui.com",
             :target       => &"li > a.status0"
-        ]?.attach_to(comic);
+        ]?.reversed_attach_to(comic);
 
         Ok(())
     }

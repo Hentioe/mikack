@@ -21,7 +21,7 @@ def_exctractor! {
             :entry          => Chapter,
             :url            => &comic.url,
             :target         => &".row-content-chapter > li > a.chapter-name"
-        ]?.reverse_with_attach_to(comic);
+        ]?.reversed_attach_to(comic);
 
         Ok(())
     }

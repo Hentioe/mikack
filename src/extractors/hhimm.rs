@@ -23,7 +23,7 @@ def_exctractor! {
             :url            => &comic.url,
             :href_prefix    => &"http://www.hhimm.com",
             :target         => &".cVolUl > li > a"
-        ]?.attach_to(comic);
+        ]?.reversed_attach_to(comic);
 
         Ok(())
     }

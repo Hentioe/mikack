@@ -18,7 +18,7 @@ def_exctractor! {
             :entry          => Comic,
             :url            => &url,
             :href_prefix    => &"https://www.dm5.com",
-            :selector       => &"ul.mh-list.col3.top-cat > li .mh-item-detali > h2.title"
+            :target       => &"ul.mh-list > li .mh-item-detali > h2.title > a"
         ]
     }
 
@@ -27,9 +27,8 @@ def_exctractor! {
             :entry          => Chapter,
             :url            => &comic.url,
             :href_prefix    => &"https://www.dm5.com",
-            :selector       => &"#chapterlistload ul > li",
-            :find           => &"a[title]"
-        ]?.attach_to(comic);
+            :target       => &"#chapterlistload ul > li > a[title]"
+        ]?.reversed_attach_to(comic);
 
         Ok(())
     }
@@ -92,7 +91,7 @@ fn test_extr() {
     extr.fetch_chapters(&mut comic).unwrap();
     assert_eq!(670, comic.chapters.len());
 
-    let chapter1 = &mut comic.chapters[27];
+    let chapter1 = &mut comic.chapters[642];
     chapter1.title = "".to_string();
     extr.fetch_pages(chapter1).unwrap();
     assert_eq!("风云全集 第648卷 下", chapter1.title);

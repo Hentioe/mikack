@@ -420,7 +420,7 @@ macro_rules! itemsgen {
 
 trait AttachTo<T> {
     fn attach_to(self, target: &mut T);
-    fn reverse_with_attach_to(self, target: &mut T);
+    fn reversed_attach_to(self, target: &mut T);
 }
 
 impl AttachTo<Comic> for Vec<Chapter> {
@@ -431,7 +431,7 @@ impl AttachTo<Comic> for Vec<Chapter> {
         }
     }
 
-    fn reverse_with_attach_to(mut self, target: &mut Comic) {
+    fn reversed_attach_to(mut self, target: &mut Comic) {
         self.reverse();
         self.attach_to(target);
     }

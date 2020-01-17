@@ -26,7 +26,7 @@ def_exctractor! {
             :url            => &comic.url,
             :target         => &".plist ul > li > a",
             :encoding       => &GBK
-        ]?.attach_to(comic);
+        ]?.reversed_attach_to(comic);
 
         Ok(())
     }

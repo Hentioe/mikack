@@ -21,7 +21,7 @@ def_exctractor! {
             :url            => &comic.url,
             :href_prefix    => &"http://comic.veryim.com",
             :target         => &".chapters > ul.clearfix > li > a"
-        ]?.attach_to(comic);
+        ]?.reversed_attach_to(comic);
 
         Ok(())
     }
