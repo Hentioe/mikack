@@ -73,7 +73,7 @@ def_exctractor! {
             list_1.reversed_attach_to(comic);
         }
         if list_2.len() > 0 {
-            list_2.reversed_attach_to(comic);
+            list_2.attach_to(comic);
         }
 
         Ok(())
