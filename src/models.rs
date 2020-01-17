@@ -1,6 +1,5 @@
 use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
-use std::ffi::OsStr;
 use std::path::Path;
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -27,7 +26,6 @@ pub struct Comic {
     pub chapters: Vec<Chapter>,
 }
 
-static DEFAULT_EXT: &'static str = "jpg";
 static DEFAULT_MIME: &'static str = "*/*";
 
 impl Page {
@@ -43,12 +41,14 @@ impl Page {
     }
 
     pub fn fname(address: &str, n: &usize) -> String {
-        let extension = Path::new(address)
-            .extension()
-            .unwrap_or(OsStr::new(DEFAULT_EXT));
-        let extension = extension.to_str().unwrap_or(DEFAULT_EXT);
-        let params_marker_index = extension.find("?").unwrap_or(extension.len());
-        format!("{}.{}", n, extension[0..params_marker_index].to_string())
+        let mut name = n.to_string();
+        if let Some(extension) = Path::new(address).extension() {
+            if let Some(ext_s) = extension.to_str() {
+                let params_marker_index = ext_s.find("?").unwrap_or(extension.len());
+                name += &format!(".{}", ext_s[0..params_marker_index].to_string());
+            }
+        }
+        name
     }
 }
 

@@ -158,11 +158,10 @@ impl HtmlHelper for Html {
 }
 
 fn simple_fetch_index<T: FromLink>(
-    html: String,
+    document: &Html,
     selector: &str,
     parse_elem: &dyn Fn(ElementRef) -> Result<T>,
 ) -> Result<Vec<T>> {
-    let document = parse_document(&html);
     let mut list = Vec::new();
 
     for element in document.select(&parse_selector(selector)?) {
@@ -385,6 +384,7 @@ macro_rules! itemsgen {
             let find = keyword_fetch!(keyword, "find", &str, &"a");
             let href_prefix = keyword_fetch!(keyword, "href_prefix", &str, &"");
             let encoding = keyword.get_as::<&Encoding>("encoding");
+            let sub_dom_text = keyword.get_as::<&str>("sub_dom_text");
 
             let mut resp = get(url)?;
             let html = if let Some(encoding) = encoding {
@@ -392,25 +392,34 @@ macro_rules! itemsgen {
             }else{
                 resp.text()?
             };
-
+            let document = parse_document(&html);
+            let from_link = |element: &ElementRef, mut title: String, mut url: String| -> Result<$entry> {
+                if !href_prefix.is_empty() {
+                    url = format!("{}{}", href_prefix, url)
+                }
+                if let Some(sub_text_selector) = sub_dom_text {
+                    let selector = parse_selector(&sub_text_selector)?;
+                    title = element.select(&selector)
+                        .next()
+                        .ok_or(err_msg(format!("No :sub_dom_text node found: `{}`", sub_text_selector)))?
+                        .text()
+                        .next()
+                        .ok_or(err_msg(format!("No :sub_dom_text text found: `{}`", sub_text_selector)))?
+                        .to_string();
+                }
+                title = title.trim().to_string();
+                Ok($entry::from_link(title, url))
+            };
             if let Some(target) = keyword.get_as::<&str>("target") {
-                simple_fetch_index(html, target, &|element: ElementRef| {
-                    let (mut title, mut url) = simple_parse_link(element, None)?;
-                    if !href_prefix.is_empty() {
-                        url = format!("{}{}", href_prefix, url)
-                    }
-                    title = title.trim().to_string();
-                    Ok($entry::from_link(title, url))
+                simple_fetch_index(&document, target, &|element: ElementRef| {
+                    let (title, url) = simple_parse_link(element, None)?;
+                    Ok(from_link(&element, title, url)?)
                 })
 
             }else{
-                simple_fetch_index(html, selector, &|element: ElementRef| {
-                    let (mut title, mut url) = simple_parse_link(element, Some(find))?;
-                    if !href_prefix.is_empty() {
-                        url = format!("{}{}", href_prefix, url)
-                    }
-                    title = title.trim().to_string();
-                    Ok($entry::from_link(title, url))
+                simple_fetch_index(&document, selector, &|element: ElementRef| {
+                    let (title, url) = simple_parse_link(element, Some(find))?;
+                    Ok(from_link(&element, title, url)?)
                 })
             }
 
@@ -571,6 +580,10 @@ import_impl_mods![
         :domain => "manganelo.com",
         :name   => "Manganelo"
     },
+    manhuadui: {
+        :domain => "www.manhuadui.com",
+        :name   => "漫画堆"
+    },
     manhuagui: {
         :domain => "www.manhuagui.com",
         :name   => "漫画柜"
@@ -684,6 +697,11 @@ def_routes![
         :chapter_re => r#"^https?://manganelo\.com/chapter/[^/]+/chapter_.+"#
     },
     {
+        :domain     => "www.manhuadui.com",
+        :comic_re   => r#"^https?://www\.manhuadui\.com/manhua/.+"#,
+        :chapter_re => r#"^https?://www\.manhuadui\.com/manhua/[^/]+/\d+\.html"#
+    },
+    {
         :domain     => "www.manhuagui.com",
         :comic_re   => r#"^https?://www\.manhuagui\.com/comic/\d+/"#,
         :chapter_re => r#"^https?://www\.manhuagui\.com/comic/\d+/\d+\.html"#
@@ -767,6 +785,14 @@ fn test_routes() {
     assert_eq!(
         DomainRoute::Chapter(String::from("manganelo.com")),
         domain_route("https://manganelo.com/chapter/hgj2047065412/chapter_43").unwrap()
+    );
+    assert_eq!(
+        DomainRoute::Comic(String::from("www.manhuadui.com")),
+        domain_route("https://www.manhuadui.com/manhua/jingjiechufazhe/").unwrap()
+    );
+    assert_eq!(
+        DomainRoute::Chapter(String::from("www.manhuadui.com")),
+        domain_route("https://www.manhuadui.com/manhua/jingjiechufazhe/435634.html").unwrap()
     );
     assert_eq!(
         DomainRoute::Comic(String::from("www.manhuagui.com")),
