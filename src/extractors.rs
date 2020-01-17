@@ -420,6 +420,7 @@ macro_rules! itemsgen {
 
 trait AttachTo<T> {
     fn attach_to(self, target: &mut T);
+    fn reverse_with_attach_to(self, target: &mut T);
 }
 
 impl AttachTo<Comic> for Vec<Chapter> {
@@ -428,6 +429,11 @@ impl AttachTo<Comic> for Vec<Chapter> {
             chapter.which = (i as u32) + 1;
             target.push_chapter(chapter);
         }
+    }
+
+    fn reverse_with_attach_to(mut self, target: &mut Comic) {
+        self.reverse();
+        self.attach_to(target);
     }
 }
 
@@ -561,9 +567,13 @@ import_impl_mods![
         :domain => "comic.kukudm.com",
         :name   => "KuKu动漫"
     },
+    manganelo: {
+        :domain => "manganelo.com",
+        :name   => "Manganelo"
+    },
     manhuagui: {
         :domain => "www.manhuagui.com",
-        :name   => "看漫画"
+        :name   => "漫画柜"
     },
     manhuaren: {
         :domain => "www.manhuaren.com",
@@ -595,6 +605,7 @@ fn test_usable() {
     assert!(get_extr("e-hentai.org").unwrap().is_usable());
     assert!(get_extr("www.hhimm.com").unwrap().is_usable());
     assert!(get_extr("comic.kukudm.com").unwrap().is_usable());
+    assert!(get_extr("manganelo.com").unwrap().is_usable());
     assert!(get_extr("www.manhuagui.com").unwrap().is_usable());
     assert!(get_extr("www.manhuaren.com").unwrap().is_usable());
     assert!(get_extr("www.qkmh5.com").unwrap().is_usable());
@@ -666,6 +677,11 @@ def_routes![
         :domain     => "comic.kukudm.com",
         :comic_re   => r#"^https?://comic\.kukudm\.com/comiclist/\d+/index.htm"#,
         :chapter_re => r#"^https?://comic\d?\.kukudm\.com/comiclist/\d+/\d+/\d+.htm"#
+    },
+    {
+        :domain     => "manganelo.com",
+        :comic_re   => r#"^https?://manganelo\.com/manga/.+"#,
+        :chapter_re => r#"^https?://manganelo\.com/chapter/[^/]+/chapter_.+"#
     },
     {
         :domain     => "www.manhuagui.com",
@@ -743,6 +759,14 @@ fn test_routes() {
     assert_eq!(
         DomainRoute::Chapter(String::from("comic.kukudm.com")),
         domain_route("https://comic2.kukudm.com/comiclist/2555/66929/1.htm").unwrap()
+    );
+    assert_eq!(
+        DomainRoute::Comic(String::from("manganelo.com")),
+        domain_route("https://manganelo.com/manga/hgj2047065412").unwrap()
+    );
+    assert_eq!(
+        DomainRoute::Chapter(String::from("manganelo.com")),
+        domain_route("https://manganelo.com/chapter/hgj2047065412/chapter_43").unwrap()
     );
     assert_eq!(
         DomainRoute::Comic(String::from("www.manhuagui.com")),
