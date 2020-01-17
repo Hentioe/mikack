@@ -83,6 +83,5 @@ fn test_extr() {
     );
     extr.fetch_pages(chapter1).unwrap();
     assert_eq!("境界触发者 189话", chapter1.title);
-    println!("{:?}", chapter1);
     assert_eq!(20, chapter1.pages.len());
 }

@@ -55,12 +55,26 @@ def_exctractor! {
     }
 
     fn fetch_chapters(&self, comic: &mut Comic) -> Result<()> {
-        itemsgen![
+        let list_1 = itemsgen![
             :entry          => Chapter,
             :url            => &comic.url,
             :href_prefix    => &"http://www.manhuaren.com",
-            :target         => &"li > a.chapteritem"
-        ]?.attach_to(comic);
+            :target         => &"ul.detail-list-1 > li > a.chapteritem"
+        ]?;
+        let list_2 = itemsgen![
+            :entry          => Chapter,
+            :url            => &comic.url,
+            :href_prefix    => &"http://www.manhuaren.com",
+            :target         => &"ul.detail-list-2 > li > a.chapteritem",
+            :sub_dom_text   => &".detail-list-2-info-title"
+        ]?;
+
+        if list_1.len() > 0 {
+            list_1.reversed_attach_to(comic);
+        }
+        if list_2.len() > 0 {
+            list_2.reversed_attach_to(comic);
+        }
 
         Ok(())
     }
@@ -69,7 +83,7 @@ def_exctractor! {
         let html = get(&chapter.url)?.text()?;
         let document = parse_document(&html);
         let title = document.dom_text("p.view-fix-top-bar-title")?;
-        chapter.title =  title[0..(title.len() - 1)].to_string();
+        chapter.title =  Chapter::title(&title[0..(title.len() - 1)]);
 
         let decrypt_code = match_content![
             :text   =>  &html,
@@ -95,15 +109,14 @@ fn test_extr() {
     assert_eq!(21, comics.len());
 
     let mut comic = Comic::from_link(
-        "夏目萌记帐 参",
-        "http://www.manhuaren.com/manhua-xiamumengjizhang-can/",
+        "风云全集",
+        "https://www.manhuaren.com/manhua-fengyunquanji/",
     );
     extr.fetch_chapters(&mut comic).unwrap();
-    assert_eq!(1, comic.chapters.len());
+    assert_eq!(670, comic.chapters.len());
 
     let chapter1 = &mut comic.chapters[0];
-    chapter1.title = "".to_string();
     extr.fetch_pages(chapter1).unwrap();
-    assert_eq!("夏目萌记帐 参第1话", chapter1.title);
-    assert_eq!(21, chapter1.pages.len());
+    assert_eq!("风云全集外传：第1话", chapter1.title);
+    assert_eq!(53, chapter1.pages.len());
 }

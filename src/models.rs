@@ -58,12 +58,16 @@ impl Chapter {
         let url = url.into();
         page_headers.insert(String::from("Referer"), url.clone());
         Self {
-            title: title.into(),
+            title: Self::title(title),
             url: url.clone(),
             which,
             pages: vec![],
             page_headers,
         }
+    }
+
+    pub fn title<S: Into<String>>(title: S) -> String {
+        title.into().trim().to_string()
     }
 
     pub fn push_page(&mut self, page: Page) {
