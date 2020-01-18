@@ -80,8 +80,8 @@ fn test_extr() {
     extr.fetch_chapters(&mut comic).unwrap();
     assert_eq!(597, comic.chapters.len());
 
-    let chapter1 = &mut Chapter::new("", "http://www.hhimm.com/cool285664/1.html?s=4", 0);
-    extr.fetch_pages(chapter1).unwrap();
+    let chapter1 = &mut Chapter::from_link("", "http://www.hhimm.com/cool285664/1.html?s=4");
+    extr.fetch_pages_unsafe(chapter1).unwrap();
     assert_eq!("妖精的尾巴 543集", chapter1.title);
     assert_eq!(22, chapter1.pages.len());
 }

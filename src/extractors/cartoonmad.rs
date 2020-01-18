@@ -2,7 +2,7 @@ use super::*;
 
 /// 对 www.cartoonmad.com 内容的抓取实现
 /// 优化空间：
-/// - 复用 fetch_pages 方法的第一个 URL 内容
+/// - 复用 pages_iter 方法的第一个 URL 内容
 def_exctractor! {
     fn index(&self, page: u32) -> Result<Vec<Comic>> {
         let url = if page > 9 {
@@ -70,8 +70,9 @@ fn test_extr() {
     extr.fetch_chapters(&mut comic).unwrap();
     assert_eq!(411, comic.chapters.len());
 
-    let chapter1 = &mut comic.chapters[18];
-    extr.fetch_pages(chapter1).unwrap();
+    let chapter1 =
+        &mut Chapter::from_link("", "https://www.cartoonmad.com/comic/115301532018001.html");
+    extr.fetch_pages_unsafe(chapter1).unwrap();
     assert_eq!("魔導少年 - 153 話", chapter1.title);
     assert_eq!(18, chapter1.pages.len());
 }

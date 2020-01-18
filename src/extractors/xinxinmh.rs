@@ -91,7 +91,7 @@ fn test_extr() {
     extr.fetch_chapters(&mut comic).unwrap();
     assert_eq!(517, comic.chapters.len());
 
-    let chapter1 = &mut comic.chapters[0];
+    let chapter1 = &mut comic.chapters[516];
     chapter1.title = "".to_string();
     extr.fetch_pages(chapter1).unwrap();
     assert_eq!("火影忍者 外传_满月", chapter1.title);

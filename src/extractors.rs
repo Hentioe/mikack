@@ -30,6 +30,13 @@ pub trait Extractor {
         self.pages_iter(chapter)?.for_each(drop);
         Ok(())
     }
+
+    fn fetch_pages_unsafe(&self, chapter: &mut Chapter) -> Result<()> {
+        self.pages_iter(chapter)?.for_each(|r| {
+            r.unwrap();
+        });
+        Ok(())
+    }
 }
 
 pub struct ChapterPages<'a> {
@@ -73,7 +80,7 @@ impl<'a> ChapterPages<'a> {
 }
 
 impl<'a> Iterator for ChapterPages<'a> {
-    type Item = Page;
+    type Item = Result<Page>;
 
     fn next(&mut self) -> Option<Self::Item> {
         self.current_page += 1;
@@ -82,25 +89,26 @@ impl<'a> Iterator for ChapterPages<'a> {
         }
         let page_index = self.current_page - 1;
         if ((self.chapter.pages.len() as i32) - 1) >= page_index as i32 {
-            return Some(self.chapter.pages[page_index].clone());
+            return Some(Ok(self.chapter.pages[page_index].clone()));
         }
 
-        if let Ok(mut pages) = (self.fetch)(self.current_page) {
-            let count = pages.len();
-            self.chapter.pages.append(&mut pages);
-            let current_len = self.chapter.pages.len();
-            if count > 0 {
-                Some(self.chapter.pages[current_len - count].clone())
-            } else {
-                None
+        match (self.fetch)(self.current_page) {
+            Ok(mut pages) => {
+                let count = pages.len();
+                self.chapter.pages.append(&mut pages);
+                let current_len = self.chapter.pages.len();
+                if count > 0 {
+                    Some(Ok(self.chapter.pages[current_len - count].clone()))
+                } else {
+                    None
+                }
             }
-        } else {
-            None
+            Err(e) => Some(Err(e)),
         }
     }
 }
 
-use reqwest::blocking::get;
+use reqwest::blocking::{Client, Response};
 use scraper::{element_ref::ElementRef, Html, Selector};
 
 fn parse_selector(selector: &str) -> Result<Selector> {
@@ -155,6 +163,19 @@ impl HtmlHelper for Html {
 
         Ok(attrs)
     }
+}
+
+use reqwest::header::USER_AGENT;
+
+pub static DEFAULT_USER_AGENT: &'static str = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/79.0.3945.130 Safari/537.36";
+
+pub fn get<T: reqwest::IntoUrl>(url: T) -> Result<Response> {
+    Ok(Client::builder()
+        .danger_accept_invalid_certs(true)
+        .build()?
+        .get(url)
+        .header(USER_AGENT, DEFAULT_USER_AGENT)
+        .send()?)
 }
 
 fn simple_fetch_index<T: FromLink>(

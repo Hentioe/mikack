@@ -85,8 +85,7 @@ fn test_extr() {
     assert_eq!(96, comic.chapters.len());
 
     let chapter1 = &mut comic.chapters[0];
-    chapter1.title = "".to_string();
     extr.fetch_pages(chapter1).unwrap();
-    assert_eq!("火影忍者原画集", chapter1.title);
-    assert_eq!(74, chapter1.pages.len());
+    assert_eq!("火影忍者第01卷", chapter1.title);
+    assert_eq!(190, chapter1.pages.len());
 }
