@@ -406,6 +406,7 @@ macro_rules! itemsgen {
             let href_prefix = keyword_fetch!(keyword, "href_prefix", &str, &"");
             let encoding = keyword.get_as::<&Encoding>("encoding");
             let sub_dom_text = keyword.get_as::<&str>("sub_dom_text");
+            let attr_text = keyword.get_as::<&str>("attr_text");
 
             let mut resp = get(url)?;
             let html = if let Some(encoding) = encoding {
@@ -426,6 +427,12 @@ macro_rules! itemsgen {
                         .text()
                         .next()
                         .ok_or(err_msg(format!("No :sub_dom_text text found: `{}`", sub_text_selector)))?
+                        .to_string();
+                }
+                if let Some(attr) = attr_text {
+                    title = element.value()
+                        .attr(attr)
+                        .ok_or(err_msg(format!("No :attr_text found: `{}`", attr)))?
                         .to_string();
                 }
                 title = title.trim().to_string();
@@ -628,6 +635,10 @@ import_impl_mods![
     xinxinmh: {
         :domain => "www.177mh.net",
         :name   => "新新漫画网"
+    },
+    yylsmh: {
+        :domain => "8comic.se",
+        :name   => "YYLS漫畫"
     }
 ];
 
