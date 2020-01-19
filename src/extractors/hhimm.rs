@@ -13,7 +13,7 @@ def_exctractor! {
             :entry          => Comic,
             :url            => &url,
             :href_prefix    => &"http://www.hhimm.com",
-            :target         => &r#"#list .cComicList > li > a"#
+            :target         => &r#".cComicList > li > a"#
         ]
     }
 

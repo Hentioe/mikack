@@ -767,6 +767,11 @@ def_routes![
         :domain     => "www.177mh.net",
         :comic_re   => r#"^https?://www\.177mh\.net/colist_\d+\.html"#,
         :chapter_re => r#"^https?://www.177mh.net/\d+/\d+\.html"#
+    },
+    {
+        :domain     => "8comic.se",
+        :comic_re   => r#"^-NONE-$"#,
+        :chapter_re => r#"^https?://8comic\.se/\d+"#
     }
 ];
 
@@ -879,5 +884,9 @@ fn test_routes() {
     assert_eq!(
         DomainRoute::Chapter(String::from("www.177mh.net")),
         domain_route("https://www.177mh.net/202001/437290.html").unwrap()
+    );
+    assert_eq!(
+        DomainRoute::Chapter(String::from("8comic.se")),
+        domain_route("http://8comic.se/879/").unwrap()
     );
 }

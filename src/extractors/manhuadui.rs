@@ -31,7 +31,7 @@ def_exctractor! {
     fn pages_iter<'a>(&'a self, chapter: &'a mut Chapter) -> Result<ChapterPages> {
         let html = get(&chapter.url)?.text()?;
         let document = parse_document(&html);
-        let comic_name = document.dom_text(".head_title > h1")?;
+        let comic_name = document.dom_text(".head_title > h1 > a")?;
         let chapter_num = document.dom_text(".head_title > h2")?;
         chapter.title = format!("{} {}", comic_name, chapter_num);
 
