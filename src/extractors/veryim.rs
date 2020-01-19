@@ -30,16 +30,18 @@ def_exctractor! {
 #[test]
 fn test_extr() {
     let extr = new_extr();
-    let mut comics = extr.index(1).unwrap();
-    assert_eq!(28, comics.len());
+    if extr.is_usable() {
+        let mut comics = extr.index(1).unwrap();
+        assert_eq!(28, comics.len());
 
-    let mut comic = &mut comics[0];
-    extr.fetch_chapters(&mut comic).unwrap();
-    assert_eq!(519, comic.chapters.len());
+        let mut comic = &mut comics[0];
+        extr.fetch_chapters(&mut comic).unwrap();
+        assert_eq!(519, comic.chapters.len());
 
-    // let chapter1 = &mut comic.chapters[0];
-    // chapter1.title = "".to_string();
-    // extr.fetch_pages(chapter1).unwrap();
-    // assert_eq!("龙珠 - 第519话 再见，龙珠", chapter1.title);
-    // assert_eq!(19, chapter1.pages.len());
+        // let chapter1 = &mut comic.chapters[0];
+        // chapter1.title = "".to_string();
+        // extr.fetch_pages(chapter1).unwrap();
+        // assert_eq!("龙珠 - 第519话 再见，龙珠", chapter1.title);
+        // assert_eq!(19, chapter1.pages.len());
+    }
 }

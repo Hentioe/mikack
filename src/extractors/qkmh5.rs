@@ -7,8 +7,9 @@ def_regex![
 ];
 
 /// 对 www.qkmh5.com 内容的抓取实现
+/// 不可用：上游域名已经失效
 def_exctractor! {
-    fn is_usable(&self) -> bool { true }
+    fn is_usable(&self) -> bool { false }
     fn index(&self, _page: u32) -> Result<Vec<Comic>> {
         let url = "http://www.qkmh5.com/mall/".to_string();
 
@@ -53,15 +54,15 @@ def_exctractor! {
 #[test]
 fn test_extr() {
     let extr = new_extr();
-    let comics = extr.index(1).unwrap();
-    assert_eq!(2283, comics.len());
-
-    let mut comic = Comic::new("爱丽丝学园", "http://www.qkmh5.com/mh/ailisixueyuan.html");
-    extr.fetch_chapters(&mut comic).unwrap();
-    assert_eq!(147, comic.chapters.len());
-
-    let chapter1 = &mut comic.chapters[0];
-    extr.fetch_pages(chapter1).unwrap();
-    assert_eq!("爱丽丝学园第1卷", chapter1.title);
-    assert_eq!(94, chapter1.pages.len());
+    if extr.is_usable() {
+        let comics = extr.index(1).unwrap();
+        assert_eq!(2283, comics.len());
+        let mut comic = Comic::new("爱丽丝学园", "http://www.qkmh5.com/mh/ailisixueyuan.html");
+        extr.fetch_chapters(&mut comic).unwrap();
+        assert_eq!(147, comic.chapters.len());
+        let chapter1 = &mut comic.chapters[0];
+        extr.fetch_pages(chapter1).unwrap();
+        assert_eq!("爱丽丝学园第1卷", chapter1.title);
+        assert_eq!(94, chapter1.pages.len());
+    }
 }

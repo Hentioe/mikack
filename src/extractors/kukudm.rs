@@ -76,8 +76,7 @@ fn test_extr() {
     assert_eq!(141, comic.chapters.len());
 
     let chapter1 = &mut comic.chapters[15];
-    chapter1.title = "".to_string();
-    extr.fetch_pages(chapter1).unwrap();
+    extr.fetch_pages_unsafe(chapter1).unwrap();
     assert_eq!("进击的巨人 番外篇2", chapter1.title);
     assert_eq!(18, chapter1.pages.len());
 }

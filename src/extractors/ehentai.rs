@@ -75,8 +75,7 @@ fn test_extr() {
     assert_eq!(1, comic.chapters.len());
 
     let chapter1 = &mut comic.chapters[0];
-    chapter1.title = "".to_string();
-    extr.fetch_pages(chapter1).unwrap();
+    extr.fetch_pages_unsafe(chapter1).unwrap();
     assert_eq!(title, chapter1.title);
     assert_eq!(25, chapter1.pages.len());
 }

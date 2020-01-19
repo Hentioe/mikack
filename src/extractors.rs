@@ -613,7 +613,7 @@ import_impl_mods![
         :domain => "www.manhuaren.com",
         :name   => "漫画人"
     },
-    oneone7pic: {
+    one77pic: {
         :domain => "www.177pic.info",
         :name   => "177漫畫"
     },
@@ -647,7 +647,7 @@ fn test_usable() {
     assert!(get_extr("www.manhuagui.com").unwrap().is_usable());
     assert!(get_extr("www.manhuaren.com").unwrap().is_usable());
     assert!(get_extr("www.177pic.info").unwrap().is_usable());
-    assert!(get_extr("www.qkmh5.com").unwrap().is_usable());
+    assert!(!get_extr("www.qkmh5.com").unwrap().is_usable());
     assert!(!get_extr("comic.veryim.com").unwrap().is_usable());
     assert!(get_extr("www.177mh.net").unwrap().is_usable());
 }
