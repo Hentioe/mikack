@@ -23,6 +23,7 @@ pub struct Chapter {
 pub struct Comic {
     pub title: String,
     pub url: String,
+    pub cover: String,
     pub chapters: Vec<Chapter>,
 }
 
@@ -84,6 +85,16 @@ impl Comic {
         Self {
             title: title.into(),
             url: url.into(),
+            cover: String::from(""),
+            chapters: vec![],
+        }
+    }
+
+    pub fn from_index<S: Into<String>>(title: S, url: S, cover: S) -> Self {
+        Self {
+            title: title.into(),
+            url: url.into(),
+            cover: cover.into(),
             chapters: vec![],
         }
     }

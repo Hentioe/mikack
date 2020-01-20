@@ -604,6 +604,10 @@ import_impl_mods![
         :domain => "comic.kukudm.com",
         :name   => "KuKu动漫"
     },
+    lhscan: {
+        :domain => "lhscan.net",
+        :name   => "LHScan"
+    },
     manganelo: {
         :domain => "manganelo.com",
         :name   => "Manganelo"
@@ -654,6 +658,7 @@ fn test_usable() {
     assert!(get_extr("e-hentai.org").unwrap().is_usable());
     assert!(get_extr("www.hhimm.com").unwrap().is_usable());
     assert!(get_extr("comic.kukudm.com").unwrap().is_usable());
+    assert!(get_extr("lhscan.net").unwrap().is_usable());
     assert!(get_extr("manganelo.com").unwrap().is_usable());
     assert!(get_extr("www.manhuagui.com").unwrap().is_usable());
     assert!(get_extr("www.manhuaren.com").unwrap().is_usable());
@@ -727,6 +732,11 @@ def_routes![
         :domain     => "comic.kukudm.com",
         :comic_re   => r#"^https?://comic\.kukudm\.com/comiclist/\d+/index.htm"#,
         :chapter_re => r#"^https?://comic\d?\.kukudm\.com/comiclist/\d+/\d+/\d+.htm"#
+    },
+    {
+        :domain     => "lhscan.net",
+        :comic_re   => r#"^https?://lhscan\.net/manga-.+\.html"#,
+        :chapter_re => r#"^https?://lhscan\.net/read-.+\.html"#
     },
     {
         :domain     => "manganelo.com",
@@ -824,6 +834,15 @@ fn test_routes() {
     assert_eq!(
         DomainRoute::Chapter(String::from("comic.kukudm.com")),
         domain_route("https://comic2.kukudm.com/comiclist/2555/66929/1.htm").unwrap()
+    );
+    assert_eq!(
+        DomainRoute::Comic(String::from("lhscan.net")),
+        domain_route("https://lhscan.net/manga-ichinichi-gaishutsuroku-hanchou-raw.html").unwrap()
+    );
+    assert_eq!(
+        DomainRoute::Chapter(String::from("lhscan.net")),
+        domain_route("https://lhscan.net/read-ichinichi-gaishutsuroku-hanchou-raw-chapter-54.html")
+            .unwrap()
     );
     assert_eq!(
         DomainRoute::Comic(String::from("manganelo.com")),
