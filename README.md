@@ -1,3 +1,3 @@
 # manga-rs
 
-New universal cross-platform manga library, documentation has not been written (WIP).
+新的通用跨平台漫画库。
