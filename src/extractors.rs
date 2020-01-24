@@ -192,27 +192,6 @@ fn simple_fetch_index<T: FromLink>(
     Ok(list)
 }
 
-fn simple_parse_link(element: ElementRef, selector: Option<&str>) -> Result<(String, String)> {
-    let link_elem = if let Some(selector) = selector {
-        element
-            .select(&parse_selector(selector)?)
-            .next()
-            .ok_or(err_msg("No link found"))?
-    } else {
-        element
-    };
-    let title = link_elem
-        .text()
-        .next()
-        .ok_or(err_msg("No link text found"))?;
-    let url = link_elem
-        .value()
-        .attr("href")
-        .ok_or(err_msg("No link href found"))?;
-
-    Ok((title.to_string(), url.to_string()))
-}
-
 pub fn eval_value(code: &str) -> Result<JsValue> {
     let context = Context::new()?;
     Ok(context.eval(code)?)
@@ -406,7 +385,7 @@ macro_rules! itemsgen {
             let href_prefix = keyword_fetch!(keyword, "href_prefix", &str, &"");
             let encoding = keyword.get_as::<&Encoding>("encoding");
             let sub_dom_text = keyword.get_as::<&str>("sub_dom_text");
-            let attr_text = keyword.get_as::<&str>("attr_text");
+            let text_attr = keyword.get_as::<&str>("text_attr");
 
             let mut resp = get(url)?;
             let html = if let Some(encoding) = encoding {
@@ -415,10 +394,16 @@ macro_rules! itemsgen {
                 resp.text()?
             };
             let document = parse_document(&html);
-            let from_link = |element: &ElementRef, mut title: String, mut url: String| -> Result<$entry> {
+            let from_link = |element: &ElementRef| -> Result<$entry> {
+                let mut url = element
+                    .value()
+                    .attr("href")
+                    .ok_or(err_msg("No link href found"))?
+                    .to_string();
                 if !href_prefix.is_empty() {
                     url = format!("{}{}", href_prefix, url)
                 }
+                let mut title = String::new();
                 if let Some(sub_text_selector) = sub_dom_text {
                     let selector = parse_selector(&sub_text_selector)?;
                     title = element.select(&selector)
@@ -429,10 +414,16 @@ macro_rules! itemsgen {
                         .ok_or(err_msg(format!("No :sub_dom_text text found: `{}`", sub_text_selector)))?
                         .to_string();
                 }
-                if let Some(attr) = attr_text {
+                if let Some(attr) = text_attr {
                     title = element.value()
                         .attr(attr)
-                        .ok_or(err_msg(format!("No :attr_text found: `{}`", attr)))?
+                        .ok_or(err_msg(format!("No :text_attr found: `{}`", attr)))?
+                        .to_string();
+                }
+                if title.is_empty() {
+                    title = element.text()
+                        .next()
+                        .ok_or(err_msg("No link text found"))?
                         .to_string();
                 }
                 title = title.trim().to_string();
@@ -440,14 +431,15 @@ macro_rules! itemsgen {
             };
             if let Some(target) = keyword.get_as::<&str>("target") {
                 simple_fetch_index(&document, target, &|element: ElementRef| {
-                    let (title, url) = simple_parse_link(element, None)?;
-                    Ok(from_link(&element, title, url)?)
+                    Ok(from_link(&element)?)
                 })
 
             }else{
                 simple_fetch_index(&document, selector, &|element: ElementRef| {
-                    let (title, url) = simple_parse_link(element, Some(find))?;
-                    Ok(from_link(&element, title, url)?)
+                    let link_dom = element.select(&parse_selector(&find)?)
+                        .next()
+                        .ok_or(err_msg(format!("No :find found: {}", find)))?;
+                    Ok(from_link(&link_dom)?)
                 })
             }
 
@@ -615,6 +607,10 @@ import_impl_mods![
     manhuadui: {
         :domain => "www.manhuadui.com",
         :name   => "漫画堆"
+    },
+    manhuadb: {
+        :domain => "www.manhuadb.com",
+        :name   => "漫画DB"
     },
     manhuagui: {
         :domain => "www.manhuagui.com",

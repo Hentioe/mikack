@@ -16,7 +16,7 @@ def_exctractor! {
             :entry          => Comic,
             :url            => &url,
             :target         => &r#".loop-content a.clip-link"#,
-            :attr_text      => &"title"
+            :text_attr      => &"title"
         ]
     }
 
