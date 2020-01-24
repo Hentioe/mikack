@@ -62,13 +62,12 @@ fn test_extr() {
     let comics = extr.index(1).unwrap();
     assert_eq!(20, comics.len());
 
-    let mut comic = Comic::from_link("极主夫道", "http://manhua.dmzj.com/jizhufudao/");
+    let mut comic = Comic::from_link("灌篮高手全国大赛篇(全彩版本)", "http://manhua.dmzj.com/lanqiufeirenquancai/");
     extr.fetch_chapters(&mut comic).unwrap();
-    assert_eq!(47, comic.chapters.len());
+    assert_eq!(80, comic.chapters.len());
 
     let chapter1 = &mut comic.chapters[0];
-    chapter1.title = "".to_string();
-    extr.fetch_pages(chapter1).unwrap();
-    assert_eq!("极主夫道 第01话", chapter1.title);
-    assert_eq!(16, chapter1.pages.len());
+    extr.fetch_pages_unsafe(chapter1).unwrap();
+    assert_eq!("灌篮高手全国大赛篇(全彩版本) 第01话", chapter1.title);
+    assert_eq!(21, chapter1.pages.len());
 }
