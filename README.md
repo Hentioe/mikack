@@ -17,6 +17,7 @@
 | LHScan     | lhscan.net         |   ⭕️    |
 | Manganelo  | manganelo.com      |   ⭕️    |
 | 漫画堆     | www.manhuadui.com  |   ⭕️    |
+| 漫画 DB    | www.manhuadb.com   |   ⭕️    |
 | 漫画柜     | www.manhuagui.com  |   ⭕️    |
 | 漫画人     | www.manhuaren.com  |   ⭕️    |
 | 177 漫畫   | www.177pic.info    |   ⭕️    |
