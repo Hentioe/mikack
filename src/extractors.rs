@@ -656,6 +656,8 @@ fn test_usable() {
     assert!(get_extr("comic.kukudm.com").unwrap().is_usable());
     assert!(get_extr("lhscan.net").unwrap().is_usable());
     assert!(get_extr("manganelo.com").unwrap().is_usable());
+    assert!(get_extr("www.manhuadb.com").unwrap().is_usable());
+    assert!(get_extr("www.manhuadui.com").unwrap().is_usable());
     assert!(get_extr("www.manhuagui.com").unwrap().is_usable());
     assert!(get_extr("www.manhuaren.com").unwrap().is_usable());
     assert!(get_extr("www.177pic.info").unwrap().is_usable());
@@ -738,6 +740,11 @@ def_routes![
         :domain     => "manganelo.com",
         :comic_re   => r#"^https?://manganelo\.com/manga/.+"#,
         :chapter_re => r#"^https?://manganelo\.com/chapter/[^/]+/chapter_.+"#
+    },
+    {
+        :domain     => "www.manhuadb.com",
+        :comic_re   => r#"^https?://www\.manhuadb\.com/manhua/.+"#,
+        :chapter_re => r#"^https?://www\.manhuadb\.com/manhua/\d+/\d+_\d+\.html"#
     },
     {
         :domain     => "www.manhuadui.com",
@@ -847,6 +854,14 @@ fn test_routes() {
     assert_eq!(
         DomainRoute::Chapter(String::from("manganelo.com")),
         domain_route("https://manganelo.com/chapter/hgj2047065412/chapter_43").unwrap()
+    );
+    assert_eq!(
+        DomainRoute::Comic(String::from("www.manhuadb.com")),
+        domain_route("https://www.manhuadb.com/manhua/10906").unwrap()
+    );
+    assert_eq!(
+        DomainRoute::Chapter(String::from("www.manhuadb.com")),
+        domain_route("https://www.manhuadb.com/manhua/10906/13071_183254.html").unwrap()
     );
     assert_eq!(
         DomainRoute::Comic(String::from("www.manhuadui.com")),
