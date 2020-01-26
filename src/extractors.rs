@@ -588,6 +588,10 @@ import_impl_mods![
         :domain => "e-hentai.org",
         :name   => "E-Hentai"
     },
+    eighteenh: {
+        :domain => "18h.animezilla.com",
+        :name   => "18H 宅宅愛動漫"
+    },
     hhimm: {
         :domain => "www.hhimm.com",
         :name   => "汗汗酷漫"
