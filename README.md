@@ -4,15 +4,15 @@
 
 ## 周边项目
 
-本项目是仅仅是一个库，以 C ABI 兼容的形式公开接口以支持不同的操作系统（或编程语言）。
+本项目仅仅是一个库，以 C ABI 兼容的形式公开接口支持不同的操作系统和编程语言。
 
 ### 基于本库实现的工具：
 
-- [manga-cli](https://github.com/Hentioe/manga-cli)（基于 Rust 的 Native 程序，适用于命令行）
-- manga-mobile（基于 Flutter 或 React Native，适用于手机）
-- manga-desktop（基于 Electron，适用于桌面系统）
+- [manga-cli](https://github.com/Hentioe/manga-cli)（使用 Rust 的 Native 程序，适用于命令行）
+- manga-mobile（使用 Flutter 或 React Native，适用于手机）
+- manga-desktop（使用 Electron，适用于桌面系统）
 
-注意，manga-cli 项目因为技术同构的原因是直接使用 Rust 接口，参考性较低。
+注意，manga-cli 项目由于技术同构的原因直接使用了 Rust 接口，参考性较低。
 
 手机版和桌面版还在预备开发中。
 
