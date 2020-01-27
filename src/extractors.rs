@@ -656,6 +656,7 @@ fn test_usable() {
     assert!(get_extr("www.dm5.com").unwrap().is_usable());
     assert!(get_extr("manhua.dmzj.com").unwrap().is_usable());
     assert!(get_extr("e-hentai.org").unwrap().is_usable());
+    assert!(get_extr("18h.animezilla.com").unwrap().is_usable());
     assert!(get_extr("www.hhimm.com").unwrap().is_usable());
     assert!(get_extr("comic.kukudm.com").unwrap().is_usable());
     assert!(get_extr("lhscan.net").unwrap().is_usable());
@@ -724,6 +725,11 @@ def_routes![
         :domain     => "e-hentai.org",
         :comic_re   => r#"^-NONE-$"#,
         :chapter_re => r#"^https?://e-hentai\.org/g/\d+/[^/]+/"#
+    },
+    {
+        :domain     => "18h.animezilla.com",
+        :comic_re   => r#"^-NONE-$"#,
+        :chapter_re => r#"^https?://18h\.animezilla\.com/manga/\d+"#
     },
     {
         :domain     => "www.hhimm.com",
@@ -821,6 +827,10 @@ fn test_routes() {
     assert_eq!(
         DomainRoute::Chapter(String::from("e-hentai.org")),
         domain_route("https://e-hentai.org/g/1552929/c9f7a6ad71/").unwrap()
+    );
+    assert_eq!(
+        DomainRoute::Chapter(String::from("18h.animezilla.com")),
+        domain_route("https://18h.animezilla.com/manga/2940").unwrap()
     );
     assert_eq!(
         DomainRoute::Comic(String::from("www.hhimm.com")),
