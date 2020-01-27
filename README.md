@@ -12,7 +12,7 @@
 | 动漫屋         | www.dm5.com        |   ⭕️    |          中文          |
 | 动漫之家       | manhua.dmzj.com    |   ⭕️    |          中文          |
 | E-Hentai       | e-hentai.org       |   ⭕️    | 英文, 日文, 中文, NSFW |
-| 18H 宅宅愛動漫 | e-hentai.org       |   ⭕️    |       中文, NSFW       |
+| 18H 宅宅愛動漫 | 18h.animezilla.com |   ⭕️    |       中文, NSFW       |
 | 汗汗酷漫       | www.hhimm.com      |   ⭕️    |          中文          |
 | KuKu 动漫      | comic.kukudm.com   |   ⭕️    |          中文          |
 | LHScan         | lhscan.net         |   ⭕️    |          英文          |
