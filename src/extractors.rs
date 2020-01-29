@@ -1,10 +1,10 @@
+use crate::error::*;
+use crate::models::*;
+use duang::duang;
 use encoding_rs::*;
 use quick_js::{Context, JsValue};
 use regex::Regex;
 use std::collections::HashMap;
-
-use crate::error::*;
-use crate::models::*;
 
 pub trait Extractor {
     fn is_usable(&self) -> bool {
@@ -390,7 +390,7 @@ macro_rules! itemsgen {
             let mut resp = get(url)?;
             let html = if let Some(encoding) = encoding {
                 resp.decode_text(encoding)?
-            }else{
+            } else {
                 resp.text()?
             };
             let document = parse_document(&html);
@@ -446,6 +446,100 @@ macro_rules! itemsgen {
         }
     };
 }
+
+duang!(
+    pub fn itemsgen2<T: FromLink + SetCover>(
+        url: &str =  "",
+        encoding: &'static Encoding = UTF_8,
+        target_dom: &str = "",
+        target_text_dom: &str = "",
+        target_text_attr: &str = "",
+        parent_dom: &str = "",
+        cover_dom: &str = "",
+        cover_attr: &str = "src",
+        cover_prefix: &str = "",
+        link_prefix: &str = "",
+        link_dom: &str = "",
+        link_attr: &str = "href"
+    ) -> Result<Vec<T>> {
+        if url.is_empty() {
+            panic!("Missing `url` parameter");
+        }
+        let mut resp = get(url)?;
+        let html = if encoding != UTF_8 {
+            resp.decode_text(encoding)?
+        } else {
+            resp.text()?
+        };
+        let document = parse_document(&html);
+        let from_link = |element: &ElementRef| -> Result<T> {
+            let mut url = element
+                .value()
+                .attr(link_attr)
+                .ok_or(err_msg("No link href found"))?
+                .to_string();
+            if !link_prefix.is_empty() {
+                url = format!("{}{}", link_prefix, url)
+            }
+            let mut title = String::new();
+            if !target_text_dom.is_empty() {
+                title = element.select(&parse_selector(target_text_dom)?)
+                    .next()
+                    .ok_or(err_msg(format!("No :target_text_dom node found: `{}`", target_text_dom)))?
+                    .text()
+                    .next()
+                    .ok_or(err_msg(format!("No :target_text_dom text found: `{}`", target_text_dom)))?
+                    .to_string();
+            }
+            if !target_text_attr.is_empty() {
+                title = element.value()
+                    .attr(target_text_attr)
+                    .ok_or(err_msg(format!("No :target_text_attr found: `{}`", target_text_attr)))?
+                    .to_string();
+            }
+            if title.is_empty() {
+                title = element
+                    .text()
+                    .next()
+                    .ok_or(err_msg("No link text found"))?
+                    .to_string();
+            }
+            title = title.trim().to_string();
+            Ok(T::from_link(title, url))
+        };
+
+        let mut items = vec![];
+        if !parent_dom.is_empty() {
+            let parent_elems = document.select(&parse_selector(parent_dom)?).collect::<Vec<_>>();
+            for parent_elem in parent_elems {
+                let link_elem = parent_elem
+                    .select(&parse_selector(link_dom)?)
+                    .next()
+                    .ok_or(err_msg(format!("No link DOM node found: `{}`", link_dom)))?;
+                let mut item = from_link(&link_elem)?;
+                let cover = parent_elem
+                    .select(&parse_selector(cover_dom)?)
+                    .next()
+                    .ok_or(err_msg(format!("No cover DOM node found: `{}`", cover_dom)))?
+                    .value()
+                    .attr(cover_attr)
+                    .ok_or(err_msg(format!("No cover attr found: `{}`", cover_attr)))?;
+                item.set_cover(format!("{}{}", cover_prefix, cover));
+                items.push(item);
+            }
+        } else {
+            if target_dom.is_empty() {
+                panic!("Missing `target_dom` parameter");
+            }
+            let link_elems = document.select(&parse_selector(target_dom)?).collect::<Vec<_>>();
+            for link_elem in link_elems {
+                items.push(from_link(&link_elem)?);
+            }
+        }
+
+        Ok(items)
+    }
+);
 
 trait AttachTo<T> {
     fn attach_to(self, target: &mut T);
@@ -631,6 +725,10 @@ import_impl_mods![
     qkmh5: {
         :domain => "www.qkmh5.com",
         :name   => "青空漫画"
+    },
+    twoanimx: {
+        :domain => "www.2animx.com",
+        :name   => "二次元動漫"
     },
     veryim: {
         :domain => "comic.veryim.com",

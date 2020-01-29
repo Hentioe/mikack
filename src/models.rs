@@ -108,6 +108,10 @@ pub trait FromLink {
     fn from_link<S: Into<String>>(text: S, href: S) -> Self;
 }
 
+pub trait SetCover {
+    fn set_cover<S: Into<String>>(&mut self, address: S);
+}
+
 impl FromLink for Comic {
     fn from_link<S: Into<String>>(text: S, href: S) -> Self {
         Self::new(text, href)
@@ -118,4 +122,14 @@ impl FromLink for Chapter {
     fn from_link<S: Into<String>>(text: S, href: S) -> Self {
         Self::new(text, href, 0)
     }
+}
+
+impl SetCover for Comic {
+    fn set_cover<S: Into<String>>(&mut self, address: S) {
+        self.cover = address.into();
+    }
+}
+
+impl SetCover for Chapter {
+    fn set_cover<S: Into<String>>(&mut self, _address: S) {}
 }
