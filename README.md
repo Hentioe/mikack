@@ -32,7 +32,7 @@
 | 汗汗酷漫       | www.hhimm.com      |   ⭕️    |          中文          |
 | KuKu 动漫      | comic.kukudm.com   |   ⭕️    |          中文          |
 | LHScan         | lhscan.net         |   ⭕️    |          英文          |
-| Luscious       | www.luscious.net   |   ❌    | 英文, 日文, 中文, NSFW |
+| Luscious       | www.luscious.net   |    ❌    | 英文, 日文, 中文, NSFW |
 | Manganelo      | manganelo.com      |   ⭕️    |          英文          |
 | 漫画 DB        | www.manhuadb.com   |   ⭕️    |          中文          |
 | 漫画堆         | www.manhuadui.com  |   ⭕️    |          中文          |
@@ -49,4 +49,31 @@
 
 ## 文档说明
 
-目前作者还没有为本项目编写文档。
+### 一些概念
+
+本库将漫画类网站的资源抽象为了三个最基本的通用模型，分别是：
+
+1. Comic（指漫画资源）
+1. Chapter（指漫画章节，例如常见单位：话、集）
+1. Page（指漫画页，也就是 1P、2P、3P 中的单个 P）
+
+基本关系非常简单：漫画包含多个章节，章节包含多个页。以下是三个基本模型的字段说明：
+
+- Comic
+  - title（漫画名称）
+  - url（漫画链接）
+  - cover（漫画封面）
+  - chapters（章节列表）
+- Chapter
+  - title（章节名称）
+  - url（章节链接）
+  - which（章节索引，可用作排序）
+  - pages（页面列表）
+  - page_headers（下载页面资源需包含的请求头）
+- Page
+  - n（页码，当前以 0 开始）
+  - address（文件资源地址）
+  - fname（文件名称）
+  - fmime（文件的 MIME）
+
+更多文档内容作者正在紧急撰写中……
