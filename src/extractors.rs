@@ -698,6 +698,10 @@ import_impl_mods![
         :domain => "lhscan.net",
         :name   => "LHScan"
     },
+    luscious: {
+        :domain => "www.luscious.net",
+        :name   => "Luscious"
+    },
     manganelo: {
         :domain => "manganelo.com",
         :name   => "Manganelo"
