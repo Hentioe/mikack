@@ -8,7 +8,7 @@
 
 ### 基于本库实现的工具：
 
-- [manga-cli](https://github.com/Hentioe/manga-cli)（使用 Rust 的 Native 程序，适用于命令行）
+- [manga-cli](https://github.com/Hentioe/manga-cli)（使用 Rust 的 native 程序，适用于命令行）
 - manga-mobile（使用 Flutter 或 React Native，适用于手机）
 - manga-desktop（使用 Electron，适用于桌面系统）
 
@@ -16,7 +16,7 @@
 
 **手机版和桌面版还在预备开发中。**
 
-注意：本项目是纯 Rust 实现，Javascript 代码是辅助某些平台加解密所用。所以也并不存在 JS 直接访问的接口，需要作为 Native 模块通过 Binding 使用。
+注意：本项目是纯 Rust 实现，Javascript 代码是辅助某些平台加解密所用。所以也并不存在 JS 直接访问的接口，需要作为 native 模块通过 binding 使用。
 
 ## 支持平台
 
@@ -39,7 +39,7 @@
 | 漫画人         | www.manhuaren.com  |   ⭕️    |          中文          |
 | 177 漫畫       | www.177pic.info    |   ⭕️    |    中文, 日文, NSFW    |
 | 青空漫画       | www.qkmh5.com      |    ❌    |          中文          |
-| 二次元動漫     | www.2animx.com     |    ❌    |          中文          |
+| 二次元動漫     | www.2animx.com     |    ⭕️    |          中文          |
 | 非常爱漫       | comic.veryim.com   |    ❌    |          中文          |
 | 新新漫画网     | www.177mh.net      |   ⭕️    |          中文          |
 | YYLS 漫畫      | 8comic.se          |   ⭕️    |          中文          |

@@ -1,6 +1,10 @@
 use super::*;
 use std::str;
 
+def_regex![
+    URL_RE  => r#"(.+-cid-\d+-id-\d+)"#
+];
+
 /// 对 www.2animx.com 内容的抓取实现
 def_exctractor! {
     fn index(&self, _page: u32) -> Result<Vec<Comic>> {
@@ -22,8 +26,31 @@ def_exctractor! {
         Ok(())
     }
 
-    // fn pages_iter<'a>(&'a self, chapter: &'a mut Chapter) -> Result<ChapterPages> {
-    // }
+    fn pages_iter<'a>(&'a self, chapter: &'a mut Chapter) -> Result<ChapterPages> {
+        let html = get(&chapter.url)?.text()?;
+        let document = parse_document(&html);
+        chapter.set_title(document.dom_attr("img#ComicPic", "alt")?);
+        let prue_url = match_content![
+            :text   => &chapter.url,
+            :regex  => &*URL_RE
+        ].to_string();
+        let total = document.dom_text(".lookpage > a:last-child")?.parse::<i32>()?;
+        let fetch = Box::new(move |current_page: usize| {
+            let page_html = get(&format!("{}-p-{}", prue_url, current_page))?.text()?;
+            let page_document = parse_document(&page_html);
+            let current_addr = page_document
+                .dom_attr("img#ComicPic", "src")?;
+            let mut pages = vec![Page::new(current_page - 1, current_addr)];
+            if current_page < total as usize {
+                let next_addr = page_document
+                .dom_attr(r#"#img_ad_img > img[style="display:none;"]"#, "src")?;
+                pages.push(Page::new(current_page, next_addr));
+            }
+            Ok(pages)
+        });
+
+        Ok(ChapterPages::new(chapter, total, vec![], fetch))
+    }
 }
 
 #[test]
@@ -38,9 +65,9 @@ fn test_extr() {
         );
         extr.fetch_chapters(&mut comic).unwrap();
         assert_eq!(670, comic.chapters.len());
-        // let chapter1 = &mut comic.chapters[2];
-        // extr.fetch_pages(chapter1).unwrap();
-        // assert_eq!("風雲全集 第21卷", chapter1.title);
-        // assert_eq!(29, chapter1.pages.len());
+        let chapter1 = &mut comic.chapters[23];
+        extr.fetch_pages_unsafe(chapter1).unwrap();
+        assert_eq!("風雲全集 第23卷", chapter1.title);
+        assert_eq!(26, chapter1.pages.len());
     }
 }

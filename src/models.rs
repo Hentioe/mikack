@@ -71,6 +71,11 @@ impl Chapter {
         title.into().trim().to_string()
     }
 
+    pub fn set_title<S: Into<String>>(&mut self, title: S) -> &Self {
+        self.title = Chapter::title(title);
+        self
+    }
+
     pub fn push_page(&mut self, page: Page) {
         self.pages.push(page);
     }
