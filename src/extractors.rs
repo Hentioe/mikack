@@ -850,6 +850,11 @@ def_routes![
         :chapter_re => r#"^https?://lhscan\.net/read-.+\.html"#
     },
     {
+        :domain     => "www.luscious.net",
+        :comic_re   => r#"^-NONE-$"#,
+        :chapter_re => r#"^https?://www\.luscious\.net/albums/.+"#
+    },
+    {
         :domain     => "manganelo.com",
         :comic_re   => r#"^https?://manganelo\.com/manga/.+"#,
         :chapter_re => r#"^https?://manganelo\.com/chapter/[^/]+/chapter_.+"#
@@ -967,6 +972,11 @@ fn test_routes() {
     assert_eq!(
         DomainRoute::Chapter(String::from("lhscan.net")),
         domain_route("https://lhscan.net/read-ichinichi-gaishutsuroku-hanchou-raw-chapter-54.html")
+            .unwrap()
+    );
+    assert_eq!(
+        DomainRoute::Chapter(String::from("www.luscious.net")),
+        domain_route("https://www.luscious.net/albums/teitoku-wa-semai-toko-suki-kantai-collection-kanco_363520/")
             .unwrap()
     );
     assert_eq!(

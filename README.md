@@ -32,7 +32,7 @@
 | 汗汗酷漫       | www.hhimm.com      |   ⭕️    |          中文          |
 | KuKu 动漫      | comic.kukudm.com   |   ⭕️    |          中文          |
 | LHScan         | lhscan.net         |   ⭕️    |          英文          |
-| Luscious       | www.luscious.net   |    ❌    | 英文, 日文, 中文, NSFW |
+| Luscious       | www.luscious.net   |   ⭕️    | 英文, 日文, 中文, NSFW |
 | Manganelo      | manganelo.com      |   ⭕️    |          英文          |
 | 漫画 DB        | www.manhuadb.com   |   ⭕️    |          中文          |
 | 漫画堆         | www.manhuadui.com  |   ⭕️    |          中文          |
