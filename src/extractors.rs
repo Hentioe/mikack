@@ -26,7 +26,7 @@ macro_rules! def_ableitem {
 type State = HashMap<&'static str, Box<dyn Any + Send + Sync>>;
 
 pub trait Extractor {
-    def_ableitem![:usable, :searchable];
+    def_ableitem![:usable, :searchable, :pageable];
 
     fn read_state(&self) -> &State;
 
@@ -331,7 +331,7 @@ macro_rules! def_extractor {
         }
     };
     ( $($tt:tt)* ) => {
-        def_extractor!{ [usable: false, searchable: false], $($tt)* }
+        def_extractor!{ [usable: false, searchable: false, pageable: false], $($tt)* }
     }
 }
 
@@ -490,9 +490,10 @@ duang!(
         cover_dom: &str = "",
         cover_attr: &str = "src",
         cover_prefix: &str = "",
-        link_prefix: &str = "",
         link_dom: &str = "",
-        link_attr: &str = "href"
+        link_attr: &str = "href",
+        link_prefix: &str = "",
+        link_text_attr: &str = ""
     ) -> Result<Vec<T>> {
         if url.is_empty() {
             panic!("Missing `url` parameter");
@@ -527,6 +528,12 @@ duang!(
                 title = element.value()
                     .attr(target_text_attr)
                     .ok_or(err_msg(format!("No :target_text_attr found: `{}`", target_text_attr)))?
+                    .to_string();
+            }
+            if !link_text_attr.is_empty() {
+                title = element.value()
+                    .attr(link_text_attr)
+                    .ok_or(err_msg(format!("No attr found: `{}`", link_text_attr)))?
                     .to_string();
             }
             if title.is_empty() {
@@ -718,10 +725,6 @@ import_impl_mods![
         :domain => "18h.animezilla.com",
         :name   => "18H 宅宅愛動漫"
     },
-    fzdm: {
-        :domain => "www.fzdm.com",
-        :name   => "风之动漫"
-    },
     hhimm: {
         :domain => "www.hhimm.com",
         :name   => "汗汗酷漫"
@@ -795,7 +798,6 @@ fn test_usable() {
     assert!(get_extr("manhua.dmzj.com").unwrap().is_usable());
     assert!(get_extr("e-hentai.org").unwrap().is_usable());
     assert!(get_extr("18h.animezilla.com").unwrap().is_usable());
-    assert!(!get_extr("www.fzdm.com").unwrap().is_usable());
     assert!(get_extr("www.hhimm.com").unwrap().is_usable());
     assert!(get_extr("comic.kukudm.com").unwrap().is_usable());
     assert!(get_extr("lhscan.net").unwrap().is_usable());

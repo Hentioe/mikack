@@ -29,7 +29,6 @@
 | 动漫之家       | manhua.dmzj.com    |   ⭕️    |          中文          |
 | E-Hentai       | e-hentai.org       |   ⭕️    | 英文, 日文, 中文, NSFW |
 | 18H 宅宅愛動漫 | 18h.animezilla.com |   ⭕️    |       中文, NSFW       |
-| 风之动漫       | www.fzdm.com       |    ❌    |          中文          |
 | 汗汗酷漫       | www.hhimm.com      |   ⭕️    |          中文          |
 | KuKu 动漫      | comic.kukudm.com   |   ⭕️    |          中文          |
 | LHScan         | lhscan.net         |   ⭕️    |          英文          |
