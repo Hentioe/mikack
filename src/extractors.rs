@@ -4,12 +4,31 @@ use duang::duang;
 use encoding_rs::*;
 use quick_js::{Context, JsValue};
 use regex::Regex;
+use std::any::Any;
 use std::collections::HashMap;
 
+macro_rules! def_ableitem {
+    ( $(:$name:ident),* ) => {
+        paste::item!{
+            $(
+                fn [<is_ $name>](&self) -> bool {
+                    if let Some(ableitem) = self.read_state().get(format!(stringify!($name)).as_str()) {
+                        ableitem.downcast_ref::<bool>() == Some(&true)
+                    } else {
+                        false
+                    }
+                }
+            )*
+        }
+    };
+}
+
+type State = HashMap<&'static str, Box<dyn Any + Send + Sync>>;
+
 pub trait Extractor {
-    fn is_usable(&self) -> bool {
-        true
-    }
+    def_ableitem![:usable, :searchable];
+
+    fn read_state(&self) -> &State;
 
     fn index(&self, page: u32) -> Result<Vec<Comic>>;
 
@@ -286,21 +305,34 @@ def_js_helper!(to_value: [
     {:name => as_object, :js_t => JsValue::Object, :result_t => JsObject}
 ]);
 
-macro_rules! def_exctractor {
-    ( $( $tt:tt )* ) => {
-        pub struct Extr;
+macro_rules! def_extractor {
+    ( [$($name:ident: $value:expr),*], $($tt:tt)* ) => {
+        pub struct Extr {
+            state: State,
+        }
         impl Extractor for Extr {
             $($tt)*
+
+            fn read_state(&self) -> &State {
+                &self.state
+            }
         }
         impl Extr {
-            fn new() -> Self {
-                Self {}
+            fn new(state: State) -> Self {
+                Self { state }
             }
         }
         pub fn new_extr() -> Extr {
-            Extr::new()
+            let mut state = State::new();
+            $(
+                state.insert(stringify!($name), Box::new($value));
+            )*
+            Extr::new(state)
         }
     };
+    ( $($tt:tt)* ) => {
+        def_extractor!{ [usable: false, searchable: false], $($tt)* }
+    }
 }
 
 macro_rules! keyword_list {
@@ -686,6 +718,10 @@ import_impl_mods![
         :domain => "18h.animezilla.com",
         :name   => "18H 宅宅愛動漫"
     },
+    fzdm: {
+        :domain => "www.fzdm.com",
+        :name   => "风之动漫"
+    },
     hhimm: {
         :domain => "www.hhimm.com",
         :name   => "汗汗酷漫"
@@ -759,6 +795,7 @@ fn test_usable() {
     assert!(get_extr("manhua.dmzj.com").unwrap().is_usable());
     assert!(get_extr("e-hentai.org").unwrap().is_usable());
     assert!(get_extr("18h.animezilla.com").unwrap().is_usable());
+    assert!(get_extr("www.fzdm.com").unwrap().is_usable());
     assert!(get_extr("www.hhimm.com").unwrap().is_usable());
     assert!(get_extr("comic.kukudm.com").unwrap().is_usable());
     assert!(get_extr("lhscan.net").unwrap().is_usable());

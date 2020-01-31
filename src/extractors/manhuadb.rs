@@ -8,7 +8,7 @@ def_regex! [
 ];
 
 /// 对 www.manhuadb.com 内容的抓取实现
-def_exctractor! {
+def_extractor! {[usable: true, searchable: false],
     fn index(&self, page: u32) -> Result<Vec<Comic>> {
         let url =
             format!("https://www.manhuadb.com/update_{}.html", page);

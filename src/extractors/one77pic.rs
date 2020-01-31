@@ -9,7 +9,7 @@ def_regex![
 /// 对 www.177pic.info 内容的抓取实现
 /// 优化空间
 /// - 复用第一页的图片数据
-def_exctractor! {
+def_extractor! {[usable: true, searchable: false],
     fn index(&self, page: u32) -> Result<Vec<Comic>> {
         let url = format!("http://www.177pic.info/page/{}/", page);
 

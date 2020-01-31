@@ -5,7 +5,7 @@ def_regex![
 ];
 
 /// 对 8comic.se 内容的抓取实现
-def_exctractor! {
+def_extractor! {[usable: true, searchable: false],
     fn index(&self, page: u32) -> Result<Vec<Comic>> {
         let url = format!(
             "http://8comic.se/category/%e9%80%a3%e8%bc%89%e5%ae%8c%e7%b5%90/%e6%bc%ab%e7%95%ab%e9%80%a3%e8%bc%89/page/{}/",

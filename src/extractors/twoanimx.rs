@@ -6,7 +6,7 @@ def_regex![
 ];
 
 /// 对 www.2animx.com 内容的抓取实现
-def_exctractor! {
+def_extractor! {[usable: true, searchable: false],
     fn index(&self, _page: u32) -> Result<Vec<Comic>> {
         itemsgen2!(
             url             = "http://www.2animx.com/index-update-date-30",

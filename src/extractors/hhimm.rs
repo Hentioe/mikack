@@ -5,7 +5,7 @@ lazy_static! {
     static ref DEFAULT_DOMAIN_NO: String = "0".to_string();
 }
 
-def_exctractor! {
+def_extractor! {[usable: true, searchable: false],
     fn index(&self, page: u32) -> Result<Vec<Comic>> {
         let url = format!("http://www.hhimm.com/comic/{}.html", page);
 

@@ -10,7 +10,7 @@ def_regex![
     IMGS_RE     => r#"\("<.+'"\+.+\+"([^']+)'>.+<.+='"\+.+\+"([^']+)'.+\);"#
 ];
 
-def_exctractor! {
+def_extractor! {[usable: true, searchable: false],
     fn index(&self, page: u32) -> Result<Vec<Comic>> {
         let url = format!("http://comic.kukudm.com/comictype/3_{}.htm", page);
 

@@ -2,8 +2,7 @@ use super::*;
 
 /// 对 comic.veryim.com 内容的抓取实现
 /// 注意： 由于上游问题 fetch_pages 并未实现，需进一步考察上游稳定性
-def_exctractor! {
-    fn is_usable(&self) -> bool { false }
+def_extractor! {[usable: false, searchable: false],
     fn index(&self, page: u32) -> Result<Vec<Comic>> {
         let url = format!("http://comic.veryim.com/allhit/{}.html", page);
 

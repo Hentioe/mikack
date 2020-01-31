@@ -26,7 +26,7 @@ def_regex! {
     DECRYPT_RE => r#"(eval\(.+\))[\s\S]*</script>"#
 }
 
-def_exctractor! {
+def_extractor! {[usable: true, searchable: false],
     fn index(&self, page: u32) -> Result<Vec<Comic>> {
         let client = Client::new();
         let mut params = HashMap::new();

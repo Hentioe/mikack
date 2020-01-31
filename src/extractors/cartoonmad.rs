@@ -3,7 +3,7 @@ use super::*;
 /// 对 www.cartoonmad.com 内容的抓取实现
 /// 优化空间：
 /// - 复用 pages_iter 方法的第一个 URL 内容
-def_exctractor! {
+def_extractor! {[usable: true, searchable: false],
     fn index(&self, page: u32) -> Result<Vec<Comic>> {
         let url = if page > 9 {
             format!("https://www.cartoonmad.com/endcm.0{}.html", page)

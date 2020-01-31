@@ -6,7 +6,7 @@ def_regex![
     PARAMS_CODE_RE => r#"<script type="text/javascript">\s+var\s{1,}isVip\s{1,}=\s{1,}"False";(.+)\s+reseturl\(.+\);\s+</script>"#
 ];
 
-def_exctractor! {
+def_extractor! {[usable: true, searchable: false],
     fn index(&self, page: u32) -> Result<Vec<Comic>> {
         let url = urlgen![
             :first  => &"http://www.dm5.com/manhua-rank/?t=1",

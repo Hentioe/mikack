@@ -4,7 +4,7 @@ def_regex![
     DECRYPT_RE => r#"<script type="text/javascript">[\s\n]+(eval.+)[\s\n]+</script>"#
 ];
 
-def_exctractor! {
+def_extractor! {[usable: true, searchable: false],
     fn index(&self, page: u32) -> Result<Vec<Comic>> {
         let next_page = page - 1;
         let url = urlgen![

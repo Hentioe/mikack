@@ -5,7 +5,7 @@ def_regex! [
     PATH_RE        => r#"var\s*chapterPath\s*=\s*"([^"]+)""#
 ];
 
-def_exctractor! {
+def_extractor! {[usable: true, searchable: false],
     fn index(&self, page: u32) -> Result<Vec<Comic>> {
         let url = format!("https://www.manhuadui.com/list/riben/{}/", page);
 

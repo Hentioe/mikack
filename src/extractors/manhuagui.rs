@@ -4,7 +4,7 @@ def_regex![
     CTYPTO_RE => r#"window\["\\x65\\x76\\x61\\x6c"\]\((.+)\)\s+</script>"#
 ];
 
-def_exctractor! {
+def_extractor! {[usable: true, searchable: false],
     fn index(&self, page: u32) -> Result<Vec<Comic>> {
         let url = urlgen![
             :first  => &"https://www.manhuagui.com/list/",
