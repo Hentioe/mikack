@@ -60,7 +60,10 @@ def_exctractor! {
             .dom_attrs(".ReactVirtualized__Grid__innerScrollContainer .picture-card-outer > img", "src")?
             .iter()
             .map(|addr| {
-                addr.replace("315x0", "1024x0").to_string()
+                addr
+                    .replace("w315", "w1024")
+                    .replace("315x0", "1024x0")
+                    .to_string()
             })
             .collect::<Vec<_>>();
 
@@ -75,7 +78,7 @@ fn test_extr() {
     assert_eq!(30, comics.len());
 
     let chapter1 = &mut Chapter::from_link("", "https://www.luscious.net/albums/teitoku-wa-semai-toko-suki-kantai-collection-kanco_363520/");
-    extr.fetch_pages(chapter1).unwrap();
+    extr.fetch_pages_unsafe(chapter1).unwrap();
     assert_eq!(
         "Teitoku wa Semai Toko Suki (Kantai Collection -KanColle-) [English]",
         chapter1.title
