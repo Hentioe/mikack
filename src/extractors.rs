@@ -795,7 +795,7 @@ fn test_usable() {
     assert!(get_extr("manhua.dmzj.com").unwrap().is_usable());
     assert!(get_extr("e-hentai.org").unwrap().is_usable());
     assert!(get_extr("18h.animezilla.com").unwrap().is_usable());
-    assert!(get_extr("www.fzdm.com").unwrap().is_usable());
+    assert!(!get_extr("www.fzdm.com").unwrap().is_usable());
     assert!(get_extr("www.hhimm.com").unwrap().is_usable());
     assert!(get_extr("comic.kukudm.com").unwrap().is_usable());
     assert!(get_extr("lhscan.net").unwrap().is_usable());
