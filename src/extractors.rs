@@ -9,7 +9,7 @@ use std::collections::HashMap;
 
 macro_rules! def_ableitem {
     ( $(:$name:ident),* ) => {
-        paste::item!{
+        paste::item! {
             $(
                 fn [<is_ $name>](&self) -> bool {
                     if let Some(ableitem) = self.read_state().get(format!(stringify!($name)).as_str()) {
@@ -30,7 +30,9 @@ pub trait Extractor {
 
     fn read_state(&self) -> &State;
 
-    fn index(&self, page: u32) -> Result<Vec<Comic>>;
+    fn index(&self, _page: u32) -> Result<Vec<Comic>> {
+        Ok(vec![])
+    }
 
     fn fetch_chapters(&self, _comic: &mut Comic) -> Result<()> {
         Ok(())
@@ -55,6 +57,10 @@ pub trait Extractor {
             r.unwrap();
         });
         Ok(())
+    }
+
+    fn search(&self, _keywords: &str) -> Result<Vec<Comic>> {
+        Ok(vec![])
     }
 }
 
@@ -609,6 +615,21 @@ macro_rules! def_regex {
     };
 }
 
+macro_rules! def_regex2 {
+    ( $( $name:ident => $str:expr ),*, ) => {
+        paste::item! {
+            lazy_static! {
+                $(
+                    static ref [<$name _RE>]: Regex = Regex::new($str).unwrap();
+                )*
+            }
+        }
+    };
+    ( $( $name:ident => $str:expr ),* ) => {
+        def_regex2![ $($name => $str,)* ];
+    }
+}
+
 macro_rules! match_content {
     ( $( :$name:ident => $value:expr ),* ) => {
         {
@@ -629,6 +650,20 @@ macro_rules! match_content {
         }
     };
 }
+
+duang!(
+    fn match_content2(text: &str, regex: &Regex, group: usize = 1) -> Result<String> {
+        let caps = regex.captures(text)
+            .ok_or(err_msg(format!("No content was captured, regex: `{}`", regex)))?;
+
+        let r = caps.get(group)
+            .ok_or(err_msg(format!("No group found: {}, regex: `{}`", group, regex)))?
+            .as_str()
+            .to_string();
+
+        Ok(r)
+    }
+);
 
 macro_rules! wrap_code {
     ($code:expr, $custom:expr, :end) => {
@@ -724,6 +759,10 @@ import_impl_mods![
     eighteenh: {
         :domain => "18h.animezilla.com",
         :name   => "18H 宅宅愛動漫"
+    },
+    gufengmh8: {
+        :domain => "www.gufengmh8.com",
+        :name   => "古风漫画网"
     },
     hhimm: {
         :domain => "www.hhimm.com",
@@ -874,6 +913,11 @@ def_routes![
         :chapter_re => r#"^https?://18h\.animezilla\.com/manga/\d+"#
     },
     {
+        :domain     => "www.gufengmh8.com",
+        :comic_re   => r#"^https?://www\.gufengmh8\.com/manhua/.+"#,
+        :chapter_re => r#"^https?://www\.gufengmh8\.com/manhua/[^/]+/\d+\.html"#
+    },
+    {
         :domain     => "www.hhimm.com",
         :comic_re   => r#"^https?://www\.hhimm\.com/manhua/\d+\.html"#,
         :chapter_re => r#"^https?://www\.hhimm\.com/cool\d+/\d+\.html"#
@@ -983,6 +1027,14 @@ fn test_routes() {
     assert_eq!(
         DomainRoute::Chapter(String::from("18h.animezilla.com")),
         domain_route("https://18h.animezilla.com/manga/2940").unwrap()
+    );
+    assert_eq!(
+        DomainRoute::Comic(String::from("www.gufengmh8.com")),
+        domain_route("https://www.gufengmh8.com/manhua/dongjingshishiguire/").unwrap()
+    );
+    assert_eq!(
+        DomainRoute::Chapter(String::from("www.gufengmh8.com")),
+        domain_route("https://www.gufengmh8.com/manhua/dongjingshishiguire/8519.html").unwrap()
     );
     assert_eq!(
         DomainRoute::Comic(String::from("www.hhimm.com")),

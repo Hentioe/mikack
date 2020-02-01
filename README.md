@@ -29,6 +29,7 @@
 | 动漫之家       | [manhua.dmzj.com](manhua.dmzj.com)       |   ⭕️    |          中文          |
 | E-Hentai       | [e-hentai.org](e-hentai.org)             |   ⭕️    | 英文, 日文, 中文, NSFW |
 | 18H 宅宅愛動漫 | [18h.animezilla.com](18h.animezilla.com) |   ⭕️    |       中文, NSFW       |
+| 古风漫画网     | [www.gufengmh8.com](www.gufengmh8.com)   |   ⭕️    |          中文          |
 | 汗汗酷漫       | [www.hhimm.com](www.hhimm.com)           |   ⭕️    |          中文          |
 | KuKu 动漫      | [comic.kukudm.com](comic.kukudm.com)     |   ⭕️    |          中文          |
 | LHScan         | [lhscan.net](lhscan.net)                 |   ⭕️    |          英文          |
@@ -39,9 +40,9 @@
 | 漫画柜         | [www.manhuagui.com](www.manhuagui.com)   |   ⭕️    |          中文          |
 | 漫画人         | [www.manhuaren.com](www.manhuaren.com)   |   ⭕️    |          中文          |
 | 177 漫畫       | [www.177pic.info](www.177pic.info)       |   ⭕️    |    中文, 日文, NSFW    |
-| 青空漫画       | www<i>.</i>qkmh5<i>.</i>com                          |    ❌    |          中文          |
+| 青空漫画       | www<i>.</i>qkmh5<i>.</i>com              |    ❌    |          中文          |
 | 二次元動漫     | [www.2animx.com](www.2animx.com)         |   ⭕️    |          中文          |
-| 非常爱漫       | comic<i>.</i>veryim<i>.</i>com                       |    ❌    |          中文          |
+| 非常爱漫       | comic<i>.</i>veryim<i>.</i>com           |    ❌    |          中文          |
 | 新新漫画网     | [www.177mh.net](www.177mh.net)           |   ⭕️    |          中文          |
 | YYLS 漫畫      | [8comic.se](8comic.se)                   |   ⭕️    |          中文          |
 
