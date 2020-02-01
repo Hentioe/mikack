@@ -16,7 +16,7 @@
 
 **手机版和桌面版还在预备开发中。**
 
-注意：本项目是纯 Rust 实现，Javascript 代码是辅助某些平台加解密所用。所以也并不存在 JS 直接访问的接口，需要作为 native 模块通过 binding 使用。
+注意：本项目占比很高的 Javascript 代码作用于某些平台资源的加解密，和具体实现/接口无关。所以没有 JS 能直接访问的接口，需要作为 native 模块通过 binding 使用。
 
 ## 支持平台
 
@@ -55,11 +55,11 @@
 
 本库将漫画类网站的资源抽象为了三个最基本的通用模型，分别是：
 
-1. Comic（漫画，指具体的漫画主页）
-1. Chapter（章节，例如常见单位：话/集）
+1. Comic（漫画，指具体的漫画主页信息）
+1. Chapter（章节，例如常见单位：话/集/章）
 1. Page（页，即 1P、2P、3P 中的单个 P）
 
-基本关系非常简单：漫画包含多个章节，章节包含多个页。以下是三个基本模型的字段说明：
+简单的基本关系：漫画包含多个章节，章节包含多个页。以下是对三个基本模型的字段说明：
 
 - Comic
   - title（漫画名称）
@@ -71,11 +71,41 @@
   - url（章节链接）
   - which（章节索引）
   - pages（页面列表）
-  - page_headers（下载页面资源需包含的请求头）
+  - page_headers（下载资源必要的 HTTP headers）
 - Page
   - n（页码，当前以 0 开始）
   - address（资源文件地址）
   - fname（资源文件名称）
   - fmime（资源文件的 MIME）
 
-更多文档内容作者正在紧急撰写中……
+您可能会注意到并没有与“平台”相关的模型，因为平台被抽象为了具有相同行为的组件，这类组件从其它 API 中获取，无法自行创建。这个定义了平台行为的组件被称作 Extracotr（提取器）。
+
+### 基本 API
+
+#### 获取 Extractor 列表：
+
+```rust
+use manga_rs::extractors;
+
+for (domain, name) in extractors::PLATFORMS.iter() {
+    println!("平台域名：{}", domain);
+    println!("平台名称：{}", name);
+}
+```
+
+extractors::PLATFORMS 是一个包含所有 Extractor 基本信息的 HashMap 结构，键是域名，值是 Extractor 对应平台的名称。
+
+对于其它 API 调用而言，名称都是无用的。一般用于 UI 数据显示。
+
+#### 获取指定的 Extractor
+
+```rust
+use manga_rs::extractors;
+
+let extractor =
+    extractors::get_extr(domain).expect(&format!("Unsupported platform {}", domain));
+```
+
+通过域名获取指定的 Extractor，若没有找到则返回 None。通常没有找到就是不支持此域名，域名参数来源于上一个 API 的返回值，而非自行输入。
+
+文档正在紧张撰写中……
