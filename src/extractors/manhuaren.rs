@@ -18,7 +18,7 @@ struct Items {
 
 impl Item {
     fn full_url(&self) -> String {
-        format!("http://www.manhuaren.com/{}/", self.url_key)
+        format!("https://www.manhuaren.com/{}/", self.url_key)
     }
 }
 
@@ -43,7 +43,7 @@ def_extractor! {[usable: true, searchable: false],
         params.insert("sort", "2");
         params.insert("iscopyright", "0");
         let items = client
-                        .post("http://www.manhuaren.com/manhua-list/dm5.ashx")
+                        .post("https://www.manhuaren.com/manhua-list/dm5.ashx")
                         .form(&params)
                         .send()?
                         .json::<Items>()?;
@@ -58,13 +58,13 @@ def_extractor! {[usable: true, searchable: false],
         let list_1 = itemsgen![
             :entry          => Chapter,
             :url            => &comic.url,
-            :href_prefix    => &"http://www.manhuaren.com",
+            :href_prefix    => &"https://www.manhuaren.com",
             :target         => &"ul.detail-list-1 > li > a.chapteritem"
         ]?;
         let list_2 = itemsgen![
             :entry          => Chapter,
             :url            => &comic.url,
-            :href_prefix    => &"http://www.manhuaren.com",
+            :href_prefix    => &"https://www.manhuaren.com",
             :target         => &"ul.detail-list-2 > li > a.chapteritem",
             :sub_dom_text   => &".detail-list-2-info-title"
         ]?;

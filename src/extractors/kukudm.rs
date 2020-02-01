@@ -6,13 +6,13 @@ use super::*;
 /// - 利用已存在当前页的下一张图片，提高 1/2 的速度
 def_regex![
     TITLE_RE    => "共(\\d+)页",
-    URL_RE      => "https://comic.kukudm.com/comiclist/.+(\\d+\\.htm.*)",
+    URL_RE      => "https?://comic.kukudm.com/comiclist/.+(\\d+\\.htm.*)",
     IMGS_RE     => r#"\("<.+'"\+.+\+"([^']+)'>.+<.+='"\+.+\+"([^']+)'.+\);"#
 ];
 
 def_extractor! {[usable: true, searchable: false],
     fn index(&self, page: u32) -> Result<Vec<Comic>> {
-        let url = format!("http://comic.kukudm.com/comictype/3_{}.htm", page);
+        let url = format!("https://comic.kukudm.com/comictype/3_{}.htm", page);
 
         itemsgen![
             :entry          => Comic,

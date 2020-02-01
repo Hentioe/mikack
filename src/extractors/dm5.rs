@@ -9,8 +9,8 @@ def_regex![
 def_extractor! {[usable: true, searchable: false],
     fn index(&self, page: u32) -> Result<Vec<Comic>> {
         let url = urlgen![
-            :first  => &"http://www.dm5.com/manhua-rank/?t=1",
-            :next   => &"http://www.dm5.com/manhua-rank/?t={}",
+            :first  => &"https://www.dm5.com/manhua-rank/?t=1",
+            :next   => &"https://www.dm5.com/manhua-rank/?t={}",
             :page   => &page
         ];
 
