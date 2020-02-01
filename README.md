@@ -31,7 +31,7 @@
 | 18H 宅宅愛動漫 | [18h.animezilla.com](https://18h.animezilla.com)       |   ⭕️    |       中文, NSFW       |
 | 古风漫画网     | [www.gufengmh8.com](https://www.gufengmh8.com)         |   ⭕️    |          中文          |
 | 汗汗酷漫       | [www.hhimm.com](http://www.hhimm.com)                  |   ⭕️    |          中文          |
-| 快看漫画       | [www.kuaikanmanhua.com](https://www.kuaikanmanhua.com) |    ❌    |          中文          |
+| 快看漫画       | [www.kuaikanmanhua.com](https://www.kuaikanmanhua.com) |   ⭕️    |          中文          |
 | KuKu 动漫      | [comic.kukudm.com](https://comic.kukudm.com)           |   ⭕️    |          中文          |
 | LHScan         | [lhscan.net](https://lhscan.net)                       |   ⭕️    |          英文          |
 | Luscious       | [www.luscious.net](https://www.luscious.net)           |   ⭕️    | 英文, 日文, 中文, NSFW |

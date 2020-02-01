@@ -499,7 +499,8 @@ duang!(
         link_dom: &str = "",
         link_attr: &str = "href",
         link_prefix: &str = "",
-        link_text_attr: &str = ""
+        link_text_attr: &str = "",
+        link_text_dom: &str = ""
     ) -> Result<Vec<T>> {
         if url.is_empty() {
             panic!("Missing `url` parameter");
@@ -528,6 +529,15 @@ duang!(
                     .text()
                     .next()
                     .ok_or(err_msg(format!("No :target_text_dom text found: `{}`", target_text_dom)))?
+                    .to_string();
+            }
+            if !link_text_dom.is_empty() {
+                title = element.select(&parse_selector(link_text_dom)?)
+                    .next()
+                    .ok_or(err_msg(format!("No :link_text_dom node found: `{}`", link_text_dom)))?
+                    .text()
+                    .next()
+                    .ok_or(err_msg(format!("No :link_text_dom text found: `{}`", link_text_dom)))?
                     .to_string();
             }
             if !target_text_attr.is_empty() {
@@ -768,6 +778,10 @@ import_impl_mods![
         :domain => "www.hhimm.com",
         :name   => "汗汗酷漫"
     },
+    kuaikanmanhua: {
+        :domain => "www.kuaikanmanhua.com",
+        :name   => "快看漫画"
+    },
     kukudm: {
         :domain => "comic.kukudm.com",
         :name   => "KuKu动漫"
@@ -838,6 +852,7 @@ fn test_usable() {
     assert!(get_extr("e-hentai.org").unwrap().is_usable());
     assert!(get_extr("18h.animezilla.com").unwrap().is_usable());
     assert!(get_extr("www.hhimm.com").unwrap().is_usable());
+    assert!(get_extr("www.kuaikanmanhua.com").unwrap().is_usable());
     assert!(get_extr("comic.kukudm.com").unwrap().is_usable());
     assert!(get_extr("lhscan.net").unwrap().is_usable());
     assert!(get_extr("manganelo.com").unwrap().is_usable());
@@ -921,6 +936,11 @@ def_routes![
         :domain     => "www.hhimm.com",
         :comic_re   => r#"^https?://www\.hhimm\.com/manhua/\d+\.html"#,
         :chapter_re => r#"^https?://www\.hhimm\.com/cool\d+/\d+\.html"#
+    },
+    {
+        :domain     => "www.kuaikanmanhua.com",
+        :comic_re   => r#"^https?://www\.kuaikanmanhua\.com/web/topic/\d+"#,
+        :chapter_re => r#"^https?://www\.kuaikanmanhua\.com/web/comic/\d+"#
     },
     {
         :domain     => "comic.kukudm.com",
@@ -1043,6 +1063,14 @@ fn test_routes() {
     assert_eq!(
         DomainRoute::Chapter(String::from("www.hhimm.com")),
         domain_route("http://www.hhimm.com/cool373925/1.html?s=3").unwrap()
+    );
+    assert_eq!(
+        DomainRoute::Comic(String::from("www.kuaikanmanhua.com")),
+        domain_route("https://www.kuaikanmanhua.com/web/topic/544/").unwrap()
+    );
+    assert_eq!(
+        DomainRoute::Chapter(String::from("www.kuaikanmanhua.com")),
+        domain_route("https://www.kuaikanmanhua.com/web/comic/5471/").unwrap()
     );
     assert_eq!(
         DomainRoute::Comic(String::from("comic.kukudm.com")),
