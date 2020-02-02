@@ -78,34 +78,36 @@
   - fname（资源文件名称）
   - fmime（资源文件的 MIME）
 
-您可能会注意到并没有与“平台”相关的模型，因为平台被抽象为了具有相同行为的组件，这类组件从其它 API 中获取，无法自行创建。这个定义了平台行为的组件被称作 Extracotr（提取器）。
+**您可能会注意到并没有与“平台”相关的模型，因为平台被抽象为了具有相同行为的组件，这类组件无法自行创建，需要从其它 API 中获取**。
+
+这类定义了平台行为的组件被称作 Extracotr（提取器），它本至是一个 Rust 中的 Trait 对象实例。
 
 ### 基本 API
 
-#### 获取 Extractor 列表：
+#### 获取平台列表：
 
 ```rust
 use manga_rs::extractors;
 
-for (domain, name) in extractors::PLATFORMS.iter() {
+for (domain, name) in extractors::platforms().iter() {
     println!("平台域名：{}", domain);
     println!("平台名称：{}", name);
 }
 ```
 
-extractors::PLATFORMS 是一个包含所有 Extractor 基本信息的 HashMap 结构，键是域名，值是 Extractor 对应平台的名称。
+`extractors::platforms()` 函数返回个包含所有平台基本信息的 HashMap 结构，键是域名，值是平台的名称。
 
-对于其它 API 调用而言，名称都是无用的。一般用于 UI 数据显示。
+其中域名是获取平台对应的 Extractor 实例的必要参数，不过对于其它 API 调用而言，名称都是无用的（一般用于 UI 显示）。
 
 #### 获取指定的 Extractor
 
 ```rust
 use manga_rs::extractors;
 
-let extractor =
-    extractors::get_extr(domain).expect(&format!("Unsupported platform {}", domain));
+let domain = "www.example.com";
+let extractor = extractors::get_extr(domain).expect(&format!("Unsupported platform {}", domain));
 ```
 
-通过域名获取指定的 Extractor，若没有找到则返回 None。通常没有找到就是不支持此域名，域名参数来源于上一个 API 的返回值，而非自行输入。
+通过域名获取指定的 Extractor 实例，若没有找到则返回 None。与示例代码不同，域名参数应该来源于上一个 API 的返回值，而非自行输入。
 
 文档正在紧张撰写中……

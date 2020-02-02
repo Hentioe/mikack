@@ -840,6 +840,10 @@ import_impl_mods![
     }
 ];
 
+pub fn platforms() -> &'static HashMap<String, String> {
+    &*PLATFORMS
+}
+
 pub fn get_extr<S: Into<String>>(domain: S) -> Option<&'static ExtractorObject> {
     EXTRACTORS.get(&domain.into())
 }
