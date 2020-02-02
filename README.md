@@ -111,7 +111,7 @@ let extractor = extractors::get_extr(domain).expect(&format!("Unsupported platfo
 
 通过域名获取指定的 Extractor 实例，若没有找到则返回 None。与示例代码不同，域名参数应该来源于上一个 API 的返回值，而非自行输入。
 
-### 获取漫画列表
+#### 获取漫画列表
 
 ```rust
 let page = 1;
@@ -130,7 +130,7 @@ if page > 1 && !extractor.is_pageable() {
 
 目前绝大多数平台都支持分页，不支持分页的情况一般是平台一次性返回了所有内容。
 
-### 搜索漫画
+#### 搜索漫画
 
 ```rust
 let keywords = "海贼王";
