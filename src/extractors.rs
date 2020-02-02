@@ -754,6 +754,10 @@ import_impl_mods![
         :domain => "www.cartoonmad.com",
         :name   => "動漫狂"
     },
+    comico: {
+        :domain => "www.comico.com.tw",
+        :name   => "comico"
+    },
     dm5: {
         :domain => "www.dm5.com",
         :name   => "动漫屋"
@@ -851,6 +855,7 @@ pub fn get_extr<S: Into<String>>(domain: S) -> Option<&'static ExtractorObject> 
 #[test]
 fn test_usable() {
     assert!(get_extr("www.cartoonmad.com").unwrap().is_usable());
+    assert!(get_extr("www.comico.com.tw").unwrap().is_usable());
     assert!(get_extr("www.dm5.com").unwrap().is_usable());
     assert!(get_extr("manhua.dmzj.com").unwrap().is_usable());
     assert!(get_extr("e-hentai.org").unwrap().is_usable());
@@ -910,6 +915,11 @@ def_routes![
         :domain     => "www.cartoonmad.com",
         :comic_re   => r#"^https?://www\.cartoonmad\.com/comic/\d{1,5}\.html"#,
         :chapter_re => r#"^https?://www\.cartoonmad\.com/comic/\d{11,}.html"#
+    },
+    {
+        :domain     => "www.comico.com.tw",
+        :comic_re   => r#"^https?://www\.comico\.com\.tw/challenge/\d+"#,
+        :chapter_re => r#"^https?://www\.comico\.com\.tw/challenge/\d+/\d+/"#
     },
     {
         :domain     => "www.dm5.com",
@@ -1027,6 +1037,14 @@ fn test_routes() {
     assert_eq!(
         DomainRoute::Chapter(String::from("www.cartoonmad.com")),
         domain_route("https://www.cartoonmad.com/comic/846000012038001.html").unwrap()
+    );
+    assert_eq!(
+        DomainRoute::Comic(String::from("www.comico.com.tw")),
+        domain_route("http://www.comico.com.tw/challenge/3711/").unwrap()
+    );
+    assert_eq!(
+        DomainRoute::Chapter(String::from("www.comico.com.tw")),
+        domain_route("http://www.comico.com.tw/challenge/3711/1/").unwrap()
     );
     assert_eq!(
         DomainRoute::Comic(String::from("www.dm5.com")),
