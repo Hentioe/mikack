@@ -110,4 +110,42 @@ let extractor = extractors::get_extr(domain).expect(&format!("Unsupported platfo
 
 通过域名获取指定的 Extractor 实例，若没有找到则返回 None。与示例代码不同，域名参数应该来源于上一个 API 的返回值，而非自行输入。
 
+### 获取漫画列表
+
+```rust
+let page = 1;
+let comics = extractor.index(page)?;
+
+println!("{:?}", comics); // => Comic 列表
+```
+
+通过 Extractor 实例的 `index` 方法获取到的漫画列表一般是平台最近更新的内容。您还可以通过 `is_pageable` 方法兼容不同平台的分页支持情况：
+
+```rust
+if page > 1 && !extractor.is_pageable() {
+    // 此平台不支持分页，没有下一页
+}
+```
+
+一般来讲，绝大多数平台都支持分页。目前存在的不支持分页的情况是平台一次性返回了所有内容。
+
+### 搜索漫画
+
+```rust
+let keywords = "海贼王";
+let comics = extractor.search(keywords)?;
+
+println!("{:?}", comics); // => Comic 列表
+```
+
+类似的，您可以通过 `is_searchable` 方法兼容不同平台的搜索支持情况：
+
+```rust
+if !extractor.is_searchable() {
+    // 此平台不支持搜索
+}
+```
+
+当前只有少部分平台支持搜索功能。
+
 文档正在紧张撰写中……
