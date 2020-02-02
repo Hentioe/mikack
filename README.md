@@ -25,6 +25,7 @@
 | 名称           | 域名                                                   | 支持状态 |          标签          |
 | :------------- | :----------------------------------------------------- | :------: | :--------------------: |
 | 動漫狂         | [www.cartoonmad.com](https://www.cartoonmad.com)       |   ⭕️    |          中文          |
+| comico         | [www.comico.com.tw](http://www.comico.com.tw)          |    ❌    |          中文          |
 | 动漫屋         | [www.dm5.com](http://www.dm5.com)                      |   ⭕️    |          中文          |
 | 动漫之家       | [manhua.dmzj.com](https://manhua.dmzj.com)             |   ⭕️    |          中文          |
 | E-Hentai       | [e-hentai.org](https://e-hentai.org)                   |   ⭕️    | 英文, 日文, 中文, NSFW |
