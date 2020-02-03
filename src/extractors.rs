@@ -826,6 +826,10 @@ import_impl_mods![
         :domain => "www.qkmh5.com",
         :name   => "青空漫画"
     },
+    tohomh123: {
+        :domain => "www.tohomh123.com",
+        :name   => "土豪漫画"
+    },
     twoanimx: {
         :domain => "www.2animx.com",
         :name   => "二次元動漫"
