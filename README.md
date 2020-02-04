@@ -42,6 +42,7 @@
 | 漫画柜         | [www.manhuagui.com](https://www.manhuagui.com)         |   ⭕️    |          中文          |
 | 漫画人         | [www.manhuaren.com](https://www.manhuaren.com)         |   ⭕️    |          中文          |
 | 177 漫畫       | [www.177pic.info](http://www.177pic.info)              |   ⭕️    |    中文, 日文, NSFW    |
+| 奇妙漫画       | [www.qimiaomh.com](https://www.qimiaomh.com)           |   ⭕️    |          中文          |
 | 青空漫画       | www<i>.</i>qkmh5<i>.</i>com                            |    ❌    |          中文          |
 | 土豪漫画       | [www.tohomh123.com](https://www.tohomh123.com)         |   ⭕️    |          中文          |
 | 二次元動漫     | [www.2animx.com](http://www.2animx.com)                |   ⭕️    |          中文          |
