@@ -875,6 +875,7 @@ fn test_usable() {
     assert!(get_extr("www.manhuaren.com").unwrap().is_usable());
     assert!(get_extr("www.177pic.info").unwrap().is_usable());
     assert!(!get_extr("www.qkmh5.com").unwrap().is_usable());
+    assert!(get_extr("www.tohomh123.com").unwrap().is_usable());
     assert!(get_extr("www.2animx.com").unwrap().is_usable());
     assert!(!get_extr("comic.veryim.com").unwrap().is_usable());
     assert!(get_extr("www.177mh.net").unwrap().is_usable());
@@ -1009,6 +1010,11 @@ def_routes![
         :domain     => "www.qkmh5.com",
         :comic_re   => r#"^https?://www\.qkmh5\.com/mh/[^\.]+\.html"#,
         :chapter_re => r#"^https?://www\.qkmh5\.com/mm/\d+/\d+\.html"#
+    },
+    {
+        :domain     => "www.tohomh123.com",
+        :comic_re   => r#"^https?://www\.tohomh123\.com/.+"#,
+        :chapter_re => r#"^https?://www\.tohomh123\.com/[^\]+/\d+\.html"#
     },
     {
         :domain     => "www.2animx.com",
@@ -1175,6 +1181,14 @@ fn test_routes() {
     assert_eq!(
         DomainRoute::Chapter(String::from("www.qkmh5.com")),
         domain_route("http://www.qkmh5.com/mm/1807/461806.html").unwrap()
+    );
+    assert_eq!(
+        DomainRoute::Comic(String::from("www.tohomh123.com")),
+        domain_route("https://www.tohomh123.com/guangzhizi/").unwrap()
+    );
+    assert_eq!(
+        DomainRoute::Chapter(String::from("www.tohomh123.com")),
+        domain_route("https://www.tohomh123.com/guangzhizi/1.html").unwrap()
     );
     assert_eq!(
         DomainRoute::Comic(String::from("www.2animx.com")),
