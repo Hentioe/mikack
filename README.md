@@ -24,7 +24,7 @@
 
 | 名称           | 域名                                                   | 支持状态 |          标签          |
 | :------------- | :----------------------------------------------------- | :------: | :--------------------: |
-| 百年漫画       | [www.bnmanhua.com](https://www.bnmanhua.com)           |    ⭕️    |          中文          |
+| 百年漫画       | [www.bnmanhua.com](https://www.bnmanhua.com)           |   ⭕️    |          中文          |
 | 動漫狂         | [www.cartoonmad.com](https://www.cartoonmad.com)       |   ⭕️    |          中文          |
 | comico         | [www.comico.com.tw](http://www.comico.com.tw)          |   ⭕️    |          中文          |
 | 动漫屋         | [www.dm5.com](http://www.dm5.com)                      |   ⭕️    |          中文          |
@@ -33,6 +33,7 @@
 | 18H 宅宅愛動漫 | [18h.animezilla.com](https://18h.animezilla.com)       |   ⭕️    |       中文, NSFW       |
 | 古风漫画网     | [www.gufengmh8.com](https://www.gufengmh8.com)         |   ⭕️    |          中文          |
 | 汗汗酷漫       | [www.hhimm.com](http://www.hhimm.com)                  |   ⭕️    |          中文          |
+| 扑飞漫画       | [www.ipufei.com](http://www.ipufei.com)                |    ❌    |          中文          |
 | 快看漫画       | [www.kuaikanmanhua.com](https://www.kuaikanmanhua.com) |   ⭕️    |          中文          |
 | KuKu 动漫      | [comic.kukudm.com](https://comic.kukudm.com)           |   ⭕️    |          中文          |
 | LHScan         | [lhscan.net](https://lhscan.net)                       |   ⭕️    |          英文          |
