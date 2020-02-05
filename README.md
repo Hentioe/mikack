@@ -24,7 +24,7 @@
 
 | 名称           | 域名                                                   | 支持状态 |          标签          |
 | :------------- | :----------------------------------------------------- | :------: | :--------------------: |
-| 百年漫画       | [www.bnmanhua.com](https://www.bnmanhua.com)           |    ❌    |          中文          |
+| 百年漫画       | [www.bnmanhua.com](https://www.bnmanhua.com)           |    ⭕️    |          中文          |
 | 動漫狂         | [www.cartoonmad.com](https://www.cartoonmad.com)       |   ⭕️    |          中文          |
 | comico         | [www.comico.com.tw](http://www.comico.com.tw)          |   ⭕️    |          中文          |
 | 动漫屋         | [www.dm5.com](http://www.dm5.com)                      |   ⭕️    |          中文          |

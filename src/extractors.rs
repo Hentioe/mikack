@@ -487,6 +487,7 @@ macro_rules! itemsgen {
 
 duang!(
     pub fn itemsgen2<T: FromLink + SetCover>(
+        html: &str = "",
         url: &str =  "",
         encoding: &'static Encoding = UTF_8,
         target_dom: &str = "",
@@ -502,14 +503,18 @@ duang!(
         link_text_attr: &str = "",
         link_text_dom: &str = ""
     ) -> Result<Vec<T>> {
-        if url.is_empty() {
-            panic!("Missing `url` parameter");
-        }
-        let mut resp = get(url)?;
-        let html = if encoding != UTF_8 {
-            resp.decode_text(encoding)?
+        let html = if html.is_empty() {
+            if url.is_empty() {
+                panic!("Missing `url` parameter");
+            }
+            let mut resp = get(url)?;
+            if encoding != UTF_8 {
+                resp.decode_text(encoding)?
+            } else {
+                resp.text()?
+            }.to_string()
         } else {
-            resp.text()?
+            html.to_string()
         };
         let document = parse_document(&html);
         let from_link = |element: &ElementRef| -> Result<T> {
@@ -750,6 +755,10 @@ macro_rules! import_impl_mods {
 }
 
 import_impl_mods![
+    bnmanhua: {
+        :domain => "www.bnmanhua.com",
+        :name   => "百年漫画"
+    },
     cartoonmad: {
         :domain => "www.cartoonmad.com",
         :name   => "動漫狂"
@@ -862,6 +871,7 @@ pub fn get_extr<S: Into<String>>(domain: S) -> Option<&'static ExtractorObject> 
 
 #[test]
 fn test_usable() {
+    assert!(get_extr("www.bnmanhua.com").unwrap().is_usable());
     assert!(get_extr("www.cartoonmad.com").unwrap().is_usable());
     assert!(get_extr("www.comico.com.tw").unwrap().is_usable());
     assert!(get_extr("www.dm5.com").unwrap().is_usable());
@@ -921,6 +931,11 @@ pub fn domain_route(url: &str) -> Option<DomainRoute> {
 }
 
 def_routes![
+    {
+        :domain     => "www.bnmanhua.com",
+        :comic_re   => r#"^https?://www\.bnmanhua\.com/comic/\d+\.html"#,
+        :chapter_re => r#"^https?://www\.bnmanhua\.com/comic/\d+/\d+\.html"#
+    },
     {
         :domain     => "www.cartoonmad.com",
         :comic_re   => r#"^https?://www\.cartoonmad\.com/comic/\d{1,5}\.html"#,
@@ -1050,6 +1065,14 @@ def_routes![
 
 #[test]
 fn test_routes() {
+    assert_eq!(
+        DomainRoute::Comic(String::from("www.bnmanhua.com")),
+        domain_route("https://www.bnmanhua.com/comic/15195.html").unwrap()
+    );
+    assert_eq!(
+        DomainRoute::Chapter(String::from("www.bnmanhua.com")),
+        domain_route("https://www.bnmanhua.com/comic/15195/421378.html").unwrap()
+    );
     assert_eq!(
         DomainRoute::Comic(String::from("www.cartoonmad.com")),
         domain_route("https://www.cartoonmad.com/comic/8460.html").unwrap()

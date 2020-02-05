@@ -28,7 +28,6 @@ def_regex! {
 
 def_extractor! {[usable: true, searchable: false],
     fn index(&self, page: u32) -> Result<Vec<Comic>> {
-        let client = Client::new();
         let mut params = HashMap::new();
         let page_s = page.to_string();
         params.insert("pageindex", page_s.as_str());
@@ -42,11 +41,12 @@ def_extractor! {[usable: true, searchable: false],
         params.insert("areaid", "0");
         params.insert("sort", "2");
         params.insert("iscopyright", "0");
+        let client = Client::new();
         let items = client
-                        .post("https://www.manhuaren.com/manhua-list/dm5.ashx")
-                        .form(&params)
-                        .send()?
-                        .json::<Items>()?;
+            .post("https://www.manhuaren.com/manhua-list/dm5.ashx")
+            .form(&params)
+            .send()?
+            .json::<Items>()?;
         let mut comics = vec![];
         for item in &items.update_comic_items {
             comics.push(Comic::new(item.title.clone(), item.full_url()));
