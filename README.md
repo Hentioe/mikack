@@ -33,7 +33,7 @@
 | 18H 宅宅愛動漫 | [18h.animezilla.com](https://18h.animezilla.com)       |   ⭕️    |       中文, NSFW       |
 | 古风漫画网     | [www.gufengmh8.com](https://www.gufengmh8.com)         |   ⭕️    |          中文          |
 | 汗汗酷漫       | [www.hhimm.com](http://www.hhimm.com)                  |   ⭕️    |          中文          |
-| 扑飞漫画       | [www.ipufei.com](http://www.ipufei.com)                |    ⭕️    |          中文          |
+| 扑飞漫画       | [www.ipufei.com](http://www.ipufei.com)                |   ⭕️    |          中文          |
 | 快看漫画       | [www.kuaikanmanhua.com](https://www.kuaikanmanhua.com) |   ⭕️    |          中文          |
 | KuKu 动漫      | [comic.kukudm.com](https://comic.kukudm.com)           |   ⭕️    |          中文          |
 | LHScan         | [lhscan.net](https://lhscan.net)                       |   ⭕️    |          英文          |
@@ -83,9 +83,9 @@
   - fname（资源文件名称）
   - fmime（资源文件的 MIME）
 
-**您可能会注意到并没有与“平台”相关的模型，因为平台被抽象为了具有相同行为的组件，这类组件无法自行创建，需要从其它 API 中获取**。
+您可能会注意到并没有与“平台”相关的模型，因为平台被抽象为了具有相同行为的组件，这类组件无法自行创建，需要从其它 API 中获取。
 
-这类定义了平台行为的组件被称作 Extracotr（提取器），它本至是一个 Rust 中的 Trait 对象实例。
+这类定义了平台行为的组件被称作 Extracotr（提取器），它本至上是 Rust 中的 Trait 对象。
 
 ### 基本 API
 
@@ -121,7 +121,7 @@ let extractor = extractors::get_extr(domain).expect(&format!("Unsupported platfo
 let page = 1;
 let comics = extractor.index(page)?;
 
-println!("{:?}", comics); // => Comic 列表
+comics; // => 漫画列表
 ```
 
 通过 Extractor 实例的 `index` 方法获取到的漫画列表一般是平台最近更新的内容。您还可以通过 `is_pageable` 方法兼容不同平台的分页支持情况：
@@ -140,7 +140,7 @@ if page > 1 && !extractor.is_pageable() {
 let keywords = "海贼王";
 let comics = extractor.search(keywords)?;
 
-println!("{:?}", comics); // => Comic 列表
+comics // => 漫画列表
 ```
 
 类似的，您可以通过 `is_searchable` 方法兼容不同平台的搜索支持情况：
@@ -152,5 +152,50 @@ if !extractor.is_searchable() {
 ```
 
 当前只有少部分平台支持搜索功能。在不支持的 Extractor 对象上调用 `search` 方法将始终返回空列表。
+
+#### 获取漫画章节
+
+```rust
+let mut comic = Comic::from_link("进击的巨人", "https://www.manhuadui.com/manhua/jinjidejuren/");
+extractor.fetch_chapters(comic)?;
+
+comic.chapters // => 章节列表
+```
+
+调用 `fetch_chapters` 需要将一个可变的 `Comic` 对象作为参数，章节列表会填充到 `chapters` 属性。参数中的 Comic 对象只需要有效的 url 参数。
+
+#### 获取页面资源
+
+```rust
+let mut chapter = Chapter::from_link("进击的巨人- 126话 骄傲", "https://www.manhuadui.com/manhua/jinjidejuren/459779.html");
+let iter = extractor.pages_iter(chapter)?;
+for page in iter {                      // 遍历页面资源
+    let page = page?;                   // => 页面资源
+    let address = page.address.clone(); // => 资源地址
+}
+```
+
+当我们在开发在线阅读的客户端时，如果一次性获取全部地址才开始阅读，会导致过长的等待的时间。假设某漫画某章有 100 页，可能需要提前加载完 100 个页面才能返回全部页面资源，显然是不明智的。
+
+使用迭代器手动控制翻页，逻辑将是这个样子：
+
+```rust
+// 开始载入章节
+let iter = extractor.pages_iter(..)?;   // 创建一个页面迭代器
+// 需要注意的是，创建迭代器也是需要解析页面的，但只需一个页面
+// 在创建迭代器的同时已经将除资源地址以外的章节数据载入好了
+let title = iter.chapter_title_clone(); // => 从迭代器获取章节标题
+let total = iter.total;                 // => 从迭代器获取页面数量
+// 翻页
+if let Some(page) = iter.next()? {
+    // 加载当前页
+} else {
+    // 没有下一页啦
+}
+```
+
+以上迭代器 API 是懒加载的，适合在线客户端应用。
+
+如果您不在意源获取的延迟问题，例如做单纯的下载应用，也可以使用更简单的 `fetch_pages` 方法，此处不做演示。
 
 文档正在紧张撰写中……
