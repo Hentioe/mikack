@@ -167,7 +167,10 @@ comic.chapters // => 章节列表
 #### 获取页面资源
 
 ```rust
-let mut chapter = Chapter::from_link("进击的巨人- 126话 骄傲", "https://www.manhuadui.com/manhua/jinjidejuren/459779.html");
+let mut chapter = Chapter::from_link(
+    "进击的巨人- 126话 骄傲",
+    "https://www.manhuadui.com/manhua/jinjidejuren/459779.html"
+);
 let iter = extractor.pages_iter(chapter)?;
 for page in iter {                      // 遍历页面资源
     let page = page?;                   // => 页面资源
@@ -194,8 +197,8 @@ if let Some(page) = iter.next()? {
 }
 ```
 
-以上迭代器 API 是懒加载的，适合在线客户端应用。
+迭代器 API 是懒加载的，适合在线阅读用途的客户端应用。值得一提的是 [manga-cli](https://github.com/Hentioe/manga-cli) 项目也使用迭代器 API，因为它要显示加载进度。所以实际上大多数场景都推荐使用迭代器 API。
 
-如果您不在意源获取的延迟问题，例如做单纯的下载应用，也可以使用更简单的 `fetch_pages` 方法，此处不做演示。
+如果您不在意资源获取的延迟问题，也可以使用更简单的 `fetch_pages` 方法。它将页面列表填充到参数 `chapter` 对象中，此处不做演示。
 
 文档正在紧张撰写中……
