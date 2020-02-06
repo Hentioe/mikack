@@ -5,6 +5,7 @@ use encoding_rs::*;
 use quick_js::{Context, JsValue};
 use regex::Regex;
 use std::any::Any;
+use std::borrow::Cow;
 use std::collections::HashMap;
 
 macro_rules! def_ableitem {
@@ -244,6 +245,11 @@ impl Decode for reqwest::blocking::Response {
     }
 }
 
+fn encode_text<'a>(text: &'a str, encoding: &'static Encoding) -> Result<Cow<'a, [u8]>> {
+    let (cow, _encoding_used, _had_errors) = encoding.encode(text);
+    Ok(cow)
+}
+
 type JsObject = HashMap<String, JsValue>;
 
 pub fn eval_as_obj(code: &str) -> Result<JsObject> {
@@ -401,6 +407,16 @@ macro_rules! urlgen {
         }
     };
 }
+
+duang!(
+    fn urlgen2(page : u32, first: &str = "", next: &str = "") -> String {
+        if page > 1 {
+            next.replace("{}", &page.to_string()).to_string()
+        } else {
+            first.to_string()
+        }
+    }
+);
 
 lazy_static! {
     pub static ref DEFAULT_STRING: String = "".to_string();
@@ -791,6 +807,10 @@ import_impl_mods![
         :domain => "www.hhimm.com",
         :name   => "汗汗酷漫"
     },
+    ipufei: {
+        :domain => "www.ipufei.com",
+        :name   => "扑飞漫画"
+    },
     kuaikanmanhua: {
         :domain => "www.kuaikanmanhua.com",
         :name   => "快看漫画"
@@ -879,6 +899,7 @@ fn test_usable() {
     assert!(get_extr("e-hentai.org").unwrap().is_usable());
     assert!(get_extr("18h.animezilla.com").unwrap().is_usable());
     assert!(get_extr("www.hhimm.com").unwrap().is_usable());
+    assert!(get_extr("www.ipufei.com").unwrap().is_usable());
     assert!(get_extr("www.kuaikanmanhua.com").unwrap().is_usable());
     assert!(get_extr("comic.kukudm.com").unwrap().is_usable());
     assert!(get_extr("lhscan.net").unwrap().is_usable());
@@ -975,6 +996,11 @@ def_routes![
         :domain     => "www.hhimm.com",
         :comic_re   => r#"^https?://www\.hhimm\.com/manhua/\d+\.html"#,
         :chapter_re => r#"^https?://www\.hhimm\.com/cool\d+/\d+\.html"#
+    },
+    {
+        :domain     => "www.ipufei.com",
+        :comic_re   => r#"^https?://www\.ipufei\.com/manhua/\d+/index\.html"#,
+        :chapter_re => r#"^https?://www\.ipufei\.com/manhua/\d+/\d+\.html"#
     },
     {
         :domain     => "www.kuaikanmanhua.com",
@@ -1128,6 +1154,14 @@ fn test_routes() {
     assert_eq!(
         DomainRoute::Chapter(String::from("www.hhimm.com")),
         domain_route("http://www.hhimm.com/cool373925/1.html?s=3").unwrap()
+    );
+    assert_eq!(
+        DomainRoute::Comic(String::from("www.ipufei.com")),
+        domain_route("http://www.ipufei.com/manhua/600/index.html").unwrap()
+    );
+    assert_eq!(
+        DomainRoute::Chapter(String::from("www.ipufei.com")),
+        domain_route("http://www.ipufei.com/manhua/600/45661.html").unwrap()
     );
     assert_eq!(
         DomainRoute::Comic(String::from("www.kuaikanmanhua.com")),
