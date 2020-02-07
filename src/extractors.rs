@@ -851,6 +851,10 @@ import_impl_mods![
         :domain => "www.manhuaren.com",
         :name   => "漫画人"
     },
+    ninehentai: {
+        :domain => "9hentai.com",
+        :name   => "9hentai"
+    },
     one77pic: {
         :domain => "www.177pic.info",
         :name   => "177漫畫"
@@ -913,6 +917,7 @@ fn test_usable() {
     assert!(get_extr("www.manhuadui.com").unwrap().is_usable());
     assert!(get_extr("www.manhuagui.com").unwrap().is_usable());
     assert!(get_extr("www.manhuaren.com").unwrap().is_usable());
+    assert!(get_extr("9hentai.com").unwrap().is_usable());
     assert!(get_extr("www.177pic.info").unwrap().is_usable());
     assert!(get_extr("www.qimiaomh.com").unwrap().is_usable());
     assert!(!get_extr("www.qkmh5.com").unwrap().is_usable());
@@ -1058,6 +1063,11 @@ def_routes![
         :chapter_re => r#"^https?://www\.manhuaren\.com/m\d+/"#
     },
     {
+        :domain     => "9hentai.com",
+        :comic_re   => r#"^-NONE-$"#,
+        :chapter_re => r#"^https?://9hentai\.com/g/\d+"#
+    },
+    {
         :domain     => "www.177pic.info",
         :comic_re   => r#"^-NONE-$"#,
         :chapter_re => r#"^https?://www\.177pic\.info/html/\d+/\d+/\d+\.html"#
@@ -1106,6 +1116,12 @@ macro_rules! assert_routes {
             DomainRoute::Comic(String::from($domain)),
             domain_route($comic_url).unwrap()
         );
+        assert_eq!(
+            DomainRoute::Chapter(String::from($domain)),
+            domain_route($chapter_url).unwrap()
+        );
+    };
+    ($domain:expr, :chapter => $chapter_url:expr) => {
         assert_eq!(
             DomainRoute::Chapter(String::from($domain)),
             domain_route($chapter_url).unwrap()
@@ -1264,6 +1280,9 @@ fn test_routes() {
     assert_eq!(
         DomainRoute::Chapter(String::from("www.manhuaren.com")),
         domain_route("https://www.manhuaren.com/m188947/").unwrap()
+    );
+    assert_routes!("9hentai.com",
+        :chapter => "https://9hentai.com/g/60726/"
     );
     assert_eq!(
         DomainRoute::Chapter(String::from("www.177pic.info")),
