@@ -33,7 +33,7 @@ impl Book {
 
     fn cover(&self) -> String {
         format!(
-            "{image_server}/{id}/cover-small.jpg",
+            "{image_server}{id}/cover-small.jpg",
             image_server = self.image_server,
             id = self.id
         )
@@ -103,7 +103,7 @@ def_extractor! {[usable: true, pageable: true, searchable: true],
         chapter.set_title(book.title);
         let mut addresses = vec![];
         for i in 1..(book.total_page + 1) {
-            addresses.push(format!("{}/{}/{}.jpg", book.image_server, book.id, i));
+            addresses.push(format!("{}{}/{}.jpg", book.image_server, book.id, i));
         }
         Ok(ChapterPages::full(chapter, addresses))
     }
