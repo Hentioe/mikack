@@ -54,6 +54,7 @@
 | 土豪漫画       | [www.tohomh123.com](https://www.tohomh123.com)         |   ⭕️    |          中文          |
 | 二次元動漫     | [www.2animx.com](http://www.2animx.com)                |   ⭕️    |          中文          |
 | 非常爱漫       | comic<i>.</i>veryim<i>.</i>com                         |    ❌    |          中文          |
+| 紳士漫畫       | www<i>.</i>wnacg<i>.</i>org                            |    ❌    |       中文, NSFW       |
 | 新新漫画网     | [www.177mh.net](https://www.177mh.net)                 |   ⭕️    |          中文          |
 | YYLS 漫畫      | [8comic.se](https://8comic.se)                         |   ⭕️    |          中文          |
 
