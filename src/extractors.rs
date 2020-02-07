@@ -771,6 +771,10 @@ macro_rules! import_impl_mods {
 }
 
 import_impl_mods![
+    bidongmh: {
+        :domain => "www.bidongmh.com",
+        :name   => "壁咚漫画"
+    },
     bnmanhua: {
         :domain => "www.bnmanhua.com",
         :name   => "百年漫画"
@@ -891,6 +895,7 @@ pub fn get_extr<S: Into<String>>(domain: S) -> Option<&'static ExtractorObject> 
 
 #[test]
 fn test_usable() {
+    assert!(get_extr("www.bidongmh.com").unwrap().is_usable());
     assert!(get_extr("www.bnmanhua.com").unwrap().is_usable());
     assert!(get_extr("www.cartoonmad.com").unwrap().is_usable());
     assert!(get_extr("www.comico.com.tw").unwrap().is_usable());
@@ -952,6 +957,11 @@ pub fn domain_route(url: &str) -> Option<DomainRoute> {
 }
 
 def_routes![
+    {
+        :domain     => "www.bidongmh.com",
+        :comic_re   => r#"^https?://www\.bidongmh\.com/book/\d+"#,
+        :chapter_re => r#"^https?://www\.bidongmh\.com/chapter/\d+"#
+    },
     {
         :domain     => "www.bnmanhua.com",
         :comic_re   => r#"^https?://www\.bnmanhua\.com/comic/\d+\.html"#,
@@ -1089,8 +1099,26 @@ def_routes![
     }
 ];
 
+#[allow(unused_macros)]
+macro_rules! assert_routes {
+    ($domain:expr, :comic => $comic_url:expr, :chapter => $chapter_url:expr) => {
+        assert_eq!(
+            DomainRoute::Comic(String::from($domain)),
+            domain_route($comic_url).unwrap()
+        );
+        assert_eq!(
+            DomainRoute::Chapter(String::from($domain)),
+            domain_route($chapter_url).unwrap()
+        );
+    };
+}
+
 #[test]
 fn test_routes() {
+    assert_routes!("www.bidongmh.com",
+        :comic   => "https://www.bidongmh.com/book/256",
+        :chapter => "https://www.bidongmh.com/chapter/6807"
+    );
     assert_eq!(
         DomainRoute::Comic(String::from("www.bnmanhua.com")),
         domain_route("https://www.bnmanhua.com/comic/15195.html").unwrap()
