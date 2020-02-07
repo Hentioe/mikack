@@ -44,6 +44,7 @@
 | 漫画堆         | [www.manhuadui.com](https://www.manhuadui.com)         |   ⭕️    |          中文          |
 | 漫画柜         | [www.manhuagui.com](https://www.manhuagui.com)         |   ⭕️    |          中文          |
 | 漫画人         | [www.manhuaren.com](https://www.manhuaren.com)         |   ⭕️    |          中文          |
+| 9hentai        | 9hentai<i>.</i>com                                     |    ❌    |       英文, NSFW       |
 | 177 漫畫       | [www.177pic.info](http://www.177pic.info)              |   ⭕️    |    中文, 日文, NSFW    |
 | 奇妙漫画       | [www.qimiaomh.com](https://www.qimiaomh.com)           |   ⭕️    |          中文          |
 | 青空漫画       | www<i>.</i>qkmh5<i>.</i>com                            |    ❌    |          中文          |
