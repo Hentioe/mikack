@@ -1,10 +1,6 @@
 use super::*;
 use reqwest::blocking::Client;
 
-def_regex2![
-    COVER => r#"background: url("([^"]+)")"#
-];
-
 /// 对 c-upp.com 内容的抓取实现
 def_extractor! {[usable: true, pageable: true, searchable: true],
     fn index(&self, page: u32) -> Result<Vec<Comic>> {

@@ -147,7 +147,15 @@ fn parse_document(html: &str) -> Html {
 }
 
 trait HtmlHelper {
-    fn dom_text(&self, selector: &str) -> Result<String>;
+    fn dom_texts(&self, selector: &str) -> Result<Vec<String>>;
+    fn dom_text(&self, selector: &str) -> Result<String> {
+        let texts = self.dom_texts(selector)?;
+        if texts.len() == 0 {
+            Err(err_msg(format!("DOM node not found: {}", selector)))
+        } else {
+            Ok(texts[0].clone())
+        }
+    }
     fn dom_attrs(&self, selector: &str, attr: &str) -> Result<Vec<String>>;
     fn dom_attr(&self, selector: &str, attr: &str) -> Result<String> {
         let attrs = self.dom_attrs(selector, attr)?;
@@ -157,23 +165,24 @@ trait HtmlHelper {
             Ok(attrs[0].clone())
         }
     }
+    fn dom_count(&self, selector: &str) -> Result<usize>;
 }
 
 impl HtmlHelper for Html {
-    fn dom_text(&self, selector: &str) -> Result<String> {
-        let st = parse_selector(selector)?;
-        let dom = self
-            .select(&st)
-            .next()
-            .ok_or(err_msg(format!("DOM node not found: {}", selector)))?;
-        let text = dom
-            .text()
-            .next()
-            .ok_or(err_msg(format!("DOM text not found: {}", selector)))?
-            .trim()
-            .to_string();
+    fn dom_texts(&self, selector: &str) -> Result<Vec<String>> {
+        let mut texts = vec![];
 
-        Ok(text)
+        for element in self.select(&parse_selector(selector)?) {
+            let text = element
+                .text()
+                .next()
+                .ok_or(err_msg(format!("Text not found in `{}`", selector)))?
+                .trim()
+                .to_string();
+            texts.push(text);
+        }
+
+        Ok(texts)
     }
 
     fn dom_attrs(&self, selector: &str, attr: &str) -> Result<Vec<String>> {
@@ -181,13 +190,20 @@ impl HtmlHelper for Html {
 
         for element in self.select(&parse_selector(selector)?) {
             let attr_s = element.value().attr(&attr).ok_or(err_msg(format!(
-                "Attribute `{}` not found in `{}`",
+                "Attr `{}` not found in `{}`",
                 attr, selector
             )))?;
             attrs.push(attr_s.to_string());
         }
 
         Ok(attrs)
+    }
+
+    fn dom_count(&self, selector: &str) -> Result<usize> {
+        Ok(self
+            .select(&parse_selector(selector)?)
+            .collect::<Vec<_>>()
+            .len())
     }
 }
 
@@ -1141,6 +1157,11 @@ def_routes![
         :chapter_re => r#"^https?://comic\.veryim\.com/[^/]+/\d+/\d+\.html"#
     },
     {
+        :domain     => "www.wnacg.org",
+        :comic_re   => r#"^-NONE-$"#,
+        :chapter_re => r#"^https?://www\.wnacg\.org/photos-index-(page-\d+-)?aid-\d+\.html"#
+    },
+    {
         :domain     => "www.177mh.net",
         :comic_re   => r#"^https?://www\.177mh\.net/colist_\d+\.html"#,
         :chapter_re => r#"^https?://www.177mh.net/\d+/\d+\.html"#
@@ -1379,6 +1400,9 @@ fn test_routes() {
     assert_eq!(
         DomainRoute::Chapter(String::from("comic.veryim.com")),
         domain_route("http://comic.veryim.com/qihuan/57238/883902.html").unwrap()
+    );
+    assert_routes!("www.wnacg.org",
+        :chapter => "https://www.wnacg.org/photos-index-aid-94352.html"
     );
     assert_eq!(
         DomainRoute::Comic(String::from("www.177mh.net")),
