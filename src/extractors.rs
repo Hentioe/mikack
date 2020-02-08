@@ -512,6 +512,7 @@ duang!(
         parent_dom: &str = "",
         cover_dom: &str = "",
         cover_attr: &str = "src",
+        cover_attrs: &[&str] = &[],
         cover_prefix: &str = "",
         link_dom: &str = "",
         link_attr: &str = "href",
@@ -593,13 +594,31 @@ duang!(
                     .next()
                     .ok_or(err_msg(format!("No link DOM node found: `{}`", link_dom)))?;
                 let mut item = from_link(&link_elem)?;
-                let cover = parent_elem
+                let cover_dom = parent_elem
                     .select(&parse_selector(cover_dom)?)
                     .next()
-                    .ok_or(err_msg(format!("No cover DOM node found: `{}`", cover_dom)))?
-                    .value()
-                    .attr(cover_attr)
-                    .ok_or(err_msg(format!("No cover attr found: `{}`", cover_attr)))?;
+                    .ok_or(err_msg(format!("No cover DOM node found: `{}`", cover_dom)))?;
+                let cover = if cover_attrs.len() > 0 {
+                    let covers = cover_attrs.iter()
+                        .map(|attr| {
+                            cover_dom.value().attr(attr)
+                        })
+                        .filter(|cover| {
+                            cover.is_some()
+                        })
+                        .collect::<Vec<_>>();
+                    if covers.len() > 0 {
+                        covers[0].unwrap()
+                    } else {
+                        return Err(err_msg(format!("No cover attrs found: `{}`", cover_attrs.join(","))))
+                    }
+                } else {
+                    cover_dom
+                        .value()
+                        .attr(cover_attr)
+                        .ok_or(err_msg(format!("No cover attr found: `{}`", cover_attr)))?
+                };
+
                 item.set_cover(format!("{}{}", cover_prefix, cover));
                 items.push(item);
             }
@@ -851,6 +870,10 @@ import_impl_mods![
         :domain => "www.manhuaren.com",
         :name   => "漫画人"
     },
+    nhentai: {
+        :domain => "nhentai.net",
+        :name   => "nhentai"
+    },
     ninehentai: {
         :domain => "9hentai.com",
         :name   => "9hentai"
@@ -917,6 +940,7 @@ fn test_usable() {
     assert!(get_extr("www.manhuadui.com").unwrap().is_usable());
     assert!(get_extr("www.manhuagui.com").unwrap().is_usable());
     assert!(get_extr("www.manhuaren.com").unwrap().is_usable());
+    assert!(get_extr("nhentai.net").unwrap().is_usable());
     assert!(get_extr("9hentai.com").unwrap().is_usable());
     assert!(get_extr("www.177pic.info").unwrap().is_usable());
     assert!(get_extr("www.qimiaomh.com").unwrap().is_usable());
@@ -1061,6 +1085,11 @@ def_routes![
         :domain     => "www.manhuaren.com",
         :comic_re   => r#"^https?://www\.manhuaren\.com/manhua-[^/]+/"#,
         :chapter_re => r#"^https?://www\.manhuaren\.com/m\d+/"#
+    },
+    {
+        :domain     => "nhentai.net",
+        :comic_re   => r#"^-NONE-$"#,
+        :chapter_re => r#"^https?://nhentai\.net/g/\d+"#
     },
     {
         :domain     => "9hentai.com",
@@ -1280,6 +1309,9 @@ fn test_routes() {
     assert_eq!(
         DomainRoute::Chapter(String::from("www.manhuaren.com")),
         domain_route("https://www.manhuaren.com/m188947/").unwrap()
+    );
+    assert_routes!("nhentai.net",
+        :chapter => "https://nhentai.net/g/300773/"
     );
     assert_routes!("9hentai.com",
         :chapter => "https://9hentai.com/g/60726/"

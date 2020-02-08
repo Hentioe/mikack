@@ -24,7 +24,7 @@
 
 | 名称           | 域名                                                   | 支持状态 |          标签          |
 | :------------- | :----------------------------------------------------- | :------: | :--------------------: |
-| 壁咚漫画       | www<i>.</i>bidongmh<i>.</i>com                         |    ⭕️    |       中文, NSFW       |
+| 壁咚漫画       | www<i>.</i>bidongmh<i>.</i>com                         |   ⭕️    |       中文, NSFW       |
 | 百年漫画       | [www.bnmanhua.com](https://www.bnmanhua.com)           |   ⭕️    |          中文          |
 | 動漫狂         | [www.cartoonmad.com](https://www.cartoonmad.com)       |   ⭕️    |          中文          |
 | comico         | [www.comico.com.tw](http://www.comico.com.tw)          |   ⭕️    |          中文          |
@@ -32,7 +32,6 @@
 | 动漫之家       | [manhua.dmzj.com](https://manhua.dmzj.com)             |   ⭕️    |          中文          |
 | E-Hentai       | [e-hentai.org](https://e-hentai.org)                   |   ⭕️    | 英文, 日文, 中文, NSFW |
 | 18H 宅宅愛動漫 | [18h.animezilla.com](https://18h.animezilla.com)       |   ⭕️    |       中文, NSFW       |
-| FAKKU          | www<i>.</i>fakku<i>.</i>net                            |    ❌    |       英文, NSFW       |
 | 古风漫画网     | [www.gufengmh8.com](https://www.gufengmh8.com)         |   ⭕️    |          中文          |
 | 喵绅士         | c-upp<i>.</i>com                                       |    ❌    | 英文, 日文, 中文, NSFW |
 | 汗汗酷漫       | [www.hhimm.com](http://www.hhimm.com)                  |   ⭕️    |          中文          |
@@ -46,8 +45,8 @@
 | 漫画堆         | [www.manhuadui.com](https://www.manhuadui.com)         |   ⭕️    |          中文          |
 | 漫画柜         | [www.manhuagui.com](https://www.manhuagui.com)         |   ⭕️    |          中文          |
 | 漫画人         | [www.manhuaren.com](https://www.manhuaren.com)         |   ⭕️    |          中文          |
-| nhentai        | nhentai<i>.</i>net                                     |    ❌    | 英文, 日文, 中文, NSFW |
-| 9hentai        | 9hentai<i>.</i>com                                     |    ⭕️    |       英文, NSFW       |
+| nhentai        | nhentai<i>.</i>net                                     |   ⭕️    | 英文, 日文, 中文, NSFW |
+| 9hentai        | 9hentai<i>.</i>com                                     |   ⭕️    |       英文, NSFW       |
 | 177 漫畫       | [www.177pic.info](http://www.177pic.info)              |   ⭕️    |    中文, 日文, NSFW    |
 | 奇妙漫画       | [www.qimiaomh.com](https://www.qimiaomh.com)           |   ⭕️    |          中文          |
 | 青空漫画       | www<i>.</i>qkmh5<i>.</i>com                            |    ❌    |          中文          |
@@ -101,8 +100,8 @@
 use manga_rs::extractors;
 
 for (domain, name) in extractors::platforms().iter() {
-    println!("平台域名：{}", domain);
-    println!("平台名称：{}", name);
+    domain  // => 平台域名
+    name    // => 平台名称
 }
 ```
 
