@@ -84,6 +84,7 @@ def_extractor! {[usable: true, pageable: true, searchable: true],
 
     fn fetch_chapters(&self, comic: &mut Comic) -> Result<()> {
         comic.chapters.push(Chapter::from_link(&comic.title, &comic.url));
+
         Ok(())
     }
 

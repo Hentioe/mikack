@@ -906,6 +906,10 @@ import_impl_mods![
         :domain => "comic.veryim.com",
         :name   => "非常爱漫"
     },
+    wnacg: {
+        :domain => "www.wnacg.org",
+        :name   => "紳士漫畫"
+    },
     xinxinmh: {
         :domain => "www.177mh.net",
         :name   => "新新漫画网"
