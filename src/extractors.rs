@@ -826,6 +826,10 @@ import_impl_mods![
         :domain => "www.gufengmh8.com",
         :name   => "古风漫画网"
     },
+    hcomic: {
+        :domain => "c-upp.com",
+        :name   => "喵绅士"
+    },
     hhimm: {
         :domain => "www.hhimm.com",
         :name   => "汗汗酷漫"
@@ -941,6 +945,7 @@ fn test_usable() {
     assert!(get_extr("www.manhuagui.com").unwrap().is_usable());
     assert!(get_extr("www.manhuaren.com").unwrap().is_usable());
     assert!(get_extr("nhentai.net").unwrap().is_usable());
+    assert!(get_extr("c-upp.com").unwrap().is_usable());
     assert!(get_extr("9hentai.com").unwrap().is_usable());
     assert!(get_extr("www.177pic.info").unwrap().is_usable());
     assert!(get_extr("www.qimiaomh.com").unwrap().is_usable());
@@ -1030,6 +1035,11 @@ def_routes![
         :domain     => "www.gufengmh8.com",
         :comic_re   => r#"^https?://www\.gufengmh8\.com/manhua/.+"#,
         :chapter_re => r#"^https?://www\.gufengmh8\.com/manhua/[^/]+/\d+\.html"#
+    },
+    {
+        :domain     => "c-upp.com",
+        :comic_re   => r#"^-NONE-$"#,
+        :chapter_re => r#"^https?://c-upp\.com/ja/s/\d+"#
     },
     {
         :domain     => "www.hhimm.com",
@@ -1219,6 +1229,9 @@ fn test_routes() {
     assert_eq!(
         DomainRoute::Chapter(String::from("www.gufengmh8.com")),
         domain_route("https://www.gufengmh8.com/manhua/dongjingshishiguire/8519.html").unwrap()
+    );
+    assert_routes!("c-upp.com",
+        :chapter => "https://c-upp.com/ja/s/315668/"
     );
     assert_eq!(
         DomainRoute::Comic(String::from("www.hhimm.com")),
