@@ -1199,130 +1199,69 @@ fn test_routes() {
         :comic   => "https://www.bidongmh.com/book/256",
         :chapter => "https://www.bidongmh.com/chapter/6807"
     );
-    assert_eq!(
-        DomainRoute::Comic(String::from("www.bnmanhua.com")),
-        domain_route("https://www.bnmanhua.com/comic/15195.html").unwrap()
+    assert_routes!("www.bnmanhua.com",
+        :comic   => "https://www.bnmanhua.com/comic/15195.html",
+        :chapter => "https://www.bnmanhua.com/comic/15195/421378.html"
     );
-    assert_eq!(
-        DomainRoute::Chapter(String::from("www.bnmanhua.com")),
-        domain_route("https://www.bnmanhua.com/comic/15195/421378.html").unwrap()
+    assert_routes!("www.cartoonmad.com",
+        :comic   => "https://www.cartoonmad.com/comic/8460.html",
+        :chapter => "https://www.cartoonmad.com/comic/846000012038001.html"
     );
-    assert_eq!(
-        DomainRoute::Comic(String::from("www.cartoonmad.com")),
-        domain_route("https://www.cartoonmad.com/comic/8460.html").unwrap()
+    assert_routes!("www.comico.com.tw",
+        :comic   => "http://www.comico.com.tw/challenge/3711/",
+        :chapter => "http://www.comico.com.tw/challenge/3711/1/"
     );
-    assert_eq!(
-        DomainRoute::Chapter(String::from("www.cartoonmad.com")),
-        domain_route("https://www.cartoonmad.com/comic/846000012038001.html").unwrap()
+    assert_routes!("www.dm5.com",
+        :comic   => "http://www.dm5.com/manhua-yuanzun/",
+        :chapter => "http://www.dm5.com/m578500/"
     );
-    assert_eq!(
-        DomainRoute::Comic(String::from("www.comico.com.tw")),
-        domain_route("http://www.comico.com.tw/challenge/3711/").unwrap()
+    assert_routes!("manhua.dmzj.com",
+        :comic   => "http://manhua.dmzj.com/yifuyaozhemechuan/",
+        :chapter => "http://manhua.dmzj.com/yifuyaozhemechuan/56275.shtml"
     );
-    assert_eq!(
-        DomainRoute::Chapter(String::from("www.comico.com.tw")),
-        domain_route("http://www.comico.com.tw/challenge/3711/1/").unwrap()
+    assert_routes!("e-hentai.org",
+        :chapter => "https://e-hentai.org/g/1552929/c9f7a6ad71/"
     );
-    assert_eq!(
-        DomainRoute::Comic(String::from("www.dm5.com")),
-        domain_route("http://www.dm5.com/manhua-yuanzun/").unwrap()
+    assert_routes!("18h.animezilla.com",
+        :chapter => "https://18h.animezilla.com/manga/2940"
     );
-    assert_eq!(
-        DomainRoute::Chapter(String::from("www.dm5.com")),
-        domain_route("http://www.dm5.com/m578500/").unwrap()
-    );
-    assert_eq!(
-        DomainRoute::Comic(String::from("manhua.dmzj.com")),
-        domain_route("http://manhua.dmzj.com/yifuyaozhemechuan/").unwrap()
-    );
-    assert_eq!(
-        DomainRoute::Chapter(String::from("manhua.dmzj.com")),
-        domain_route("http://manhua.dmzj.com/yifuyaozhemechuan/56275.shtml#@page=1").unwrap()
-    );
-    assert_eq!(
-        DomainRoute::Chapter(String::from("e-hentai.org")),
-        domain_route("https://e-hentai.org/g/1552929/c9f7a6ad71/").unwrap()
-    );
-    assert_eq!(
-        DomainRoute::Chapter(String::from("18h.animezilla.com")),
-        domain_route("https://18h.animezilla.com/manga/2940").unwrap()
-    );
-    assert_eq!(
-        DomainRoute::Comic(String::from("www.gufengmh8.com")),
-        domain_route("https://www.gufengmh8.com/manhua/dongjingshishiguire/").unwrap()
-    );
-    assert_eq!(
-        DomainRoute::Chapter(String::from("www.gufengmh8.com")),
-        domain_route("https://www.gufengmh8.com/manhua/dongjingshishiguire/8519.html").unwrap()
+    assert_routes!("www.gufengmh8.com",
+        :comic   => "https://www.gufengmh8.com/manhua/dongjingshishiguire/",
+        :chapter => "https://www.gufengmh8.com/manhua/dongjingshishiguire/8519.html"
     );
     assert_routes!("c-upp.com",
         :chapter => "https://c-upp.com/ja/s/315668/"
     );
-    assert_eq!(
-        DomainRoute::Comic(String::from("www.hhimm.com")),
-        domain_route("http://www.hhimm.com/manhua/40325.html").unwrap()
+    assert_routes!("www.hhimm.com",
+        :comic   => "http://www.hhimm.com/manhua/40325.html",
+        :chapter => "http://www.hhimm.com/cool373925/1.html?s=3"
     );
-    assert_eq!(
-        DomainRoute::Chapter(String::from("www.hhimm.com")),
-        domain_route("http://www.hhimm.com/cool373925/1.html?s=3").unwrap()
+    assert_routes!("www.ipufei.com",
+        :comic   => "http://www.ipufei.com/manhua/600/index.html",
+        :chapter => "http://www.ipufei.com/manhua/600/45661.html"
     );
-    assert_eq!(
-        DomainRoute::Comic(String::from("www.ipufei.com")),
-        domain_route("http://www.ipufei.com/manhua/600/index.html").unwrap()
+    assert_routes!("www.kuaikanmanhua.com",
+        :comic   => "https://www.kuaikanmanhua.com/web/topic/544/",
+        :chapter => "https://www.kuaikanmanhua.com/web/comic/5471/"
     );
-    assert_eq!(
-        DomainRoute::Chapter(String::from("www.ipufei.com")),
-        domain_route("http://www.ipufei.com/manhua/600/45661.html").unwrap()
+    assert_routes!("comic.kukudm.com",
+        :comic   => "https://comic.kukudm.com/comiclist/2555/index.htm",
+        :chapter => "https://comic.kukudm.com/comiclist/2555/66929/1.htm"
     );
-    assert_eq!(
-        DomainRoute::Comic(String::from("www.kuaikanmanhua.com")),
-        domain_route("https://www.kuaikanmanhua.com/web/topic/544/").unwrap()
+    assert_routes!("lhscan.net",
+        :comic   => "https://lhscan.net/manga-ichinichi-gaishutsuroku-hanchou-raw.html",
+        :chapter => "https://lhscan.net/read-ichinichi-gaishutsuroku-hanchou-raw-chapter-54.html"
     );
-    assert_eq!(
-        DomainRoute::Chapter(String::from("www.kuaikanmanhua.com")),
-        domain_route("https://www.kuaikanmanhua.com/web/comic/5471/").unwrap()
+    assert_routes!("www.luscious.net",
+        :chapter => "https://www.luscious.net/albums/teitoku-wa-semai-toko-suki-kantai-collection-kanco_363520/"
     );
-    assert_eq!(
-        DomainRoute::Comic(String::from("comic.kukudm.com")),
-        domain_route("https://comic.kukudm.com/comiclist/2555/index.htm").unwrap()
+    assert_routes!("manganelo.com",
+        :comic   => "https://manganelo.com/manga/hgj2047065412",
+        :chapter => "https://manganelo.com/chapter/hgj2047065412/chapter_43"
     );
-    assert_eq!(
-        DomainRoute::Chapter(String::from("comic.kukudm.com")),
-        domain_route("https://comic.kukudm.com/comiclist/2555/66929/1.htm").unwrap()
-    );
-    assert_eq!(
-        DomainRoute::Chapter(String::from("comic.kukudm.com")),
-        domain_route("https://comic2.kukudm.com/comiclist/2555/66929/1.htm").unwrap()
-    );
-    assert_eq!(
-        DomainRoute::Comic(String::from("lhscan.net")),
-        domain_route("https://lhscan.net/manga-ichinichi-gaishutsuroku-hanchou-raw.html").unwrap()
-    );
-    assert_eq!(
-        DomainRoute::Chapter(String::from("lhscan.net")),
-        domain_route("https://lhscan.net/read-ichinichi-gaishutsuroku-hanchou-raw-chapter-54.html")
-            .unwrap()
-    );
-    assert_eq!(
-        DomainRoute::Chapter(String::from("www.luscious.net")),
-        domain_route("https://www.luscious.net/albums/teitoku-wa-semai-toko-suki-kantai-collection-kanco_363520/")
-            .unwrap()
-    );
-    assert_eq!(
-        DomainRoute::Comic(String::from("manganelo.com")),
-        domain_route("https://manganelo.com/manga/hgj2047065412").unwrap()
-    );
-    assert_eq!(
-        DomainRoute::Chapter(String::from("manganelo.com")),
-        domain_route("https://manganelo.com/chapter/hgj2047065412/chapter_43").unwrap()
-    );
-    assert_eq!(
-        DomainRoute::Comic(String::from("www.manhuadb.com")),
-        domain_route("https://www.manhuadb.com/manhua/10906").unwrap()
-    );
-    assert_eq!(
-        DomainRoute::Chapter(String::from("www.manhuadb.com")),
-        domain_route("https://www.manhuadb.com/manhua/10906/13071_183254.html").unwrap()
+    assert_routes!("www.manhuadb.com",
+        :comic   => "https://www.manhuadb.com/manhua/10906",
+        :chapter => "https://www.manhuadb.com/manhua/10906/13071_183254.html"
     );
     assert_eq!(
         DomainRoute::Comic(String::from("www.manhuadui.com")),
