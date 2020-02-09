@@ -1263,29 +1263,17 @@ fn test_routes() {
         :comic   => "https://www.manhuadb.com/manhua/10906",
         :chapter => "https://www.manhuadb.com/manhua/10906/13071_183254.html"
     );
-    assert_eq!(
-        DomainRoute::Comic(String::from("www.manhuadui.com")),
-        domain_route("https://www.manhuadui.com/manhua/jingjiechufazhe/").unwrap()
+    assert_routes!("www.manhuadui.com",
+        :comic   => "https://www.manhuadui.com/manhua/jingjiechufazhe/",
+        :chapter => "https://www.manhuadui.com/manhua/jingjiechufazhe/435634.html"
     );
-    assert_eq!(
-        DomainRoute::Chapter(String::from("www.manhuadui.com")),
-        domain_route("https://www.manhuadui.com/manhua/jingjiechufazhe/435634.html").unwrap()
+    assert_routes!("www.manhuagui.com",
+        :comic   => "https://www.manhuagui.com/comic/20515/",
+        :chapter => "https://www.manhuagui.com/comic/20515/469245.html"
     );
-    assert_eq!(
-        DomainRoute::Comic(String::from("www.manhuagui.com")),
-        domain_route("https://www.manhuagui.com/comic/20515/").unwrap()
-    );
-    assert_eq!(
-        DomainRoute::Chapter(String::from("www.manhuagui.com")),
-        domain_route("https://www.manhuagui.com/comic/20515/469245.html").unwrap()
-    );
-    assert_eq!(
-        DomainRoute::Comic(String::from("www.manhuaren.com")),
-        domain_route("https://www.manhuaren.com/manhua-fengyunquanji/").unwrap()
-    );
-    assert_eq!(
-        DomainRoute::Chapter(String::from("www.manhuaren.com")),
-        domain_route("https://www.manhuaren.com/m188947/").unwrap()
+    assert_routes!("www.manhuaren.com",
+        :comic   => "https://www.manhuaren.com/manhua-fengyunquanji/",
+        :chapter => "https://www.manhuaren.com/m188947/"
     );
     assert_routes!("nhentai.net",
         :chapter => "https://nhentai.net/g/300773/"
@@ -1293,66 +1281,37 @@ fn test_routes() {
     assert_routes!("9hentai.com",
         :chapter => "https://9hentai.com/g/60726/"
     );
-    assert_eq!(
-        DomainRoute::Chapter(String::from("www.177pic.info")),
-        domain_route("http://www.177pic.info/html/2020/01/3307768.html").unwrap()
+    assert_routes!("www.177pic.info",
+        :chapter => "http://www.177pic.info/html/2020/01/3307768.html"
     );
-    assert_eq!(
-        DomainRoute::Comic(String::from("www.qimiaomh.com")),
-        domain_route("https://www.qimiaomh.com/manhua/6531.html").unwrap()
+    assert_routes!("www.qimiaomh.com",
+        :comic   => "https://www.qimiaomh.com/manhua/6531.html",
+        :chapter => "https://www.qimiaomh.com/manhua/6531/1.html"
     );
-    assert_eq!(
-        DomainRoute::Chapter(String::from("www.qimiaomh.com")),
-        domain_route("https://www.qimiaomh.com/manhua/6531/1.html").unwrap()
+    assert_routes!("www.qkmh5.com",
+        :comic   => "http://www.qkmh5.com/mh/yaojingdeweiba.html",
+        :chapter => "http://www.qkmh5.com/mm/1807/461806.html"
     );
-    assert_eq!(
-        DomainRoute::Comic(String::from("www.qkmh5.com")),
-        domain_route("http://www.qkmh5.com/mh/yaojingdeweiba.html").unwrap()
+    assert_routes!("www.tohomh123.com",
+        :comic   => "https://www.tohomh123.com/guangzhizi/",
+        :chapter => "https://www.tohomh123.com/guangzhizi/1.html"
     );
-    assert_eq!(
-        DomainRoute::Chapter(String::from("www.qkmh5.com")),
-        domain_route("http://www.qkmh5.com/mm/1807/461806.html").unwrap()
+    assert_routes!("www.2animx.com",
+        :comic   => "http://www.2animx.com/index-comic-name-%E9%A2%A8%E9%9B%B2%E5%85%A8%E9%9B%86-id-7212",
+        :chapter => "http://www.2animx.com/index-look-name-%E9%A2%A8%E9%9B%B2%E5%85%A8%E9%9B%86-cid-7212-id-88034"
     );
-    assert_eq!(
-        DomainRoute::Comic(String::from("www.tohomh123.com")),
-        domain_route("https://www.tohomh123.com/guangzhizi/").unwrap()
-    );
-    assert_eq!(
-        DomainRoute::Chapter(String::from("www.tohomh123.com")),
-        domain_route("https://www.tohomh123.com/guangzhizi/1.html").unwrap()
-    );
-    assert_eq!(
-        DomainRoute::Comic(String::from("www.2animx.com")),
-        domain_route(
-            "http://www.2animx.com/index-comic-name-%E9%A2%A8%E9%9B%B2%E5%85%A8%E9%9B%86-id-7212"
-        )
-        .unwrap()
-    );
-    assert_eq!(
-        DomainRoute::Chapter(String::from("www.2animx.com")),
-        domain_route("http://www.2animx.com/index-look-name-%E9%A2%A8%E9%9B%B2%E5%85%A8%E9%9B%86-cid-7212-id-88034").unwrap()
-    );
-    assert_eq!(
-        DomainRoute::Comic(String::from("comic.veryim.com")),
-        domain_route("http://comic.veryim.com/qihuan/57238/").unwrap()
-    );
-    assert_eq!(
-        DomainRoute::Chapter(String::from("comic.veryim.com")),
-        domain_route("http://comic.veryim.com/qihuan/57238/883902.html").unwrap()
+    assert_routes!("comic.veryim.com",
+        :comic   => "http://comic.veryim.com/qihuan/57238/",
+        :chapter => "http://comic.veryim.com/qihuan/57238/883902.html"
     );
     assert_routes!("www.wnacg.org",
         :chapter => "https://www.wnacg.org/photos-index-aid-94352.html"
     );
-    assert_eq!(
-        DomainRoute::Comic(String::from("www.177mh.net")),
-        domain_route("https://www.177mh.net/colist_244241.html").unwrap()
+    assert_routes!("www.177mh.net",
+        :comic   => "https://www.177mh.net/colist_244241.html",
+        :chapter => "https://www.177mh.net/202001/437290.html"
     );
-    assert_eq!(
-        DomainRoute::Chapter(String::from("www.177mh.net")),
-        domain_route("https://www.177mh.net/202001/437290.html").unwrap()
-    );
-    assert_eq!(
-        DomainRoute::Chapter(String::from("8comic.se")),
-        domain_route("http://8comic.se/879/").unwrap()
+    assert_routes!("8comic.se",
+        :chapter => "http://8comic.se/879/"
     );
 }
