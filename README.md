@@ -22,40 +22,39 @@
 
 以下列表的状态跟踪 master 分支的最新实现，按照模块名排序：
 
-| 名称           | 域名                                                   | 支持状态 |          标签          |
-| :------------- | :----------------------------------------------------- | :------: | :--------------------: |
-| 壁咚漫画       | www<i>.</i>bidongmh<i>.</i>com                         |   ⭕️    |       中文, NSFW       |
-| 百年漫画       | [www.bnmanhua.com](https://www.bnmanhua.com)           |   ⭕️    |          中文          |
-| 動漫狂         | [www.cartoonmad.com](https://www.cartoonmad.com)       |   ⭕️    |          中文          |
-| comico         | [www.comico.com.tw](http://www.comico.com.tw)          |   ⭕️    |          中文          |
-| 动漫屋         | [www.dm5.com](http://www.dm5.com)                      |   ⭕️    |          中文          |
-| 动漫之家       | [manhua.dmzj.com](https://manhua.dmzj.com)             |   ⭕️    |          中文          |
-| E-Hentai       | [e-hentai.org](https://e-hentai.org)                   |   ⭕️    | 英文, 日文, 中文, NSFW |
-| 18H 宅宅愛動漫 | [18h.animezilla.com](https://18h.animezilla.com)       |   ⭕️    |       中文, NSFW       |
-| 古风漫画网     | [www.gufengmh8.com](https://www.gufengmh8.com)         |   ⭕️    |          中文          |
-| 喵绅士         | c-upp<i>.</i>com                                       |   ⭕️    | 英文, 日文, 中文, NSFW |
-| 汗汗酷漫       | [www.hhimm.com](http://www.hhimm.com)                  |   ⭕️    |          中文          |
-| 扑飞漫画       | [www.ipufei.com](http://www.ipufei.com)                |   ⭕️    |          中文          |
-| 快看漫画       | [www.kuaikanmanhua.com](https://www.kuaikanmanhua.com) |   ⭕️    |          中文          |
-| KuKu 动漫      | [comic.kukudm.com](https://comic.kukudm.com)           |   ⭕️    |          中文          |
-| LHScan         | [lhscan.net](https://lhscan.net)                       |   ⭕️    |          英文          |
-| Luscious       | [www.luscious.net](https://www.luscious.net)           |   ⭕️    | 英文, 日文, 中文, NSFW |
-| Manganelo      | [manganelo.com](https://manganelo.com)                 |   ⭕️    |          英文          |
-| 漫画 DB        | [www.manhuadb.com](https://www.manhuadb.com)           |   ⭕️    |          中文          |
-| 漫画堆         | [www.manhuadui.com](https://www.manhuadui.com)         |   ⭕️    |          中文          |
-| 漫画柜         | [www.manhuagui.com](https://www.manhuagui.com)         |   ⭕️    |          中文          |
-| 漫画人         | [www.manhuaren.com](https://www.manhuaren.com)         |   ⭕️    |          中文          |
-| nhentai        | nhentai<i>.</i>net                                     |   ⭕️    | 英文, 日文, 中文, NSFW |
-| 9hentai        | 9hentai<i>.</i>com                                     |   ⭕️    |       英文, NSFW       |
-| 177 漫畫       | [www.177pic.info](http://www.177pic.info)              |   ⭕️    |    中文, 日文, NSFW    |
-| 奇妙漫画       | [www.qimiaomh.com](https://www.qimiaomh.com)           |   ⭕️    |          中文          |
-| 青空漫画       | www<i>.</i>qkmh5<i>.</i>com                            |    ❌    |          中文          |
-| 土豪漫画       | [www.tohomh123.com](https://www.tohomh123.com)         |   ⭕️    |          中文          |
-| 二次元動漫     | [www.2animx.com](http://www.2animx.com)                |   ⭕️    |          中文          |
-| 非常爱漫       | comic<i>.</i>veryim<i>.</i>com                         |    ❌    |          中文          |
-| 紳士漫畫       | www<i>.</i>wnacg<i>.</i>org                            |   ⭕️    |       中文, NSFW       |
-| 新新漫画网     | [www.177mh.net](https://www.177mh.net)                 |   ⭕️    |          中文          |
-| YYLS 漫畫      | [8comic.se](https://8comic.se)                         |   ⭕️    |          中文          |
+| 名称             | 域名                                                   | 支持状态 |          标签          |
+| :--------------- | :----------------------------------------------------- | :------: | :--------------------: |
+| 壁咚漫画         | www<i>.</i>bidongmh<i>.</i>com                         |   ⭕️    |       中文, NSFW       |
+| 百年漫画         | [www.bnmanhua.com](https://www.bnmanhua.com)           |   ⭕️    |          中文          |
+| 動漫狂           | [www.cartoonmad.com](https://www.cartoonmad.com)       |   ⭕️    |          中文          |
+| comico           | [www.comico.com.tw](http://www.comico.com.tw)          |   ⭕️    |          中文          |
+| 动漫屋（漫画人） | [www.dm5.com](https://www.dm5.com)                     |   ⭕️    |          中文          |
+| 动漫之家         | [manhua.dmzj.com](https://manhua.dmzj.com)             |   ⭕️    |          中文          |
+| E-Hentai         | [e-hentai.org](https://e-hentai.org)                   |   ⭕️    | 英文, 日文, 中文, NSFW |
+| 18H 宅宅愛動漫   | [18h.animezilla.com](https://18h.animezilla.com)       |   ⭕️    |       中文, NSFW       |
+| 古风漫画网       | [www.gufengmh8.com](https://www.gufengmh8.com)         |   ⭕️    |          中文          |
+| 喵绅士           | c-upp<i>.</i>com                                       |   ⭕️    | 英文, 日文, 中文, NSFW |
+| 汗汗酷漫         | [www.hhimm.com](http://www.hhimm.com)                  |   ⭕️    |          中文          |
+| 扑飞漫画         | [www.ipufei.com](http://www.ipufei.com)                |   ⭕️    |          中文          |
+| 快看漫画         | [www.kuaikanmanhua.com](https://www.kuaikanmanhua.com) |   ⭕️    |          中文          |
+| KuKu 动漫        | [comic.kukudm.com](https://comic.kukudm.com)           |   ⭕️    |          中文          |
+| LHScan           | [lhscan.net](https://lhscan.net)                       |   ⭕️    |          英文          |
+| Luscious         | [www.luscious.net](https://www.luscious.net)           |   ⭕️    | 英文, 日文, 中文, NSFW |
+| Manganelo        | [manganelo.com](https://manganelo.com)                 |   ⭕️    |          英文          |
+| 漫画 DB          | [www.manhuadb.com](https://www.manhuadb.com)           |   ⭕️    |          中文          |
+| 漫画堆           | [www.manhuadui.com](https://www.manhuadui.com)         |   ⭕️    |          中文          |
+| 漫画柜           | [www.manhuagui.com](https://www.manhuagui.com)         |   ⭕️    |          中文          |
+| nhentai          | nhentai<i>.</i>net                                     |   ⭕️    | 英文, 日文, 中文, NSFW |
+| 9hentai          | 9hentai<i>.</i>com                                     |   ⭕️    |       英文, NSFW       |
+| 177 漫畫         | [www.177pic.info](http://www.177pic.info)              |   ⭕️    |    中文, 日文, NSFW    |
+| 奇妙漫画         | [www.qimiaomh.com](https://www.qimiaomh.com)           |   ⭕️    |          中文          |
+| 青空漫画         | www<i>.</i>qkmh5<i>.</i>com                            |    ❌    |          中文          |
+| 土豪漫画         | [www.tohomh123.com](https://www.tohomh123.com)         |   ⭕️    |          中文          |
+| 二次元動漫       | [www.2animx.com](http://www.2animx.com)                |   ⭕️    |          中文          |
+| 非常爱漫         | comic<i>.</i>veryim<i>.</i>com                         |    ❌    |          中文          |
+| 紳士漫畫         | www<i>.</i>wnacg<i>.</i>org                            |   ⭕️    |       中文, NSFW       |
+| 新新漫画网       | [www.177mh.net](https://www.177mh.net)                 |   ⭕️    |          中文          |
+| YYLS 漫畫        | [8comic.se](https://8comic.se)                         |   ⭕️    |          中文          |
 
 不支持你需要的平台？请在 [Issues](https://github.com/Hentioe/manga-rs/issues) 中告诉我。
 
@@ -206,4 +205,4 @@ if let Some(page) = iter.next()? {
 
 如果您不在意资源获取的延迟问题，也可以使用更简单的 `fetch_pages` 方法。它将页面列表填充到参数 `chapter` 对象中，此处不做演示。
 
-文档正在紧张撰写中……
+_文档还在紧张撰写中……_

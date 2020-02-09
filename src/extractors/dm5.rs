@@ -2,33 +2,69 @@ use super::*;
 use reqwest::header::REFERER;
 use url::form_urlencoded;
 
-def_regex![
-    PARAMS_CODE_RE => r#"<script type="text/javascript">\s+var\s{1,}isVip\s{1,}=\s{1,}"False";(.+)\s+reseturl\(.+\);\s+</script>"#
+def_regex2![
+    PARAMS_CODE => r#"<script type="text/javascript">\s+var\s{1,}isVip\s{1,}=\s{1,}"False";(.+)\s+reseturl\(.+\);\s+</script>"#,
+    COVER_URL   => r#"background-image: url\((.+)\)"#
 ];
 
-def_extractor! {[usable: true, searchable: false],
-    fn index(&self, page: u32) -> Result<Vec<Comic>> {
-        let url = urlgen![
-            :first  => &"https://www.dm5.com/manhua-rank/?t=1",
-            :next   => &"https://www.dm5.com/manhua-rank/?t={}",
-            :page   => &page
-        ];
+def_extractor! {[usable: true, pageable: false, searchable: true],
+    fn index(&self, _page: u32) -> Result<Vec<Comic>> {
+        let url = "https://www.dm5.com/manhua-new/";
 
-        itemsgen![
-            :entry          => Comic,
-            :url            => &url,
-            :href_prefix    => &"https://www.dm5.com",
-            :target       => &"ul.mh-list > li .mh-item-detali > h2.title > a"
-        ]
+        let mut comics = itemsgen2!(
+            url         = url,
+            parent_dom  = "li > .mh-item",
+            cover_dom   = ".mh-cover",
+            cover_attr  = "style",
+            link_dom    = "h2.title > a",
+            link_prefix = "https://www.dm5.com"
+        )?;
+
+        comics.iter_mut().for_each(|comic: &mut Comic| {
+            if let Ok(cover) = match_content2!(&comic.cover, &*COVER_URL_RE) {
+                comic.cover = cover.clone()
+            }
+        });
+
+        Ok(comics)
+    }
+
+    fn search(&self, keywords: &str) -> Result<Vec<Comic>> {
+        let url = format!("https://www.dm5.com/search?title={}", keywords);
+        let html = get(&url)?.text()?;
+        let document = parse_document(&html);
+        let mut comics = vec![];
+
+        let banner_cover = document.dom_attr(".banner_detail_form > .cover > img", "src")?;
+        let banner_title = document.dom_text(".banner_detail_form .title > a")?;
+        let banner_url = format!("https://www.dm5.com{}", document.dom_attr(".banner_detail_form .title > a", "href")?);
+
+        comics.push(Comic::from_index(banner_title, banner_url, banner_cover));
+
+        comics.append(&mut itemsgen2!(
+            html        = &html,
+            parent_dom  = "li > .mh-item",
+            cover_dom   = ".mh-cover",
+            cover_attr  = "style",
+            link_dom    = "h2.title > a",
+            link_prefix = "https://www.dm5.com"
+        )?);
+
+        comics.iter_mut().for_each(|comic: &mut Comic| {
+            if let Ok(cover) = match_content2!(&comic.cover, &*COVER_URL_RE) {
+                comic.cover = cover.clone()
+            }
+        });
+
+        Ok(comics)
     }
 
     fn fetch_chapters(&self, comic: &mut Comic) -> Result<()> {
-        itemsgen![
-            :entry          => Chapter,
-            :url            => &comic.url,
-            :href_prefix    => &"https://www.dm5.com",
-            :target       => &"#chapterlistload ul > li > a[title]"
-        ]?.reversed_attach_to(comic);
+        itemsgen2!(
+            url         = &comic.url,
+            target_dom  = "#chapterlistload ul > li > a[title]",
+            link_prefix = "https://www.dm5.com"
+        )?.reversed_attach_to(comic);
 
         Ok(())
     }
@@ -84,15 +120,19 @@ def_extractor! {[usable: true, searchable: false],
 #[test]
 fn test_extr() {
     let extr = new_extr();
-    let comics = extr.index(1).unwrap();
-    assert_eq!(297, comics.len());
-
-    let mut comic = Comic::from_link("风云全集", "https://www.dm5.com/manhua-fengyunquanji/");
-    extr.fetch_chapters(&mut comic).unwrap();
-    assert_eq!(670, comic.chapters.len());
-
-    let chapter1 = &mut comic.chapters[642];
-    extr.fetch_pages_unsafe(chapter1).unwrap();
-    assert_eq!("风云全集 第648卷 下", chapter1.title);
-    assert_eq!(14, chapter1.pages.len());
+    if extr.is_usable() {
+        let comics = extr.index(1).unwrap();
+        assert!(0 < comics.len());
+        let mut comic1 = Comic::from_link("风云全集", "https://www.dm5.com/manhua-fengyunquanji/");
+        extr.fetch_chapters(&mut comic1).unwrap();
+        assert_eq!(670, comic1.chapters.len());
+        let chapter1 = &mut comic1.chapters[642];
+        extr.fetch_pages_unsafe(chapter1).unwrap();
+        assert_eq!("风云全集 第648卷 下", chapter1.title);
+        assert_eq!(14, chapter1.pages.len());
+        let comics = extr.search("风云全集").unwrap();
+        assert!(comics.len() > 0);
+        assert_eq!(comics[0].title, comic1.title);
+        assert_eq!(comics[0].url, comic1.url);
+    }
 }

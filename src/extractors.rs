@@ -824,7 +824,7 @@ import_impl_mods![
     },
     dm5: {
         :domain => "www.dm5.com",
-        :name   => "动漫屋"
+        :name   => "动漫屋（漫画人）"
     },
     dmjz: {
         :domain => "manhua.dmzj.com",
@@ -885,10 +885,6 @@ import_impl_mods![
     manhuagui: {
         :domain => "www.manhuagui.com",
         :name   => "漫画柜"
-    },
-    manhuaren: {
-        :domain => "www.manhuaren.com",
-        :name   => "漫画人"
     },
     nhentai: {
         :domain => "nhentai.net",
@@ -963,7 +959,6 @@ fn test_usable() {
     assert!(get_extr("www.manhuadb.com").unwrap().is_usable());
     assert!(get_extr("www.manhuadui.com").unwrap().is_usable());
     assert!(get_extr("www.manhuagui.com").unwrap().is_usable());
-    assert!(get_extr("www.manhuaren.com").unwrap().is_usable());
     assert!(get_extr("nhentai.net").unwrap().is_usable());
     assert!(get_extr("c-upp.com").unwrap().is_usable());
     assert!(get_extr("9hentai.com").unwrap().is_usable());
@@ -1110,11 +1105,6 @@ def_routes![
         :domain     => "www.manhuagui.com",
         :comic_re   => r#"^https?://www\.manhuagui\.com/comic/\d+/"#,
         :chapter_re => r#"^https?://www\.manhuagui\.com/comic/\d+/\d+\.html"#
-    },
-    {
-        :domain     => "www.manhuaren.com",
-        :comic_re   => r#"^https?://www\.manhuaren\.com/manhua-[^/]+/"#,
-        :chapter_re => r#"^https?://www\.manhuaren\.com/m\d+/"#
     },
     {
         :domain     => "nhentai.net",
