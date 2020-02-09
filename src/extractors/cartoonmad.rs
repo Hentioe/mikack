@@ -1,33 +1,59 @@
 use super::*;
+use reqwest::header::CONTENT_TYPE;
+use url::form_urlencoded::byte_serialize;
 
 /// 对 www.cartoonmad.com 内容的抓取实现
 /// 优化空间：
 /// - 复用 pages_iter 方法的第一个 URL 内容
-def_extractor! {[usable: true, searchable: false],
+def_extractor! {[usable: true, pageable: true, searchable: true],
     fn index(&self, page: u32) -> Result<Vec<Comic>> {
         let url = if page > 9 {
-            format!("https://www.cartoonmad.com/endcm.0{}.html", page)
+            format!("https://www.cartoonmad.com/newcm.0{}.html", page)
         }else{
-            format!("https://www.cartoonmad.com/endcm.{}.html", page)
+            format!("https://www.cartoonmad.com/newcm.{}.html", page)
         };
 
-        itemsgen![
-            :entry          => Comic,
-            :url            => &url,
-            :href_prefix    => &"http://www.cartoonmad.com/",
-            :target         => &r#"table[width="890"] td[colspan="2"] td[align="center"] > a"#,
-            :encoding       => &BIG5
-        ]
+        itemsgen2!(
+            url             = &url,
+            parent_dom      = r#"table[width="890"] td[colspan="2"] td[align="center"]"#,
+            cover_dom       = "img",
+            cover_prefix    = "https://www.cartoonmad.com",
+            link_dom        = "a.a1",
+            link_prefix     = "https://www.cartoonmad.com/",
+            encoding        = BIG5
+        )
+    }
+
+    fn search(&self, keywords: &str) -> Result<Vec<Comic>> {
+        let url = "https://www.cartoonmad.com/search.html";
+        let keyword_bytes = &encode_text(keywords, BIG5)?[..];
+        let keyword_encoded: String = byte_serialize(keyword_bytes).collect();
+
+        let client = Client::new();
+        let html = client
+            .post(url)
+            .header(CONTENT_TYPE, "application/x-www-form-urlencoded")
+            .body(format!("keyword={}&searchtype=all", keyword_encoded))
+            .send()?
+            .decode_text(BIG5)?;
+
+        itemsgen2!(
+            html            = &html,
+            parent_dom      = r#"table[width="890"] td[colspan="2"] td[align="center"]"#,
+            cover_dom       = "img",
+            cover_prefix    = "https://www.cartoonmad.com",
+            link_dom        = "a.a1",
+            link_prefix     = "https://www.cartoonmad.com/"
+        )
     }
 
     fn fetch_chapters(&self, comic: &mut Comic) -> Result<()> {
-        itemsgen![
-            :entry          => Chapter,
-            :url            => &comic.url,
-            :href_prefix    => &"http://www.cartoonmad.com",
-            :target         => &"fieldset td > a",
-            :encoding       => &BIG5
-        ]?.attach_to(comic);
+        itemsgen2!(
+            url             = &comic.url,
+            target_dom      = &"fieldset td > a",
+            link_prefix     = &"http://www.cartoonmad.com",
+            encoding        = &BIG5
+        )?.attach_to(comic);
 
         Ok(())
     }
@@ -63,16 +89,21 @@ def_extractor! {[usable: true, searchable: false],
 #[test]
 fn test_extr() {
     let extr = new_extr();
-    let mut comics = extr.index(1).unwrap();
-    assert_eq!(60, comics.len());
-
-    let mut comic = &mut comics[0];
-    extr.fetch_chapters(&mut comic).unwrap();
-    assert_eq!(411, comic.chapters.len());
-
-    let chapter1 =
-        &mut Chapter::from_link("", "https://www.cartoonmad.com/comic/115301532018001.html");
-    extr.fetch_pages_unsafe(chapter1).unwrap();
-    assert_eq!("魔導少年 - 153 話", chapter1.title);
-    assert_eq!(18, chapter1.pages.len());
+    if extr.is_usable() {
+        let comics = extr.index(1).unwrap();
+        assert_eq!(60, comics.len());
+        let comic1 =
+            &mut Comic::from_link("魔導少年", "https://www.cartoonmad.com/comic/1153.html");
+        extr.fetch_chapters(comic1).unwrap();
+        assert_eq!(411, comic1.chapters.len());
+        let chapter1 =
+            &mut Chapter::from_link("", "https://www.cartoonmad.com/comic/115301532018001.html");
+        extr.fetch_pages_unsafe(chapter1).unwrap();
+        assert_eq!("魔導少年 - 153 話", chapter1.title);
+        assert_eq!(18, chapter1.pages.len());
+        let comics = extr.search("魔導少年").unwrap();
+        assert!(comics.len() > 0);
+        assert_eq!(comics[0].title, comic1.title);
+        assert_eq!(comics[0].url, comic1.url);
+    }
 }
