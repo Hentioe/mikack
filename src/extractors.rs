@@ -870,6 +870,10 @@ import_impl_mods![
         :domain => "www.luscious.net",
         :name   => "Luscious"
     },
+    manben: {
+        :domain => "www.manben.com",
+        :name   => "漫本"
+    },
     manganelo: {
         :domain => "manganelo.com",
         :name   => "Manganelo"
@@ -938,37 +942,6 @@ pub fn platforms() -> &'static HashMap<String, String> {
 
 pub fn get_extr<S: Into<String>>(domain: S) -> Option<&'static ExtractorObject> {
     EXTRACTORS.get(&domain.into())
-}
-
-#[test]
-fn test_usable() {
-    assert!(get_extr("www.bidongmh.com").unwrap().is_usable());
-    assert!(get_extr("www.bnmanhua.com").unwrap().is_usable());
-    assert!(get_extr("www.cartoonmad.com").unwrap().is_usable());
-    assert!(get_extr("www.comico.com.tw").unwrap().is_usable());
-    assert!(get_extr("www.dm5.com").unwrap().is_usable());
-    assert!(get_extr("manhua.dmzj.com").unwrap().is_usable());
-    assert!(get_extr("e-hentai.org").unwrap().is_usable());
-    assert!(get_extr("18h.animezilla.com").unwrap().is_usable());
-    assert!(get_extr("www.hhimm.com").unwrap().is_usable());
-    assert!(get_extr("www.ipufei.com").unwrap().is_usable());
-    assert!(get_extr("www.kuaikanmanhua.com").unwrap().is_usable());
-    assert!(get_extr("comic.kukudm.com").unwrap().is_usable());
-    assert!(get_extr("lhscan.net").unwrap().is_usable());
-    assert!(get_extr("manganelo.com").unwrap().is_usable());
-    assert!(get_extr("www.manhuadb.com").unwrap().is_usable());
-    assert!(get_extr("www.manhuadui.com").unwrap().is_usable());
-    assert!(get_extr("www.manhuagui.com").unwrap().is_usable());
-    assert!(get_extr("nhentai.net").unwrap().is_usable());
-    assert!(get_extr("c-upp.com").unwrap().is_usable());
-    assert!(get_extr("9hentai.com").unwrap().is_usable());
-    assert!(get_extr("www.177pic.info").unwrap().is_usable());
-    assert!(get_extr("www.qimiaomh.com").unwrap().is_usable());
-    assert!(!get_extr("www.qkmh5.com").unwrap().is_usable());
-    assert!(get_extr("www.tohomh123.com").unwrap().is_usable());
-    assert!(get_extr("www.2animx.com").unwrap().is_usable());
-    assert!(!get_extr("comic.veryim.com").unwrap().is_usable());
-    assert!(get_extr("www.177mh.net").unwrap().is_usable());
 }
 
 type Routes = Vec<(String, (Regex, Regex))>;
@@ -1085,6 +1058,11 @@ def_routes![
         :domain     => "www.luscious.net",
         :comic_re   => r#"^-NONE-$"#,
         :chapter_re => r#"^https?://www\.luscious\.net/albums/.+"#
+    },
+    {
+        :domain     => "www.manben.com",
+        :comic_re   => r#"^https?://www\.manben\.com/mh-.+"#,
+        :chapter_re => r#"^https?://www\.manben\.com/m\d+"#
     },
     {
         :domain     => "manganelo.com",
@@ -1245,6 +1223,10 @@ fn test_routes() {
     assert_routes!("www.luscious.net",
         :chapter => "https://www.luscious.net/albums/teitoku-wa-semai-toko-suki-kantai-collection-kanco_363520/"
     );
+    assert_routes!("www.manben.com",
+        :comic   => "http://www.manben.com/mh-langyabang/",
+        :chapter => "http://www.manben.com/m912622/"
+    );
     assert_routes!("manganelo.com",
         :comic   => "https://manganelo.com/manga/hgj2047065412",
         :chapter => "https://manganelo.com/chapter/hgj2047065412/chapter_43"
@@ -1260,10 +1242,6 @@ fn test_routes() {
     assert_routes!("www.manhuagui.com",
         :comic   => "https://www.manhuagui.com/comic/20515/",
         :chapter => "https://www.manhuagui.com/comic/20515/469245.html"
-    );
-    assert_routes!("www.manhuaren.com",
-        :comic   => "https://www.manhuaren.com/manhua-fengyunquanji/",
-        :chapter => "https://www.manhuaren.com/m188947/"
     );
     assert_routes!("nhentai.net",
         :chapter => "https://nhentai.net/g/300773/"
