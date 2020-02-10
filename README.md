@@ -40,6 +40,7 @@
 | KuKu 动漫        | [comic.kukudm.com](https://comic.kukudm.com)           |   ⭕️    |          中文          |
 | LHScan           | [lhscan.net](https://lhscan.net)                       |   ⭕️    |          英文          |
 | Luscious         | [www.luscious.net](https://www.luscious.net)           |   ⭕️    | 英文, 日文, 中文, NSFW |
+| 漫本             | [www.manben.com](http://www.manben.com)                |    ❌    |          中文          |
 | Manganelo        | [manganelo.com](https://manganelo.com)                 |   ⭕️    |          英文          |
 | 漫画 DB          | [www.manhuadb.com](https://www.manhuadb.com)           |   ⭕️    |          中文          |
 | 漫画堆           | [www.manhuadui.com](https://www.manhuadui.com)         |   ⭕️    |          中文          |
