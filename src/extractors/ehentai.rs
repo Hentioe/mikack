@@ -1,27 +1,38 @@
 use super::*;
 
-def_regex! {
-    COUNT_RE    => r#"Showing \d+ - \d+ of (\d+) images"#,
-    URL_RE      => r#"(https?://e-hentai\.org/g/\d+/[^/]+/)"#
+def_regex2! {
+    COUNT    => r#"Showing \d+ - \d+ of (\d+) images"#,
+    URL      => r#"(https?://e-hentai\.org/g/\d+/[^/]+/)"#
 }
 
-def_extractor! {[usable: true, searchable: false],
+def_extractor! {[usable: true, pageable: true, searchable: true],
     fn index(&self, page: u32) -> Result<Vec<Comic>> {
-        let url = urlgen![
-            :first  => &"https://e-hentai.org/",
-            :next   => &"https://e-hentai.org/?page={}",
-            :page   => &page
-        ];
+        let url = format!("https://e-hentai.org/?page={}", page - 1);
 
-        itemsgen![
-            :entry      => Comic,
-            :url        => &url,
-            :selector   => &"tbody > tr > td.gl3c.glname"
-        ]
+        itemsgen2!(
+            url         = &url,
+            parent_dom  = ".itg > tbody > tr:not(:nth-child(1)):not(:nth-child(15))",
+            cover_dom   = ".glthumb img",
+            cover_attrs = &["data-src", "src"],
+            link_dom    = ".glname > a",
+        )
+    }
+
+    fn search(&self, keywords: &str) -> Result<Vec<Comic>> {
+        let url = format!("https://e-hentai.org/?f_search={}", keywords);
+
+        itemsgen2!(
+            url         = &url,
+            parent_dom  = ".itg > tbody > tr:not(:nth-child(1)):not(:nth-child(15))",
+            cover_dom   = ".glthumb img",
+            cover_attrs = &["data-src", "src"],
+            link_dom    = ".glname > a",
+        )
     }
 
     fn fetch_chapters(&self, comic: &mut Comic) -> Result<()> {
         comic.push_chapter(Chapter::from_link(&comic.title, &comic.url));
+
         Ok(())
     }
 
@@ -65,17 +76,22 @@ def_extractor! {[usable: true, searchable: false],
 #[test]
 fn test_extr() {
     let extr = new_extr();
-    let comics = extr.index(1).unwrap();
-    assert_eq!(25, comics.len());
+    if extr.is_usable() {
+        let comics = extr.index(1).unwrap();
+        assert_eq!(25, comics.len());
 
-    let title = "[Reverse Noise (Yamu)] Shizuka na Yoru ni Futarikiri (Touhou Project) [Digital]";
-
-    let mut comic = Comic::from_link(title, "https://e-hentai.org/g/1550508/b913d30dcb/");
-    extr.fetch_chapters(&mut comic).unwrap();
-    assert_eq!(1, comic.chapters.len());
-
-    let chapter1 = &mut comic.chapters[0];
-    extr.fetch_pages_unsafe(chapter1).unwrap();
-    assert_eq!(title, chapter1.title);
-    assert_eq!(25, chapter1.pages.len());
+        let title =
+            "[Reverse Noise (Yamu)] Shizuka na Yoru ni Futarikiri (Touhou Project) [Digital]";
+        let mut comic1 = Comic::from_link(title, "https://e-hentai.org/g/1550508/b913d30dcb/");
+        extr.fetch_chapters(&mut comic1).unwrap();
+        assert_eq!(1, comic1.chapters.len());
+        let chapter1 = &mut comic1.chapters[0];
+        extr.fetch_pages_unsafe(chapter1).unwrap();
+        assert_eq!(title, chapter1.title);
+        assert_eq!(25, chapter1.pages.len());
+        let comics = extr.search("Shizuka na Yoru ni Futarikiri").unwrap();
+        assert!(comics.len() > 0);
+        assert_eq!(comics[0].title, comic1.title);
+        assert_eq!(comics[0].url, comic1.url);
+    }
 }

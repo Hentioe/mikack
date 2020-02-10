@@ -604,11 +604,11 @@ duang!(
         let mut items = vec![];
         if !parent_dom.is_empty() {
             let parent_elems = document.select(&parse_selector(parent_dom)?).collect::<Vec<_>>();
-            for parent_elem in parent_elems {
+            for (i, parent_elem) in parent_elems.iter().enumerate() {
                 let link_elem = parent_elem
                     .select(&parse_selector(link_dom)?)
                     .next()
-                    .ok_or(err_msg(format!("No link DOM node found: `{}`", link_dom)))?;
+                    .ok_or(err_msg(format!("Link node `{}` not found in index `{}`",link_dom, i)))?;
                 let mut item = from_link(&link_elem)?;
                 let cover_dom = parent_elem
                     .select(&parse_selector(cover_dom)?)
