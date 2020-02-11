@@ -875,6 +875,10 @@ import_impl_mods![
         :domain => "www.luscious.net",
         :name   => "Luscious"
     },
+    mangabz: {
+        :domain => "www.mangabz.com",
+        :name   => "Mangabz"
+    },
     manganelo: {
         :domain => "manganelo.com",
         :name   => "Manganelo"
@@ -1065,6 +1069,11 @@ def_routes![
         :chapter_re => r#"^https?://www\.luscious\.net/albums/.+"#
     },
     {
+        :domain     => "www.mangabz.com",
+        :comic_re   => r#"^https?://www\.mangabz\.com/.+"#,
+        :chapter_re => r#"^https?://www\.mangabz\.com/m\d+"#
+    },
+    {
         :domain     => "manganelo.com",
         :comic_re   => r#"^https?://manganelo\.com/manga/.+"#,
         :chapter_re => r#"^https?://manganelo\.com/chapter/[^/]+/chapter_.+"#
@@ -1227,6 +1236,10 @@ fn test_routes() {
     );
     assert_routes!("www.luscious.net",
         :chapter => "https://www.luscious.net/albums/teitoku-wa-semai-toko-suki-kantai-collection-kanco_363520/"
+    );
+    assert_routes!("www.mangabz.com",
+        :comic   => "http://www.mangabz.com/565bz/",
+        :chapter => "http://www.mangabz.com/m93502/"
     );
     assert_routes!("manganelo.com",
         :comic   => "https://manganelo.com/manga/hgj2047065412",
