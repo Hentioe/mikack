@@ -891,6 +891,10 @@ import_impl_mods![
         :domain => "www.manhuagui.com",
         :name   => "漫画柜"
     },
+    manhuapu: {
+        :domain => "www.manhuapu.com",
+        :name   => "漫画铺"
+    },
     nhentai: {
         :domain => "nhentai.net",
         :name   => "nhentai"
@@ -1081,6 +1085,11 @@ def_routes![
         :chapter_re => r#"^https?://www\.manhuagui\.com/comic/\d+/\d+\.html"#
     },
     {
+        :domain     => "www.manhuapu.com",
+        :comic_re   => r#"^https?://www\.manhuapu\.com/[^/]+/.+"#,
+        :chapter_re => r#"^https?://www\.manhuapu\.com/[^/]+/[^/]+/\d+\.html"#
+    },
+    {
         :domain     => "nhentai.net",
         :comic_re   => r#"^-NONE-$"#,
         :chapter_re => r#"^https?://nhentai\.net/g/\d+"#
@@ -1234,6 +1243,10 @@ fn test_routes() {
     assert_routes!("www.manhuagui.com",
         :comic   => "https://www.manhuagui.com/comic/20515/",
         :chapter => "https://www.manhuagui.com/comic/20515/469245.html"
+    );
+    assert_routes!("www.manhuapu.com",
+        :comic   => "http://www.manhuapu.com/rexue/xiaxingjiutian/",
+        :chapter => "http://www.manhuapu.com/rexue/xiaxingjiutian/719652.html"
     );
     assert_routes!("nhentai.net",
         :chapter => "https://nhentai.net/g/300773/"

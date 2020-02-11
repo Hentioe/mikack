@@ -1,8 +1,8 @@
 use super::*;
 
-def_regex![
-    URL_RE  => r#"(https?://18h.animezilla.com/manga/\d+)"#,
-    LAST_RE => r#"https?://18h.animezilla.com/manga/\d+/(\d+)"#
+def_regex2![
+    URL  => r#"(https?://18h.animezilla.com/manga/\d+)"#,
+    LAST => r#"https?://18h.animezilla.com/manga/\d+/(\d+)"#
 ];
 
 /// 对 18h.animezilla.com 内容的抓取实现
