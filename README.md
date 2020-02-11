@@ -44,6 +44,7 @@
 | 漫画 DB          | [www.manhuadb.com](https://www.manhuadb.com)           |   ⭕️    |          中文          |
 | 漫画堆           | [www.manhuadui.com](https://www.manhuadui.com)         |   ⭕️    |          中文          |
 | 漫画柜           | [www.manhuagui.com](https://www.manhuagui.com)         |   ⭕️    |          中文          |
+| 漫画铺           | [www.manhuapu.com](http://www.manhuapu.com)            |    ❌    |          中文          |
 | nhentai          | nhentai<i>.</i>net                                     |   ⭕️    | 英文, 日文, 中文, NSFW |
 | 9hentai          | 9hentai<i>.</i>com                                     |   ⭕️    |       英文, NSFW       |
 | 177 漫畫         | [www.177pic.info](http://www.177pic.info)              |   ⭕️    |    中文, 日文, NSFW    |
