@@ -109,6 +109,12 @@ impl Comic {
     }
 }
 
+impl From<&Comic> for Chapter {
+    fn from(c: &Comic) -> Self {
+        Self::new(&c.title, &c.url, 0)
+    }
+}
+
 pub trait FromLink {
     fn from_link<S: Into<String>>(text: S, href: S) -> Self;
 }

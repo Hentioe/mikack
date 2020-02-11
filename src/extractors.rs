@@ -605,10 +605,15 @@ duang!(
         if !parent_dom.is_empty() {
             let parent_elems = document.select(&parse_selector(parent_dom)?).collect::<Vec<_>>();
             for (i, parent_elem) in parent_elems.iter().enumerate() {
-                let link_elem = parent_elem
-                    .select(&parse_selector(link_dom)?)
-                    .next()
-                    .ok_or(err_msg(format!("Link node `{}` not found in index `{}`",link_dom, i)))?;
+                let link_elem = if let Some(elem) = parent_elem.select(&parse_selector(link_dom)?).next() {
+                    elem
+                } else {
+                    let e = err_msg(format!(
+                        "Link node `{}` not found in index `{}`",
+                        link_dom, i
+                    ));
+                    return Err(e);
+                };
                 let mut item = from_link(&link_elem)?;
                 let cover_dom = parent_elem
                     .select(&parse_selector(cover_dom)?)

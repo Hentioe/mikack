@@ -6,19 +6,20 @@ def_regex![
 ];
 
 /// 对 18h.animezilla.com 内容的抓取实现
-def_extractor! {[usable: true, searchable: false],
+def_extractor! {[usable: true, pageable: true, searchable: false],
     fn index(&self, page: u32) -> Result<Vec<Comic>> {
         let url = format!("https://18h.animezilla.com/manga/page/{}", page);
 
-        itemsgen![
-            :entry          => Comic,
-            :url            => &url,
-            :target         => &r#".entry-title > a"#
-        ]
+        itemsgen2!(
+            url         = &url,
+            parent_dom  = r#".pure-u-1-2 > article[id^="post-"]"#,
+            cover_dom   = "a img",
+            link_dom    = ".entry-title > a"
+        )
     }
 
     fn fetch_chapters(&self, comic: &mut Comic) -> Result<()> {
-        comic.push_chapter(Chapter::from_link(&comic.title, &comic.url));
+        comic.push_chapter(Chapter::from(&*comic));
 
         Ok(())
     }
