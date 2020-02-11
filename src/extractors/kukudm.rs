@@ -1,82 +1,114 @@
 use super::*;
+use url::form_urlencoded::byte_serialize;
 
-/// 对 comic.kukudm.com 内容的抓取实现
-/// 优化空间：
-/// - 复用 fetch_pages 方法的第一个 URL 内容
-/// - 利用已存在当前页的下一张图片，提高 1/2 的速度
-def_regex![
-    TITLE_RE    => "共(\\d+)页",
-    URL_RE      => "https?://comic.kukudm.com/comiclist/.+(\\d+\\.htm.*)",
-    IMGS_RE     => r#"\("<.+'"\+.+\+"([^']+)'>.+<.+='"\+.+\+"([^']+)'.+\);"#
+def_regex2![
+    NAME        => r#"(.+)\[\d+\]?$"#,
+    NAME2       => r#"(.+)漫画(电信|联通)$"#,
+    TITLE       => "共(\\d+)页",
+    URL         => r#"(https?://comic\.kukudm\.com/comiclist/\d+/\d+)/\d+\.htm"#,
+    IMG         => r#"src='"\+server\+"([^']+)'>""#
 ];
 
-def_extractor! {[usable: true, searchable: false],
-    fn index(&self, page: u32) -> Result<Vec<Comic>> {
-        let url = format!("https://comic.kukudm.com/comictype/3_{}.htm", page);
+/// 对 comic.kukudm.com 内容的抓取实现
+/// 未来计划：
+/// - 可选择联通/电信
+def_extractor! {[usable: true, pageable: false, searchable: true],
+    fn index(&self, _page: u32) -> Result<Vec<Comic>> {
+        let url = "https://comic.kukudm.com/top100.htm";
 
-        itemsgen![
-            :entry          => Comic,
-            :url            => &url,
-            :href_prefix    => &"https://comic.kukudm.com",
-            :target         => &r#"#comicmain > dd > a:nth-child(2)"#,
-            :encoding       => &GBK
-        ]
+        let mut comics = itemsgen2!(
+            url             = &url,
+            parent_dom      = "#comicmain > dd",
+            cover_dom       = "a > img",
+            link_dom        = "a:nth-child(2)",
+            link_prefix     = "https://comic.kukudm.com",
+            encoding        = GBK
+        )?;
+        comics.iter_mut().for_each(|c: &mut Comic| {
+            if let Ok(title) = match_content2!(&c.title, &*NAME_RE) {
+                c.title = title
+            }
+        });
+
+        Ok(comics)
+    }
+
+    fn search(&self, keywords: &str) -> Result<Vec<Comic>> {
+        let keywords_bytes = &encode_text(keywords, GBK)?[..];
+        let keywords_encoded: String = byte_serialize(keywords_bytes).collect();
+        let url = format!("https://so.kukudm.com/search.asp?kw={}", keywords_encoded);
+
+        let mut comics = itemsgen2!(
+            url             = &url,
+            parent_dom      = "#comicmain > dd",
+            cover_dom       = "a > img",
+            link_dom        = "a:nth-child(2)",
+            encoding        = GBK
+        )?;
+        comics.iter_mut().for_each(|c: &mut Comic| {
+            if let Ok(title) = match_content2!(&c.title, &*NAME2_RE) {
+                c.title = title
+            }
+        });
+
+        Ok(comics)
     }
 
     fn fetch_chapters(&self, comic: &mut Comic) -> Result<()> {
-        itemsgen![
-            :entry          => Chapter,
-            :url            => &comic.url,
-            :href_prefix    => &"https://comic.kukudm.com",
-            :target         => &"#comiclistn > dd > a:nth-child(1)",
-            :encoding       => &GBK
-        ]?.attach_to(comic);
+        itemsgen2!(
+            url             = &comic.url,
+            target_dom      = "#comiclistn > dd > a:nth-child(1)",
+            link_prefix     = "https://comic.kukudm.com",
+            encoding        = GBK
+        )?.attach_to(comic);
 
         Ok(())
     }
 
     fn pages_iter<'a>(&'a self, chapter: &'a mut Chapter) -> Result<ChapterPages> {
+        let pure_url = match_content2!(&chapter.url, &*URL_RE)?;
+        chapter.url = format!("{}/1.htm", pure_url);
         let html = get(&chapter.url)?.decode_text(GBK)?;
         let document = parse_document(&html);
-        chapter.title = document.dom_text("title")?;
+        chapter.set_title(document.dom_text("title")?);
 
-        let page_counut = match_content![
-            :text   => &html,
-            :regex  => &*TITLE_RE
-        ].parse::<usize>()?;
-
-        let page_path = match_content![
-            :text   => &chapter.url,
-            :regex  => &*URL_RE
-        ];
-        let pure_url = chapter.url.replace(page_path, "");
-        let fetch = Box::new(move |current_page| {
-            let page_url = format!("{}{}.htm", pure_url, current_page);
-            let page_html = get(&page_url)?.decode_text(GBK)?;
-            let img_path = match_content![
-                :text   => &page_html,
-                :regex  => &*IMGS_RE
-            ];
+        let fetch_page = |page_html: &str| -> Result<String> {
+            let img_path = match_content2!(page_html, &*IMG_RE)?;
             let address = format!("https://s2.kukudm.com/{}", img_path);
+
+            Ok(address)
+        };
+
+        let first_address = fetch_page(&html)?;
+        let page_counut = match_content2!(&html, &*TITLE_RE)?.parse::<usize>()?;
+
+        let fetch = Box::new(move |current_page| {
+            let page_url = format!("{}/{}.htm", pure_url, current_page);
+            let page_html = get(&page_url)?.decode_text(GBK)?;
+            let address = fetch_page(&page_html)?;
             Ok(vec![Page::new(current_page - 1, address)])
         });
 
-        Ok(ChapterPages::new(chapter, page_counut as i32, vec![], fetch))
+        Ok(ChapterPages::new(chapter, page_counut as i32, vec![first_address], fetch))
     }
 }
 
 #[test]
 fn test_extr() {
     let extr = new_extr();
-    let comics = extr.index(1).unwrap();
-    assert_eq!(21, comics.len());
-
-    let mut comic = Comic::new("进击的巨人", "https://comic.kukudm.com/comiclist/941/");
-    extr.fetch_chapters(&mut comic).unwrap();
-    assert_eq!(141, comic.chapters.len());
-
-    let chapter1 = &mut comic.chapters[15];
-    extr.fetch_pages_unsafe(chapter1).unwrap();
-    assert_eq!("进击的巨人 番外篇2", chapter1.title);
-    assert_eq!(18, chapter1.pages.len());
+    if extr.is_usable() {
+        let comics = extr.index(1).unwrap();
+        assert_eq!(100, comics.len());
+        let mut comic1 = Comic::new("妖精的尾巴", "http://kukudm.com/comiclist/346/");
+        extr.fetch_chapters(&mut comic1).unwrap();
+        assert_eq!(648, comic1.chapters.len());
+        let chapter1 = &mut comic1.chapters[3];
+        extr.fetch_pages_unsafe(chapter1).unwrap();
+        assert_eq!("妖精的尾巴 4话", chapter1.title);
+        assert_eq!(20, chapter1.pages.len());
+        let comics = extr.search("妖精的尾巴").unwrap();
+        assert!(comics.len() > 0);
+        assert_eq!(comics[0].title, comic1.title);
+        assert_eq!(comics[0].url, comic1.url);
+    }
 }
