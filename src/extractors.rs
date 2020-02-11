@@ -870,10 +870,6 @@ import_impl_mods![
         :domain => "www.luscious.net",
         :name   => "Luscious"
     },
-    manben: {
-        :domain => "www.manben.com",
-        :name   => "漫本"
-    },
     manganelo: {
         :domain => "manganelo.com",
         :name   => "Manganelo"
@@ -1060,11 +1056,6 @@ def_routes![
         :chapter_re => r#"^https?://www\.luscious\.net/albums/.+"#
     },
     {
-        :domain     => "www.manben.com",
-        :comic_re   => r#"^https?://www\.manben\.com/mh-.+"#,
-        :chapter_re => r#"^https?://www\.manben\.com/m\d+"#
-    },
-    {
         :domain     => "manganelo.com",
         :comic_re   => r#"^https?://manganelo\.com/manga/.+"#,
         :chapter_re => r#"^https?://manganelo\.com/chapter/[^/]+/chapter_.+"#
@@ -1222,10 +1213,6 @@ fn test_routes() {
     );
     assert_routes!("www.luscious.net",
         :chapter => "https://www.luscious.net/albums/teitoku-wa-semai-toko-suki-kantai-collection-kanco_363520/"
-    );
-    assert_routes!("www.manben.com",
-        :comic   => "http://www.manben.com/mh-langyabang/",
-        :chapter => "http://www.manben.com/m912622/"
     );
     assert_routes!("manganelo.com",
         :comic   => "https://manganelo.com/manga/hgj2047065412",
