@@ -40,6 +40,7 @@
 | KuKu 动漫        | [comic.kukudm.com](https://comic.kukudm.com)           |   ⭕️    |          中文          |
 | LHScan           | [lhscan.net](https://lhscan.net)                       |   ⭕️    |          英文          |
 | Luscious         | [www.luscious.net](https://www.luscious.net)           |   ⭕️    | 英文, 日文, 中文, NSFW |
+| Mangabz          | [www.mangabz.com](http://www.mangabz.com)              |    ❌    |          中文          |
 | Manganelo        | [manganelo.com](https://manganelo.com)                 |   ⭕️    |          英文          |
 | 漫画 DB          | [www.manhuadb.com](https://www.manhuadb.com)           |   ⭕️    |          中文          |
 | 漫画堆           | [www.manhuadui.com](https://www.manhuadui.com)         |   ⭕️    |          中文          |
@@ -156,7 +157,7 @@ if !extractor.is_searchable() {
 }
 ```
 
-当前只有少部分平台支持搜索功能。在不支持的 Extractor 对象上调用 `search` 方法将始终返回空列表。
+当前只有部分平台支持搜索功能。在不支持的 Extractor 对象上调用 `search` 方法将始终返回空列表。
 
 #### 获取漫画章节
 
@@ -190,7 +191,7 @@ for page in iter {                      // 遍历页面资源
 ```rust
 // 开始载入章节
 let iter = extractor.pages_iter(..)?;   // 创建一个页面迭代器
-// 需要注意的是，创建迭代器也是需要解析页面的，但只需一个页面
+// 需要注意的是，创建迭代器也需要载入页面，但通常只解析一个页面
 // 在创建迭代器的同时已经将除资源地址以外的章节数据载入好了
 let title = iter.chapter_title_clone(); // => 从迭代器获取章节标题
 let total = iter.total;                 // => 从迭代器获取页面数量
