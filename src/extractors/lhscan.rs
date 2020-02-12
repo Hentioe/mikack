@@ -1,4 +1,37 @@
 use super::*;
+use serde::{Deserialize, Serialize};
+
+def_regex2![
+    ONCLICK_PATH    => r#"window\.location='([^']+)'"#
+];
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+struct SearchJson {
+    data: Vec<SearchDataItem>,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+struct SearchDataItem {
+    image: String,
+    primary: String,
+    onclick: String,
+}
+
+impl SearchDataItem {
+    fn url(&self) -> Result<String> {
+        match_content2!(&self.onclick, &*ONCLICK_PATH_RE)
+    }
+}
+
+impl From<&SearchDataItem> for Comic {
+    fn from(item: &SearchDataItem) -> Self {
+        if let Ok(url) = item.url() {
+            Comic::from_index(&item.primary, &url, &item.image)
+        } else {
+            Comic::from_index(&item.primary, &item.onclick, &item.image)
+        }
+    }
+}
 
 /// 对 lhscan.net 内容的抓取实现
 def_extractor! {[usable: true, searchable: false],
@@ -8,21 +41,36 @@ def_extractor! {[usable: true, searchable: false],
             page
         );
 
-        itemsgen![
-            :entry          => Comic,
-            :url            => &url,
-            :href_prefix    => &"https://lhscan.net/",
-            :target         => &r#".media > .media-body > h3 > a"#
-        ]
+        itemsgen2!(
+            url             = &url,
+            parent_dom      = ".row > .row-list",
+            cover_dom       = ".img-thumb",
+            link_dom        = ".media-heading > a",
+            link_prefix     = "https://loveheaven.net/"
+        )
+    }
+
+    fn search(&self, keywords: &str) -> Result<Vec<Comic>> {
+        let url = format!("https://loveheaven.net/app/manga/controllers/search.single.php?q={}", keywords);
+
+        let comics = get(&url)?
+            .json::<SearchJson>()?
+            .data
+            .iter()
+            .map(|item: &SearchDataItem| {
+                Comic::from(item)
+            })
+            .collect::<Vec<_>>();
+
+        Ok(comics)
     }
 
     fn fetch_chapters(&self, comic: &mut Comic) -> Result<()> {
-        itemsgen![
-            :entry          => Chapter,
-            :url            => &comic.url,
-            :href_prefix    => &"https://lhscan.net/",
-            :target         => &r#"td > a.chapter"#
-        ]?.reversed_attach_to(comic);
+        itemsgen2!(
+            url             = &comic.url,
+            target_dom      = r#"td > a.chapter"#,
+            link_prefix     = "https://lhscan.net/"
+        )?.reversed_attach_to(comic);
 
         Ok(())
     }
@@ -47,7 +95,7 @@ fn test_extr() {
             "https://lhscan.net/manga-ichinichi-gaishutsuroku-hanchou-raw.html",
         );
         extr.fetch_chapters(comic).unwrap();
-        assert_eq!(51, comic.chapters.len());
+        assert_eq!(52, comic.chapters.len());
         let chapter1 = &mut Chapter::from_link(
             "",
             "https://lhscan.net/read-ichinichi-gaishutsuroku-hanchou-raw-chapter-64.html",
