@@ -867,9 +867,9 @@ import_impl_mods![
         :domain => "comic.kukudm.com",
         :name   => "KuKu动漫"
     },
-    lhscan: {
-        :domain => "lhscan.net",
-        :name   => "LHScan"
+    loveheaven: {
+        :domain => "loveheaven.net",
+        :name   => "LoveHeaven"
     },
     luscious: {
         :domain => "www.luscious.net",
@@ -1059,9 +1059,9 @@ def_routes![
         :chapter_re => r#"^https?://comic\d?\.kukudm\.com/comiclist/\d+/\d+/\d+.htm"#
     },
     {
-        :domain     => "lhscan.net",
-        :comic_re   => r#"^https?://lhscan\.net/manga-.+\.html"#,
-        :chapter_re => r#"^https?://lhscan\.net/read-.+\.html"#
+        :domain     => "loveheaven.net",
+        :comic_re   => r#"^https?://loveheaven\.net/manga-.+\.html"#,
+        :chapter_re => r#"^https?://loveheaven\.net/read-.+\.html"#
     },
     {
         :domain     => "www.luscious.net",
@@ -1230,9 +1230,9 @@ fn test_routes() {
         :comic   => "https://comic.kukudm.com/comiclist/2555/index.htm",
         :chapter => "https://comic.kukudm.com/comiclist/2555/66929/1.htm"
     );
-    assert_routes!("lhscan.net",
-        :comic   => "https://lhscan.net/manga-ichinichi-gaishutsuroku-hanchou-raw.html",
-        :chapter => "https://lhscan.net/read-ichinichi-gaishutsuroku-hanchou-raw-chapter-54.html"
+    assert_routes!("loveheaven.net",
+        :comic   => "https://loveheaven.net/manga-ichinichi-gaishutsuroku-hanchou-raw.html",
+        :chapter => "https://loveheaven.net/read-ichinichi-gaishutsuroku-hanchou-raw-chapter-54.html"
     );
     assert_routes!("www.luscious.net",
         :chapter => "https://www.luscious.net/albums/teitoku-wa-semai-toko-suki-kantai-collection-kanco_363520/"

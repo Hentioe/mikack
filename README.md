@@ -38,7 +38,7 @@
 | 扑飞漫画         | [www.ipufei.com](http://www.ipufei.com)                |   ⭕️    |          中文          |
 | 快看漫画         | [www.kuaikanmanhua.com](https://www.kuaikanmanhua.com) |   ⭕️    |          中文          |
 | KuKu 动漫        | [comic.kukudm.com](https://comic.kukudm.com)           |   ⭕️    |          中文          |
-| LHScan           | [lhscan.net](https://lhscan.net)                       |   ⭕️    |          英文          |
+| LoveHeaven       | [loveheaven.net](https://loveheaven.net)               |   ⭕️    |          英文          |
 | Luscious         | [www.luscious.net](https://www.luscious.net)           |   ⭕️    | 英文, 日文, 中文, NSFW |
 | Mangabz          | [www.mangabz.com](http://www.mangabz.com)              |   ⭕️    |          中文          |
 | Manganelo        | [manganelo.com](https://manganelo.com)                 |   ⭕️    |          英文          |

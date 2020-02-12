@@ -19,7 +19,9 @@ struct SearchDataItem {
 
 impl SearchDataItem {
     fn url(&self) -> Result<String> {
-        match_content2!(&self.onclick, &*ONCLICK_PATH_RE)
+        let path = match_content2!(&self.onclick, &*ONCLICK_PATH_RE)?;
+
+        Ok(format!("https://loveheaven.net{}", path))
     }
 }
 
@@ -33,11 +35,11 @@ impl From<&SearchDataItem> for Comic {
     }
 }
 
-/// 对 lhscan.net 内容的抓取实现
+/// 对 loveheaven.net 内容的抓取实现
 def_extractor! {[usable: true, searchable: false],
     fn index(&self, page: u32) -> Result<Vec<Comic>> {
         let url = format!(
-            "https://lhscan.net/manga-list.html?listType=pagination&page={}&sort=last_update&sort_type=DESC",
+            "https://loveheaven.net/manga-list.html?listType=pagination&page={}&sort=last_update&sort_type=DESC",
             page
         );
 
@@ -53,8 +55,10 @@ def_extractor! {[usable: true, searchable: false],
     fn search(&self, keywords: &str) -> Result<Vec<Comic>> {
         let url = format!("https://loveheaven.net/app/manga/controllers/search.single.php?q={}", keywords);
 
-        let comics = get(&url)?
-            .json::<SearchJson>()?
+        let comics = get(&url)?.json::<Vec<SearchJson>>()?
+            .iter()
+            .next()
+            .ok_or(err_msg("Inapplicable response structure"))?
             .data
             .iter()
             .map(|item: &SearchDataItem| {
@@ -69,7 +73,7 @@ def_extractor! {[usable: true, searchable: false],
         itemsgen2!(
             url             = &comic.url,
             target_dom      = r#"td > a.chapter"#,
-            link_prefix     = "https://lhscan.net/"
+            link_prefix     = "https://loveheaven.net/"
         )?.reversed_attach_to(comic);
 
         Ok(())
@@ -90,15 +94,15 @@ fn test_extr() {
     if extr.is_usable() {
         let comics = extr.index(1).unwrap();
         assert_eq!(20, comics.len());
-        let comic = &mut Comic::from_link(
-            "Minagoroshi no Arthur - Raw",
-            "https://lhscan.net/manga-ichinichi-gaishutsuroku-hanchou-raw.html",
+        let comic1 = &mut Comic::from_link(
+            "Ichinichi Gaishutsuroku Hanchou - Raw",
+            "https://loveheaven.net/manga-ichinichi-gaishutsuroku-hanchou-raw.html",
         );
-        extr.fetch_chapters(comic).unwrap();
-        assert_eq!(52, comic.chapters.len());
+        extr.fetch_chapters(comic1).unwrap();
+        assert_eq!(52, comic1.chapters.len());
         let chapter1 = &mut Chapter::from_link(
             "",
-            "https://lhscan.net/read-ichinichi-gaishutsuroku-hanchou-raw-chapter-64.html",
+            "https://loveheaven.net/read-ichinichi-gaishutsuroku-hanchou-raw-chapter-64.html",
         );
         extr.fetch_pages_unsafe(chapter1).unwrap();
         assert_eq!(
@@ -106,5 +110,9 @@ fn test_extr() {
             chapter1.title
         );
         assert_eq!(19, chapter1.pages.len());
+        let comics = extr.search("Ichinichi Gaishutsuroku Hanchou").unwrap();
+        assert!(comics.len() > 0);
+        assert_eq!(comics[0].title, comic1.title);
+        assert_eq!(comics[0].url, comic1.url);
     }
 }
