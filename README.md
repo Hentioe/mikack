@@ -76,28 +76,21 @@
 
 三个基本模型的结构：
 
-1. Comic
-   | 字段名 | 备注 |
-   | :------- | :------- |
-   | title | 漫画名称 |
-   | url | 漫画链接 |
-   | cover | 漫画封面 |
-   | chapters | 章节列表 |
-1. Chapter
-   | 字段名 | 备注 |
-   | :----------- | :------------------------------ |
-   | title | 章节名称 |
-   | url | 章节链接 |
-   | which | 章节索引 |
-   | pages | 页面列表 |
-   | page_headers | 下载页面资源必要的 HTTP headers |
-1. Page
-   | 字段名 | 备注 |
-   | :------ | :------------------ |
-   | n | 页码，当前以 0 开始 |
-   | address | 资源文件地址 |
-   | fname | 资源文件名称 |
-   | fmime | 资源文件的 MIME |
+| 所属结构 | 字段名         | 备注                            |
+| -------: | :------------- | ------------------------------- |
+|    Comic | `title`        | 漫画名称                        |
+|    Comic | `url`          | 漫画链接                        |
+|    Comic | `cover`        | 漫画封面                        |
+|    Comic | `chapters`     | 章节列表                        |
+|  Chapter | `title`        | 章节名称                        |
+|  Chapter | `url`          | 章节链接                        |
+|  Chapter | `which`        | 章节索引                        |
+|  Chapter | `pages`        | 页面列表                        |
+|  Chapter | `page_headers` | 下载页面资源必要的 HTTP headers |
+|     Page | `n`            | 页码，当前以 0 开始             |
+|     Page | `address`      | 资源文件地址                    |
+|     Page | `fname`        | 资源文件名称                    |
+|     Page | `fmime`        | 资源文件的 MIME                 |
 
 您可能会注意到并没有与“平台”相关的模型，因为平台被抽象为了具有相同行为的组件，这类组件无法自行创建，需要从其它 API 中获取。
 
