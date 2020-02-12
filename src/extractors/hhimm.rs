@@ -5,34 +5,47 @@ lazy_static! {
     static ref DEFAULT_DOMAIN_NO: String = "0".to_string();
 }
 
-def_extractor! {[usable: true, searchable: false],
-    fn index(&self, page: u32) -> Result<Vec<Comic>> {
-        let url = format!("http://www.hhimm.com/comic/{}.html", page);
+def_extractor! {[usable: true, pageable: false, searchable: true],
+    fn index(&self, _page: u32) -> Result<Vec<Comic>> {
+        let url = "http://www.hhimm.com/top/newrating.aspx";
 
-        itemsgen![
-            :entry          => Comic,
-            :url            => &url,
-            :href_prefix    => &"http://www.hhimm.com",
-            :target         => &r#".cComicList > li > a"#
-        ]
+        itemsgen2!(
+            url             = &url,
+            parent_dom      = ".cTopComicList > .cComicItem",
+            cover_dom       = "a > img",
+            link_dom        = ".cTopNo+a",
+            link_prefix     = "http://www.hhimm.com"
+        )
+    }
+
+    fn search(&self, keywords: &str) -> Result<Vec<Comic>> {
+        let url = format!("http://www.hhimm.com/comic/?act=search&st={}", keywords);
+
+        itemsgen2!(
+            url             = &url,
+            parent_dom      = ".cComicList > li",
+            cover_dom       = "a > img",
+            link_dom        = "a",
+            link_prefix     = "http://www.hhimm.com",
+            link_text_attr  = "title"
+        )
     }
 
     fn fetch_chapters(&self, comic: &mut Comic) -> Result<()> {
-        itemsgen![
-            :entry          => Chapter,
-            :url            => &comic.url,
-            :href_prefix    => &"http://www.hhimm.com",
-            :target         => &".cVolUl > li > a"
-        ]?.reversed_attach_to(comic);
+        itemsgen2!(
+            url             = &comic.url,
+            target_dom      = ".cVolUl > li > a",
+            link_prefix     = "http://www.hhimm.com"
+        )?.reversed_attach_to(comic);
 
         Ok(())
     }
 
     fn pages_iter<'a>(&'a self, chapter: &'a mut Chapter) -> Result<ChapterPages> {
-        let query_params: HashMap<_, _> = Url::parse(&chapter.url)?
-                                .query_pairs()
-                                .map(|(name, value)| (name.to_string(), value.to_string()))
-                                .collect();
+        let query_params = Url::parse(&chapter.url)?
+            .query_pairs()
+            .map(|(name, value)| (name.to_string(), value.to_string()))
+            .collect::<HashMap<_, _>>();
         let domain_no = query_params.get("d").unwrap_or(&*DEFAULT_DOMAIN_NO).clone();
         let html = get(&chapter.url)?.text()?;
         let document = parse_document(&html);
@@ -73,15 +86,21 @@ def_extractor! {[usable: true, searchable: false],
 #[test]
 fn test_extr() {
     let extr = new_extr();
-    let comics = extr.index(1).unwrap();
-    assert_eq!(30, comics.len());
+    if extr.is_usable() {
+        let comics = extr.index(1).unwrap();
+        assert_eq!(100, comics.len());
 
-    let mut comic = Comic::new("妖精的尾巴", "http://www.hhimm.com/manhua/2779.html");
-    extr.fetch_chapters(&mut comic).unwrap();
-    assert_eq!(597, comic.chapters.len());
+        let mut comic1 = Comic::new("美食的俘虏", "http://www.hhimm.com/manhua/3787.html");
+        extr.fetch_chapters(&mut comic1).unwrap();
+        assert_eq!(400, comic1.chapters.len());
 
-    let chapter1 = &mut Chapter::from_link("", "http://www.hhimm.com/cool285664/1.html?s=4");
-    extr.fetch_pages_unsafe(chapter1).unwrap();
-    assert_eq!("妖精的尾巴 543集", chapter1.title);
-    assert_eq!(22, chapter1.pages.len());
+        let chapter1 = &mut comic1.chapters[2];
+        extr.fetch_pages_unsafe(chapter1).unwrap();
+        assert_eq!("美食的俘虏Jump next出张篇", chapter1.title);
+        assert_eq!(2, chapter1.pages.len());
+        let comics = extr.search("美食的俘虏").unwrap();
+        assert!(comics.len() > 0);
+        assert_eq!(comics[0].title, comic1.title);
+        assert_eq!(comics[0].url, comic1.url);
+    }
 }
