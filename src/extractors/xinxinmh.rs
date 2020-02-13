@@ -33,12 +33,11 @@ def_extractor! {[usable: true, pageable: true, searchable: true],
     }
 
     fn fetch_chapters(&self, comic: &mut Comic) -> Result<()> {
-        itemsgen![
-            :entry          => Chapter,
-            :url            => &comic.url,
-            :href_prefix    => &"https://www.177mh.net",
-            :target         => &"ul.ar_list_col > li > a"
-        ]?.reversed_attach_to(comic);
+        itemsgen2!(
+            url             = &comic.url,
+            target_dom      = "ul.ar_list_col > li > a",
+            link_prefix     = "https://www.177mh.net"
+        )?.reversed_attach_to(comic);
 
         Ok(())
     }
