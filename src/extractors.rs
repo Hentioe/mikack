@@ -404,26 +404,6 @@ impl Keyword for HashMap<&str, &dyn std::any::Any> {
     }
 }
 
-macro_rules! urlgen {
-    ( $( :$name:ident => $value:expr ),* ) => {
-        {
-            let mut keyword = keyword_list![];
-            $(
-                keyword.insert(stringify!($name), $value);
-            )*
-            let first = keyword_fetch!(keyword, "first", &str, &"");
-            let next = keyword_fetch!(keyword, "next", &str, &"");
-            let page = keyword_fetch!(keyword, "page", u32, &0_u32);
-
-            if *page > 1 {
-                next.replace("{}", &page.to_string())
-            } else {
-                first.to_string()
-            }
-        }
-    };
-}
-
 duang!(
     fn urlgen2(page : u32, first: &str = "", next: &str = "") -> String {
         if page > 1 {

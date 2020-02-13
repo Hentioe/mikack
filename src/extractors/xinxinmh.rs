@@ -1,24 +1,35 @@
 use super::*;
 
-def_regex![
-    DECRYPT_RE => r#"<script type="text/javascript">[\s\n]+(eval.+)[\s\n]+</script>"#
+def_regex2![
+    DECRYPT => r#"<script type="text/javascript">[\s\n]+(eval.+)[\s\n]+</script>"#
 ];
 
-def_extractor! {[usable: true, searchable: false],
+/// 对 www.177mh.net 内容的抓取实现
+def_extractor! {[usable: true, pageable: true, searchable: true],
     fn index(&self, page: u32) -> Result<Vec<Comic>> {
-        let next_page = page - 1;
-        let url = urlgen![
-            :first  => &"https://www.177mh.net/wanjie/index.html",
-            :next   => &"https://www.177mh.net/wanjie/index_{}.html",
-            :page   => &next_page
-        ];
+        let url = urlgen2!(page - 1,
+            first   = "https://www.177mh.net/lianzai/index.html",
+            next    = "https://www.177mh.net/lianzai/index_{}.html"
+        );
 
-        itemsgen![
-            :entry          => Comic,
-            :url            => &url,
-            :href_prefix    => &"https://www.177mh.net",
-            :target         => &r#".ar_list_co > ul > li > span > a"#
-        ]
+        itemsgen2!(
+            url             = &url,
+            parent_dom      = ".ar_list_co > ul > li",
+            cover_dom       = "a > img",
+            link_dom        = "span > a",
+            link_prefix     = "https://www.177mh.net"
+        )
+    }
+
+    fn search(&self, keywords: &str) -> Result<Vec<Comic>> {
+        let url = format!("https://so.177mh.net/k.php?k={}", keywords);
+
+        itemsgen2!(
+            url             = &url,
+            parent_dom      = ".so_head + ul > dl",
+            cover_dom       = "a > img",
+            link_dom        = "h1 > a"
+        )
     }
 
     fn fetch_chapters(&self, comic: &mut Comic) -> Result<()> {
@@ -84,16 +95,19 @@ def_extractor! {[usable: true, searchable: false],
 #[test]
 fn test_extr() {
     let extr = new_extr();
-    let comics = extr.index(1).unwrap();
-    assert_eq!(20, comics.len());
-
-    let mut comic = Comic::new("火影忍者", "https://www.177mh.net/colist_78825.html");
-    extr.fetch_chapters(&mut comic).unwrap();
-    assert_eq!(517, comic.chapters.len());
-
-    let chapter1 = &mut comic.chapters[516];
-    chapter1.title = "".to_string();
-    extr.fetch_pages(chapter1).unwrap();
-    assert_eq!("火影忍者 外传_满月", chapter1.title);
-    assert_eq!(44, chapter1.pages.len());
+    if extr.is_usable() {
+        let comics = extr.index(1).unwrap();
+        assert_eq!(20, comics.len());
+        let mut comic1 = Comic::new("祝福之钟", "https://www.177mh.net/colist_104931.html");
+        extr.fetch_chapters(&mut comic1).unwrap();
+        assert_eq!(21, comic1.chapters.len());
+        let chapter1 = &mut comic1.chapters[0];
+        extr.fetch_pages(chapter1).unwrap();
+        assert_eq!("祝福之钟 第001话", chapter1.title);
+        assert_eq!(24, chapter1.pages.len());
+        let comics = extr.search("祝福之钟").unwrap();
+        assert!(comics.len() > 0);
+        assert_eq!(comics[0].title, comic1.title);
+        assert_eq!(comics[0].url, comic1.url);
+    }
 }
