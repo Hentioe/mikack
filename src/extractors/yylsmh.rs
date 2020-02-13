@@ -1,31 +1,44 @@
 use super::*;
 
-def_regex![
-    PARAMS_RE   => r#"javascript:openimg\(('\d+','\d+'),'8','2'\);"#
+def_regex2![
+    PARAMS   => r#"javascript:openimg\(('\d+','\d+'),'8','2'\);"#
 ];
 
 /// 对 8comic.se 内容的抓取实现
-def_extractor! {[usable: true, searchable: false],
+def_extractor! {[usable: true, pageable: true, searchable: true],
     fn index(&self, page: u32) -> Result<Vec<Comic>> {
-        let url = format!(
-            "https://8comic.se/category/%e9%80%a3%e8%bc%89%e5%ae%8c%e7%b5%90/%e6%bc%ab%e7%95%ab%e9%80%a3%e8%bc%89/page/{}/",
-            page
-        );
+        let url = format!("https://8comic.se/category/連載完結/漫畫連載/page/{}/", page);
 
-        itemsgen![
-            :entry          => Comic,
-            :url            => &url,
-            :target         => &r#".loop-content a.clip-link"#,
-            :text_attr      => &"title"
-        ]
+        let mut comics = itemsgen2!(
+            url             = &url,
+            parent_dom      = r#"div[id^="post-"]"#,
+            cover_dom       = ".clip > img",
+            link_dom        = ".entry-title > a"
+        )?;
+        comics.iter_mut().for_each(|c: &mut Comic| {
+            if !c.cover.starts_with("http") {
+                c.cover = format!("https:{}", &c.cover);
+            }
+        });
+
+        Ok(comics)
+    }
+
+    fn search(&self, keywords: &str) -> Result<Vec<Comic>> {
+        let url = format!("https://8comic.se/搜尋結果/?w={}", keywords);
+
+        itemsgen2!(
+            url             = &url,
+            target_dom      = ".post-list-full > li a",
+            link_prefix     = "https://8comic.se"
+        )
     }
 
     fn fetch_chapters(&self, comic: &mut Comic) -> Result<()> {
-        itemsgen![
-            :entry          => Chapter,
-            :url            => &comic.url,
-            :target         => &r#".entry-content tbody td > a"#
-        ]?.attach_to(comic);
+        itemsgen2!(
+            url             = &comic.url,
+            target_dom      = ".entry-content tbody td > a"
+        )?.attach_to(comic);
 
         Ok(())
     }
@@ -61,12 +74,16 @@ fn test_extr() {
     if extr.is_usable() {
         let comics = extr.index(1).unwrap();
         assert_eq!(27, comics.len());
-        let comic = &mut Comic::from_link("火影忍者", "https://8comic.se/1671/");
-        extr.fetch_chapters(comic).unwrap();
-        assert_eq!(217, comic.chapters.len());
+        let comic1 = &mut Comic::from_link("生存遊戲", "https://8comic.se/15798/");
+        extr.fetch_chapters(comic1).unwrap();
+        assert_eq!(15, comic1.chapters.len());
         let chapter1 = &mut Chapter::from_link("", "https://8comic.se/1113/");
         extr.fetch_pages_unsafe(chapter1).unwrap();
         assert_eq!("火影忍者 – 556 話", chapter1.title);
         assert_eq!(15, chapter1.pages.len());
+        let comics = extr.search("生存遊戲").unwrap();
+        assert!(comics.len() > 0);
+        assert_eq!(comics[0].title, comic1.title);
+        assert_eq!(comics[0].url, comic1.url);
     }
 }

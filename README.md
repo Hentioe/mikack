@@ -158,7 +158,7 @@ if !extractor.is_searchable() {
 }
 ```
 
-当前只有部分平台支持搜索功能。在不支持的 Extractor 对象上调用 `search` 方法将始终返回空列表。
+当前绝大部分平台都支持搜索功能。在不支持的平台的 Extractor 对象上调用 `search` 方法将始终返回空列表。
 
 #### 获取漫画章节
 

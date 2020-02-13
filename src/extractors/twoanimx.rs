@@ -1,8 +1,8 @@
 use super::*;
 use std::str;
 
-def_regex![
-    URL_RE  => r#"(.+-cid-\d+-id-\d+)"#
+def_regex2![
+    URL  => r#"(.+-cid-\d+-id-\d+)"#
 ];
 
 /// 对 www.2animx.com 内容的抓取实现

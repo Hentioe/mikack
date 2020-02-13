@@ -220,20 +220,6 @@ pub fn get<T: reqwest::IntoUrl>(url: T) -> Result<Response> {
         .send()?)
 }
 
-fn simple_fetch_index<T: FromLink>(
-    document: &Html,
-    selector: &str,
-    parse_elem: &dyn Fn(ElementRef) -> Result<T>,
-) -> Result<Vec<T>> {
-    let mut list = Vec::new();
-
-    for element in document.select(&parse_selector(selector)?) {
-        list.push(parse_elem(element)?);
-    }
-
-    Ok(list)
-}
-
 pub fn eval_value(code: &str) -> Result<JsValue> {
     let context = Context::new()?;
     Ok(context.eval(code)?)
@@ -421,82 +407,6 @@ lazy_static! {
         Box::new(|_| vec![]);
 }
 
-macro_rules! itemsgen {
-    ( :entry => $entry:tt, $( :$name:ident => $value:expr ),* ) => {
-        {
-            let mut keyword = keyword_list![];
-            $(
-                keyword.insert(stringify!($name), $value);
-            )*
-
-            let url = keyword_fetch!(keyword, "url", String, &*DEFAULT_STRING);
-            let selector = keyword_fetch!(keyword, "selector", &str, &"");
-            let find = keyword_fetch!(keyword, "find", &str, &"a");
-            let href_prefix = keyword_fetch!(keyword, "href_prefix", &str, &"");
-            let encoding = keyword.get_as::<&Encoding>("encoding");
-            let sub_dom_text = keyword.get_as::<&str>("sub_dom_text");
-            let text_attr = keyword.get_as::<&str>("text_attr");
-
-            let mut resp = get(url)?;
-            let html = if let Some(encoding) = encoding {
-                resp.decode_text(encoding)?
-            } else {
-                resp.text()?
-            };
-            let document = parse_document(&html);
-            let from_link = |element: &ElementRef| -> Result<$entry> {
-                let mut url = element
-                    .value()
-                    .attr("href")
-                    .ok_or(err_msg("No link href found"))?
-                    .to_string();
-                if !href_prefix.is_empty() {
-                    url = format!("{}{}", href_prefix, url)
-                }
-                let mut title = String::new();
-                if let Some(sub_text_selector) = sub_dom_text {
-                    let selector = parse_selector(&sub_text_selector)?;
-                    title = element.select(&selector)
-                        .next()
-                        .ok_or(err_msg(format!("No :sub_dom_text node found: `{}`", sub_text_selector)))?
-                        .text()
-                        .next()
-                        .ok_or(err_msg(format!("No :sub_dom_text text found: `{}`", sub_text_selector)))?
-                        .to_string();
-                }
-                if let Some(attr) = text_attr {
-                    title = element.value()
-                        .attr(attr)
-                        .ok_or(err_msg(format!("No :text_attr found: `{}`", attr)))?
-                        .to_string();
-                }
-                if title.is_empty() {
-                    title = element.text()
-                        .next()
-                        .ok_or(err_msg("No link text found"))?
-                        .to_string();
-                }
-                title = title.trim().to_string();
-                Ok($entry::from_link(title, url))
-            };
-            if let Some(target) = keyword.get_as::<&str>("target") {
-                simple_fetch_index(&document, target, &|element: ElementRef| {
-                    Ok(from_link(&element)?)
-                })
-
-            }else{
-                simple_fetch_index(&document, selector, &|element: ElementRef| {
-                    let link_dom = element.select(&parse_selector(&find)?)
-                        .next()
-                        .ok_or(err_msg(format!("No :find found: {}", find)))?;
-                    Ok(from_link(&link_dom)?)
-                })
-            }
-
-        }
-    };
-}
-
 duang!(
     pub fn itemsgen2<T: FromLink + SetCover>(
         html: &str = "",
@@ -654,16 +564,6 @@ impl AttachTo<Comic> for Vec<Chapter> {
         self.reverse();
         self.attach_to(target);
     }
-}
-
-macro_rules! def_regex {
-    ( $( $name:ident => $expr:expr ),* ) => {
-        $(
-            lazy_static! {
-                static ref $name: Regex = Regex::new($expr).unwrap();
-            }
-        )*
-    };
 }
 
 macro_rules! def_regex2 {
