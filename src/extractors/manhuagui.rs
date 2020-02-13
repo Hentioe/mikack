@@ -1,32 +1,42 @@
 use super::*;
 
-def_regex![
-    CTYPTO_RE => r#"window\["\\x65\\x76\\x61\\x6c"\]\((.+)\)\s+</script>"#
+def_regex2![
+    CTYPTO => r#"window\["\\x65\\x76\\x61\\x6c"\]\((.+)\)\s+</script>"#
 ];
 
-def_extractor! {[usable: true, searchable: false],
-    fn index(&self, page: u32) -> Result<Vec<Comic>> {
-        let url = urlgen![
-            :first  => &"https://www.manhuagui.com/list/",
-            :next   => &"https://www.manhuagui.com/list/index_p{}.html",
-            :page   => &page
-        ];
+def_extractor! {[usable: true, pageable: false, searchable: true],
+    fn index(&self, _page: u32) -> Result<Vec<Comic>> {
+        let url = "https://www.manhuagui.com/update/";
 
-        itemsgen![
-            :entry          => Comic,
-            :url            => &url,
-            :href_prefix    => &"https://www.manhuagui.com",
-            :target         => &"#contList .ell > a"
-        ]
+        itemsgen2!(
+            url             = &url,
+            parent_dom      = ".latest-list > ul > li",
+            cover_dom       = "a > img",
+            cover_attrs     = &["data-src", "src"],
+            link_dom        = ".ell > a",
+            link_prefix     = "https://www.manhuagui.com"
+        )
+    }
+
+    fn search(&self, keywords: &str) -> Result<Vec<Comic>> {
+        let url = format!("https://www.manhuagui.com/s/{}.html", keywords);
+
+        itemsgen2!(
+            url             = &url,
+            parent_dom      = ".book-result > ul > li",
+            cover_dom       = ".bcover > img",
+            cover_attrs     = &["data-src", "src"],
+            link_dom        = "dt > a",
+            link_prefix     = "https://www.manhuagui.com"
+        )
     }
 
     fn fetch_chapters(&self, comic: &mut Comic) -> Result<()> {
-        itemsgen![
-            :entry          => Chapter,
-            :url            => &comic.url,
-            :href_prefix    => &"https://www.manhuagui.com",
-            :target       => &"li > a.status0"
-        ]?.reversed_attach_to(comic);
+        itemsgen2!(
+            url             = &comic.url,
+            target_dom      = "li > a.status0",
+            link_prefix     = "https://www.manhuagui.com"
+        )?.reversed_attach_to(comic);
 
         Ok(())
     }
@@ -34,10 +44,7 @@ def_extractor! {[usable: true, searchable: false],
     fn pages_iter<'a>(&'a self, chapter: &'a mut Chapter) -> Result<ChapterPages> {
         let html = get(&chapter.url)?.text()?;
         let runtime = include_str!("../../runtime/manhuagui.js");
-        let crypty_code = match_content![
-            :text   => &html,
-            :regex  => &*CTYPTO_RE
-        ];
+        let crypty_code = match_content2!(&html, &*CTYPTO_RE)?;
         let wrap_code = format!("{}\n{}", &runtime, format!("
             DATA = null;
             SMH = {{
@@ -62,8 +69,8 @@ def_extractor! {[usable: true, searchable: false],
         let path = obj.get_as_string("path")?.clone();
         let files = obj.get_as_array("files")?.clone();
         let total = files.len() as i32;
-        chapter.title = name;
 
+        chapter.set_title(name);
         let fetch = Box::new(move |current_page: usize| {
             let file = files[current_page - 1].as_string()?;
             let address = format!("https://i.hamreus.com{}{}?cid={}&md5={}", path, file, cid, md5);
@@ -77,15 +84,20 @@ def_extractor! {[usable: true, searchable: false],
 #[test]
 fn test_extr() {
     let extr = new_extr();
-    let comics = extr.index(1).unwrap();
-    assert_eq!(42, comics.len());
+    if extr.is_usable() {
+        let comics = extr.index(1).unwrap();
+        assert_eq!(727, comics.len());
 
-    let mut comic = Comic::from_link("火影忍者", "https://www.manhuagui.com/comic/4681/");
-    extr.fetch_chapters(&mut comic).unwrap();
-    assert_eq!(96, comic.chapters.len());
-
-    let chapter1 = &mut comic.chapters[0];
-    extr.fetch_pages(chapter1).unwrap();
-    assert_eq!("火影忍者第01卷", chapter1.title);
-    assert_eq!(190, chapter1.pages.len());
+        let mut comic1 = Comic::from_link("食戟之灵", "https://www.manhuagui.com/comic/2863/");
+        extr.fetch_chapters(&mut comic1).unwrap();
+        assert_eq!(298, comic1.chapters.len());
+        let chapter1 = &mut comic1.chapters[0];
+        extr.fetch_pages_unsafe(chapter1).unwrap();
+        assert_eq!("食戟之灵第01卷", chapter1.title);
+        assert_eq!(211, chapter1.pages.len());
+        let comics = extr.search("食戟之灵").unwrap();
+        assert!(comics.len() > 0);
+        assert_eq!(comics[0].title, comic1.title);
+        assert_eq!(comics[0].url, comic1.url);
+    }
 }
