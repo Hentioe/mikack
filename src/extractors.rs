@@ -915,10 +915,6 @@ import_impl_mods![
         :domain => "www.qimiaomh.com",
         :name   => "奇妙漫画"
     },
-    qkmh5: {
-        :domain => "www.qkmh5.com",
-        :name   => "青空漫画"
-    },
     tohomh123: {
         :domain => "www.tohomh123.com",
         :name   => "土豪漫画"
@@ -1119,11 +1115,6 @@ def_routes![
         :chapter_re => r#"^https?://www\.qimiaomh\.com/manhua/\d+/\d+\.html"#
     },
     {
-        :domain     => "www.qkmh5.com",
-        :comic_re   => r#"^https?://www\.qkmh5\.com/mh/[^\.]+\.html"#,
-        :chapter_re => r#"^https?://www\.qkmh5\.com/mm/\d+/\d+\.html"#
-    },
-    {
         :domain     => "www.tohomh123.com",
         :comic_re   => r#"^https?://www\.tohomh123\.com/.+"#,
         :chapter_re => r#"^https?://www\.tohomh123\.com/[^/]+/\d+\.html"#
@@ -1273,10 +1264,6 @@ fn test_routes() {
     assert_routes!("www.qimiaomh.com",
         :comic   => "https://www.qimiaomh.com/manhua/6531.html",
         :chapter => "https://www.qimiaomh.com/manhua/6531/1.html"
-    );
-    assert_routes!("www.qkmh5.com",
-        :comic   => "http://www.qkmh5.com/mh/yaojingdeweiba.html",
-        :chapter => "http://www.qkmh5.com/mm/1807/461806.html"
     );
     assert_routes!("www.tohomh123.com",
         :comic   => "https://www.tohomh123.com/guangzhizi/",
