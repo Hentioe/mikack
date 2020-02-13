@@ -923,10 +923,6 @@ import_impl_mods![
         :domain => "www.2animx.com",
         :name   => "二次元動漫"
     },
-    veryim: {
-        :domain => "comic.veryim.com",
-        :name   => "非常爱漫"
-    },
     wnacg: {
         :domain => "www.wnacg.org",
         :name   => "紳士漫畫"
@@ -1125,11 +1121,6 @@ def_routes![
         :chapter_re => r#"^https?://www\.2animx\.com/index-look-name-.+-cid-\d+-id-\d+"#
     },
     {
-        :domain     => "comic.veryim.com",
-        :comic_re   => r#"^https?://comic\.veryim\.com/[^/]+/\d+/"#,
-        :chapter_re => r#"^https?://comic\.veryim\.com/[^/]+/\d+/\d+\.html"#
-    },
-    {
         :domain     => "www.wnacg.org",
         :comic_re   => r#"^-NONE-$"#,
         :chapter_re => r#"^https?://www\.wnacg\.org/photos-index-(page-\d+-)?aid-\d+\.html"#
@@ -1272,10 +1263,6 @@ fn test_routes() {
     assert_routes!("www.2animx.com",
         :comic   => "http://www.2animx.com/index-comic-name-%E9%A2%A8%E9%9B%B2%E5%85%A8%E9%9B%86-id-7212",
         :chapter => "http://www.2animx.com/index-look-name-%E9%A2%A8%E9%9B%B2%E5%85%A8%E9%9B%86-cid-7212-id-88034"
-    );
-    assert_routes!("comic.veryim.com",
-        :comic   => "http://comic.veryim.com/qihuan/57238/",
-        :chapter => "http://comic.veryim.com/qihuan/57238/883902.html"
     );
     assert_routes!("www.wnacg.org",
         :chapter => "https://www.wnacg.org/photos-index-aid-94352.html"
