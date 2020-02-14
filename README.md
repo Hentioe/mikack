@@ -30,8 +30,8 @@
 | comico           | [www.comico.com.tw](http://www.comico.com.tw)          |   ⭕️    |          中文          |
 | 动漫屋（漫画人） | [www.dm5.com](https://www.dm5.com)                     |   ⭕️    |          中文          |
 | 动漫之家         | [manhua.dmzj.com](https://manhua.dmzj.com)             |   ⭕️    |          中文          |
-| E-Hentai         | [e-hentai.org](https://e-hentai.org)                   |   ⭕️    | 英文, 日文, 中文, NSFW |
-| 18H 宅宅愛動漫   | [18h.animezilla.com](https://18h.animezilla.com)       |   ⭕️    |       中文, NSFW       |
+| E-Hentai         | e-hentai<i>.</i>org                                    |   ⭕️    | 英文, 日文, 中文, NSFW |
+| 18H 宅宅愛動漫   | 18h<i>.</i>animezilla<i>.</i>com                       |   ⭕️    |       中文, NSFW       |
 | 古风漫画网       | [www.gufengmh8.com](https://www.gufengmh8.com)         |   ⭕️    |          中文          |
 | 喵绅士           | c-upp<i>.</i>com                                       |   ⭕️    | 英文, 日文, 中文, NSFW |
 | 汗汗酷漫         | [www.hhimm.com](http://www.hhimm.com)                  |   ⭕️    |          中文          |
@@ -39,7 +39,7 @@
 | 快看漫画         | [www.kuaikanmanhua.com](https://www.kuaikanmanhua.com) |   ⭕️    |          中文          |
 | KuKu 动漫        | [comic.kukudm.com](https://comic.kukudm.com)           |   ⭕️    |          中文          |
 | LoveHeaven       | [loveheaven.net](https://loveheaven.net)               |   ⭕️    |          英文          |
-| Luscious         | [www.luscious.net](https://www.luscious.net)           |   ⭕️    | 英文, 日文, 中文, NSFW |
+| Luscious         | www<i>.</i>luscious<i>.</i>net                         |   ⭕️    | 英文, 日文, 中文, NSFW |
 | Mangabz          | [www.mangabz.com](http://www.mangabz.com)              |   ⭕️    |          中文          |
 | Manganelo        | [manganelo.com](https://manganelo.com)                 |   ⭕️    |          英文          |
 | 漫画 DB          | [www.manhuadb.com](https://www.manhuadb.com)           |   ⭕️    |          中文          |
@@ -48,7 +48,7 @@
 | 漫画铺           | [www.manhuapu.com](http://www.manhuapu.com)            |   ⭕️    |          中文          |
 | nhentai          | nhentai<i>.</i>net                                     |   ⭕️    | 英文, 日文, 中文, NSFW |
 | 9hentai          | 9hentai<i>.</i>com                                     |   ⭕️    |       英文, NSFW       |
-| 177 漫畫         | [www.177pic.info](http://www.177pic.info)              |   ⭕️    |    中文, 日文, NSFW    |
+| 177 漫畫         | www<i>.</i>177pic<i>.</i>info                          |   ⭕️    |    中文, 日文, NSFW    |
 | 奇妙漫画         | [www.qimiaomh.com](https://www.qimiaomh.com)           |   ⭕️    |          中文          |
 | 土豪漫画         | [www.tohomh123.com](https://www.tohomh123.com)         |   ⭕️    |          中文          |
 | 二次元動漫       | [www.2animx.com](http://www.2animx.com)                |   ⭕️    |          中文          |
