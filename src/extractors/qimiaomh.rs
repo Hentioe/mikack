@@ -13,10 +13,22 @@ def_regex2![
 ];
 
 /// 对 www.qimiaomh.com 内容的抓取实现
-/// 不支持搜索原因：上游搜索功能不能工作
-def_extractor! {[usable: true, pageable: true, searchable: false],
+def_extractor! {[usable: true, pageable: true, searchable: true],
     fn index(&self, page: u32) -> Result<Vec<Comic>> {
         let url = format!("https://www.qimiaomh.com/list-1------updatetime--{}.html", page);
+
+        itemsgen2!(
+            url             = &url,
+            parent_dom      = ".classification",
+            cover_dom       = "a > img",
+            cover_attr      = "data-src",
+            link_dom        = "h2 > a",
+            link_prefix     = "https://www.qimiaomh.com"
+        )
+    }
+
+    fn search(&self, keywords: &str) -> Result<Vec<Comic>> {
+        let url = format!("https://www.qimiaomh.com/action/Search?keyword={}", keywords);
 
         itemsgen2!(
             url             = &url,
@@ -68,12 +80,16 @@ fn test_extr() {
     if extr.is_usable() {
         let comics = extr.index(1).unwrap();
         assert_eq!(33, comics.len());
-        let mut comic1 = Comic::new("大王饶命", "https://www.qimiaomh.com/manhua/6531.html");
+        let mut comic1 = Comic::new("玉猪龙", "https://www.qimiaomh.com/manhua/5955.html");
         extr.fetch_chapters(&mut comic1).unwrap();
-        assert_eq!(35, comic1.chapters.len());
+        assert_eq!(48, comic1.chapters.len());
         let chapter1 = &mut comic1.chapters[0];
         extr.fetch_pages_unsafe(chapter1).unwrap();
-        assert_eq!("大王饶命 预告", chapter1.title);
-        assert_eq!(8, chapter1.pages.len());
+        assert_eq!("玉猪龙 预告", chapter1.title);
+        assert_eq!(7, chapter1.pages.len());
+        let comics = extr.search("玉猪龙").unwrap();
+        assert!(comics.len() > 0);
+        assert_eq!(comics[0].title, comic1.title);
+        assert_eq!(comics[0].url, comic1.url);
     }
 }
