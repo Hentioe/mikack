@@ -3,10 +3,13 @@ use super::*;
 def_regex2![
     PATH    => r#"t3\.wnacg\.download/data/t/(\d+/\d+)/\d+\.jpg"#,
     ID      => r#"https?://www\.wnacg\.org/photos-index-(page-\d+-)?aid-(\d+)\.html"#,
-    FORMAT  => r#"\.([^.]+)$"#
+    FORMAT  => r#"\.([^.]+)$"#,
+    COUNT   => r#"頁數：(\d+)P"#
 ];
 
 /// 对 www.wnacg.org 内容的抓取实现
+/// 实现细节：
+/// - 跳过第一张封面导致一些运算值进行过偏移
 def_extractor! {[usable: true, pageable: true, searchable: true],
     fn index(&self, page: u32) -> Result<Vec<Comic>> {
         let url = format!("https://www.wnacg.org/albums-index-page-{}.html", page);
@@ -45,14 +48,14 @@ def_extractor! {[usable: true, pageable: true, searchable: true],
     }
 
     fn fetch_chapters(&self, comic: &mut Comic) -> Result<()> {
-        comic.chapters.push(Chapter::from_link(&comic.title, &comic.url));
+        comic.chapters.push(Chapter::from(&*comic));
 
         Ok(())
     }
 
     fn pages_iter<'a>(&'a self, chapter: &'a mut Chapter) -> Result<ChapterPages> {
         let id = match_content2!(&chapter.url, &*ID_RE, group = 2)?;
-        let make_page_url = |page: usize| -> String {
+        let make_page_url = move |page: usize| -> String {
             format!("https://www.wnacg.org/photos-index-page-{page}-aid-{id}.html", page = page, id = id)
         };
         chapter.url = make_page_url(1);
@@ -61,14 +64,17 @@ def_extractor! {[usable: true, pageable: true, searchable: true],
         let document = parse_document(&html);
 
         chapter.set_title(document.dom_attr(".uwthumb > img", "alt")?);
-        let page_count = document.dom_count(".paginator > a")? + 1;
         let path = match_content2!(
             &document.dom_attr(".uwthumb > img", "src")?,
             &*PATH_RE
         )?;
+        let total = match_content2!(
+            &document.dom_text(".uwconn > label:nth-child(2)")?,
+            &*COUNT_RE
+        )?.parse::<i32>()? - 1;
 
-        let fetch_files = |page_document: &Html| -> Result<Vec<String>> {
-            let mut files = vec![];
+        let fetch_page_addresses = move |page_document: &Html| -> Result<Vec<String>> {
+            let mut page_addresses = vec![];
             for elem in page_document.select(&parse_selector(".cc > li")?) {
                 let name = elem
                     .select(&parse_selector(".title > span")?)
@@ -85,30 +91,31 @@ def_extractor! {[usable: true, pageable: true, searchable: true],
                     .value()
                     .attr("src")
                     .ok_or(err_msg("No preview-image src found"))?;
-                let format = match_content2!(&prevew_address, &*FORMAT_RE)?;
+                let ext = match_content2!(&prevew_address, &*FORMAT_RE)?;
+                let file = format!("{}.{}", name, ext);
+                let address = format!(
+                    "https://img2.wnacg.download/data/{path}/{file}",
+                    path = path, file = file
+                );
 
-                files.push(format!("{}.{}", name, format));
+                page_addresses.push(address);
             }
-            Ok(files)
+            Ok(page_addresses)
         };
-        let mut files = vec![];
-        let mut first_page_files = fetch_files(&document)?;
-        files.append(&mut first_page_files[1..].to_vec());
-
-        for i in 2..(page_count + 1) {
-            let page_html = get(&make_page_url(i))?.text()?;
+        let first_page_addresses = fetch_page_addresses(&document)?[1..].to_vec();
+        let fetch = Box::new(move |current_page: usize| {
+            let page_num = ((current_page + 1) as f64 / 12.0).ceil() as usize;
+            let page_html = get(&make_page_url(page_num))?.text()?;
             let page_document = parse_document(&page_html);
-            files.append(&mut fetch_files(&page_document)?);
-        }
-        let mut addresses = vec![];
-        for file in files {
-            addresses.push(format!(
-                "https://img2.wnacg.download/data/{path}/{file}",
-                path = path, file = file
-            ));
-        }
+            let mut pages = vec![];
+            for (i, addr) in fetch_page_addresses(&page_document)?.iter().enumerate() {
+                pages.push(Page::new(current_page + i, addr))
+            }
 
-        Ok(ChapterPages::full(chapter, addresses))
+            Ok(pages)
+        });
+
+        Ok(ChapterPages::new(chapter, total, first_page_addresses, fetch))
     }
 }
 

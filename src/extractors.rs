@@ -146,7 +146,7 @@ fn parse_document(html: &str) -> Html {
     Html::parse_document(html)
 }
 
-trait HtmlHelper {
+trait HtmlExt {
     fn dom_texts(&self, selector: &str) -> Result<Vec<String>>;
     fn dom_text(&self, selector: &str) -> Result<String> {
         let texts = self.dom_texts(selector)?;
@@ -168,7 +168,7 @@ trait HtmlHelper {
     fn dom_count(&self, selector: &str) -> Result<usize>;
 }
 
-impl HtmlHelper for Html {
+impl HtmlExt for Html {
     fn dom_texts(&self, selector: &str) -> Result<Vec<String>> {
         let mut texts = vec![];
 
