@@ -1,5 +1,4 @@
 use super::*;
-use std::str;
 
 def_regex2![
     URL  => r#"(.+-cid-\d+-id-\d+)"#

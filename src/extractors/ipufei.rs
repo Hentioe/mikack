@@ -1,8 +1,5 @@
 use super::*;
-use reqwest::blocking::multipart::Form;
-use reqwest::blocking::multipart::Part;
-use reqwest::blocking::Client;
-use std::str;
+use reqwest::blocking::{multipart::Form, multipart::Part, Client};
 
 def_regex2![
     PACKED  => r#"packed="([^"]+)""#

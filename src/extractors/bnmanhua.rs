@@ -1,6 +1,5 @@
 use super::*;
 use reqwest::blocking::Client;
-use std::str;
 
 def_regex2![
     DATA  => r#"<script>.+z_img=('[^']+')"#

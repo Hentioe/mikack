@@ -1,5 +1,4 @@
 use super::*;
-use std::str;
 
 def_regex2![
     COVER => r#"background: url("([^"]+)")"#

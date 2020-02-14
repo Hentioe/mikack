@@ -1,8 +1,9 @@
 use super::*;
-use reqwest::blocking::Client;
-use reqwest::header::CONTENT_TYPE;
+use reqwest::{
+    blocking::Client,
+    header::CONTENT_TYPE
+};
 use serde::Deserialize;
-use std::str;
 
 def_regex2![
     ID  => r#"https?://9hentai\.com/g/(\d+)"#
