@@ -6,13 +6,25 @@ def_regex2![
 ];
 
 /// 对 www.2animx.com 内容的抓取实现
-def_extractor! {[usable: true, pageable: false, searchable: false],
+def_extractor! {[usable: true, pageable: false, searchable: true],
     fn index(&self, _page: u32) -> Result<Vec<Comic>> {
         itemsgen2!(
-            url             = "http://www.2animx.com/index-update-date-30",
+            url             = "https://www.2animx.com/index-update",
             parent_dom      = ".latest-list > .liemh > li",
             cover_dom       = "a > img",
-            cover_prefix    = "http://www.2animx.com/",
+            cover_prefix    = "https://www.2animx.com/",
+            link_dom        = "a",
+        )
+    }
+
+    fn search(&self, keywords: &str) -> Result<Vec<Comic>> {
+        let url = format!("https://www.2animx.com/search-index?searchType=1&q={}", keywords);
+
+        itemsgen2!(
+            url             = &url,
+            parent_dom      = ".liemh > li",
+            cover_dom       = "a > img",
+            cover_prefix    = "https://www.2animx.com/",
             link_dom        = "a",
         )
     }
@@ -59,15 +71,19 @@ fn test_extr() {
     if extr.is_usable() {
         let comics = extr.index(1).unwrap();
         assert!(1 < comics.len());
-        let mut comic = Comic::new(
+        let mut comic1 = Comic::new(
             "風雲全集",
-            "http://www.2animx.com/index-comic-name-%E9%A2%A8%E9%9B%B2%E5%85%A8%E9%9B%86-id-7212",
+            "https://www.2animx.com/index-comic-name-風雲全集-id-7212",
         );
-        extr.fetch_chapters(&mut comic).unwrap();
-        assert_eq!(670, comic.chapters.len());
-        let chapter1 = &mut comic.chapters[23];
+        extr.fetch_chapters(&mut comic1).unwrap();
+        assert_eq!(670, comic1.chapters.len());
+        let chapter1 = &mut comic1.chapters[23];
         extr.fetch_pages_unsafe(chapter1).unwrap();
         assert_eq!("風雲全集 第23卷", chapter1.title);
         assert_eq!(26, chapter1.pages.len());
+        let comics = extr.search("风云全集").unwrap();
+        assert!(comics.len() > 0);
+        assert_eq!(comics[0].title, comic1.title);
+        assert_eq!(comics[0].url, comic1.url);
     }
 }
