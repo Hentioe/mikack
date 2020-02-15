@@ -136,7 +136,6 @@ fn test_extr() {
         assert_eq!(1, comic1.chapters.len());
         let chapter1 = &mut comic1.chapters[0];
         extr.fetch_pages_unsafe(chapter1).unwrap();
-        println!("{:?}", chapter1);
         assert_eq!(
             "(C97) [てまりきゃっと (爺わら)] お姉さんが養ってあげる [绅士仓库汉化]",
             chapter1.title
