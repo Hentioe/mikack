@@ -1,11 +1,11 @@
 use super::*;
+use std::cell::RefCell;
+use std::vec::Vec;
 
 def_regex2![
-    SERVER  => r#"//(.+\..+\..+)/data/t/"#,
-    PATH    => r#"//.+\..+\..+/data/t/(\d+/\d+)/\d+\..+"#,
     ID      => r#"https?://www\.wnacg\.org/photos-index-(page-\d+-)?aid-(\d+)\.html"#,
-    FORMAT  => r#"\.([^.]+)$"#,
-    COUNT   => r#"頁數：(\d+)P"#
+    COUNT   => r#"頁數：(\d+)P"#,
+    NEXT    => r#"imagePreload\.src = '([^']+)';"#
 ];
 
 /// 对 www.wnacg.org 内容的抓取实现
@@ -63,62 +63,60 @@ def_extractor! {[usable: true, pageable: true, searchable: true],
         let document = parse_document(&html);
 
         chapter.set_title(document.dom_attr(".uwthumb > img", "alt")?);
-        let path = match_content2!(
-            &document.dom_attr(".uwthumb > img", "src")?,
-            &*PATH_RE
-        )?;
         let total = match_content2!(
             &document.dom_text(".uwconn > label:nth-child(2)")?,
             &*COUNT_RE
         )?.parse::<i32>()?;
 
-        let fetch_page_addresses = move |page_document: &Html| -> Result<Vec<String>> {
-            let mut page_addresses = vec![];
-            for elem in page_document.select(&parse_selector(".cc > li")?) {
-                let name = elem
-                    .select(&parse_selector(".title > span:last-child")?)
-                    .next()
-                    .ok_or(err_msg("No name DOM found"))?
-                    .text()
-                    .next()
-                    .ok_or(err_msg("No name text found"))?
-                    .trim();
-                let prevew_address = elem
-                    .select(&parse_selector(".pic_box > a > img")?)
-                    .next()
-                    .ok_or(err_msg("No preview-image DOM found"))?
-                    .value()
-                    .attr("src")
-                    .ok_or(err_msg("No preview-image src found"))?;
-                let ext = match_content2!(&prevew_address, &*FORMAT_RE)?;
-                let file = format!("{}.{}", name, ext);
-                let server = match &match_content2!(&*prevew_address, &*SERVER_RE)?[..] {
-                    "t1.wnacg.download" => "img1.wnacg.download",
-                    _ => "img2.wnacg.download" // 已知的有 t2/t3 服务器映射到 img2
-                };
-                let address = format!(
-                    "https://{server}/data/{path}/{file}",
-                    server = server, path = path, file = file
-                );
-
-                page_addresses.push(address);
-            }
-            Ok(page_addresses)
-        };
-        let first_page_addresses = fetch_page_addresses(&document)?;
-        let fetch = Box::new(move |current_page: usize| {
+        let preview_documents = RefCell::new(Vec::<Html>::new());
+        let fetch_preview_document = move |current_page: usize| -> Result<Html> {
             let page_num = (current_page as f64 / 12.0).ceil() as usize;
-            let page_html = get(&make_page_url(page_num))?.text()?;
+            if preview_documents.borrow().len() < page_num { // 载入页面
+                let preview_html = get(&make_page_url(page_num))?.text()?;
+                let preview_docuement = parse_document(&preview_html);
+                {
+                    preview_documents.try_borrow_mut()?.push(preview_docuement.clone());
+                }
+
+                Ok(preview_docuement)
+            } else { // 返回网页文档
+                let preview_docuement = preview_documents.borrow()[page_num - 1].clone();
+
+                Ok(preview_docuement)
+            }
+        };
+        let fetch = Box::new(move |current_page: usize| {
+            let preview_document = fetch_preview_document(current_page)?;
+            let element_num = if current_page < 12 {
+                current_page
+            } else {
+                let rem = current_page % 12;
+                if rem == 0 { 12 } else { rem }
+            };
+            let page_path = preview_document.dom_attr(
+                &format!(".cc > li:nth-child({}) > .pic_box > a", element_num),
+                "href"
+            )?;
+            let page_html = get(&format!("https://www.wnacg.org{}", page_path))?.text()?;
             let page_document = parse_document(&page_html);
             let mut pages = vec![];
-            for (i, addr) in fetch_page_addresses(&page_document)?.iter().enumerate() {
-                pages.push(Page::new(current_page + i, addr))
+            let first_address = format!(
+                "https:{}",
+                page_document.dom_attr("#picarea", "src")?
+            );
+            pages.push(Page::new(current_page - 1, first_address));
+            if current_page < total as usize {
+                let next_address = format!(
+                    "https:{}",
+                    match_content2!(&page_html, &*NEXT_RE)?
+                );
+                pages.push(Page::new(current_page, next_address));
             }
 
             Ok(pages)
         });
 
-        Ok(ChapterPages::new(chapter, total, first_page_addresses, fetch))
+        Ok(ChapterPages::new(chapter, total, vec![], fetch))
     }
 }
 
@@ -129,19 +127,19 @@ fn test_extr() {
         let comics = extr.index(1).unwrap();
         assert_eq!(12, comics.len());
         let mut comic1 = Comic::new(
-            "(C97) [てまりきゃっと (爺わら)] お姉さんが養ってあげる [绅士仓库汉化]",
-            "https://www.wnacg.org/photos-index-aid-94345.html",
+            "[雛咲葉] ワルイヤツ [COMlC 快楽天ビースト 2017年2月号][不想记名汉化][无修正]",
+            "https://www.wnacg.org/photos-index-page-1-aid-89569.html",
         );
         extr.fetch_chapters(&mut comic1).unwrap();
         assert_eq!(1, comic1.chapters.len());
         let chapter1 = &mut comic1.chapters[0];
         extr.fetch_pages_unsafe(chapter1).unwrap();
         assert_eq!(
-            "(C97) [てまりきゃっと (爺わら)] お姉さんが養ってあげる [绅士仓库汉化]",
+            "[雛咲葉] ワルイヤツ [COMlC 快楽天ビースト 2017年2月号][不想记名汉化][无修正]",
             chapter1.title
         );
-        assert_eq!(28, chapter1.pages.len());
-        let comics = extr.search("お姉さんが養ってあげる").unwrap();
+        assert_eq!(27, chapter1.pages.len());
+        let comics = extr.search("ワルイヤツ").unwrap();
         assert!(comics.len() > 0);
         assert_eq!(comics[0].title, comic1.title);
         assert_eq!(comics[0].url, comic1.url);
