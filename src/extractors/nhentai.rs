@@ -1,7 +1,10 @@
 use super::*;
 
 /// 对 nhentai.net 内容的抓取实现
-def_extractor! {[usable: true, pageable: true, searchable: true],
+def_extractor! {
+    state	=> [usable: true, pageable: true, searchable: true],
+    tags	=> [English, Japanese, Chinese, NSFW],
+
     fn index(&self, page: u32) -> Result<Vec<Comic>> {
         let url = format!("https://nhentai.net/?page={}", page);
 

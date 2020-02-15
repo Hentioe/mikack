@@ -12,7 +12,10 @@ def_regex2![
 /// 对 comic.kukudm.com 内容的抓取实现
 /// 未来计划：
 /// - 可选择联通/电信
-def_extractor! {[usable: true, pageable: false, searchable: true],
+def_extractor! {
+	state	=> [usable: true, pageable: false, searchable: true],
+	tags	=> [Chinese],
+
     fn index(&self, _page: u32) -> Result<Vec<Comic>> {
         let url = "https://comic.kukudm.com/top100.htm";
 

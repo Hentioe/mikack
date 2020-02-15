@@ -6,7 +6,10 @@ def_regex2![
 ];
 
 /// 对 18h.animezilla.com 内容的抓取实现
-def_extractor! {[usable: true, pageable: true, searchable: false],
+def_extractor! {
+    state	=> [usable: true, pageable: true, searchable: false],
+    tags	=> [Chinese, NSFW],
+
     fn index(&self, page: u32) -> Result<Vec<Comic>> {
         let url = format!("https://18h.animezilla.com/manga/page/{}", page);
 
@@ -25,18 +28,12 @@ def_extractor! {[usable: true, pageable: true, searchable: false],
     }
 
     fn pages_iter<'a>(&'a self, chapter: &'a mut Chapter) -> Result<ChapterPages> {
-        chapter.url = match_content![
-            :text   => &chapter.url,
-            :regex  => &*URL_RE
-        ].to_string();
+        chapter.url = match_content2!(&chapter.url, &*URL_RE)?.to_string();
         let html = get(&chapter.url)?.text()?;
         let document = parse_document(&html);
         chapter.title = document.dom_attr(r#"meta[itemprop="name"]"#, "content")?;
         let last_url = document.dom_attr("a.last", "href")?;
-        let total = match_content![
-            :text   => &last_url,
-            :regex  => &*LAST_RE
-        ].parse::<i32>()?;
+        let total = match_content2!(&last_url, &*LAST_RE)?.parse::<i32>()?;
 
         let url = chapter.url.clone();
         let fetch = Box::new(move |current_page: usize| {

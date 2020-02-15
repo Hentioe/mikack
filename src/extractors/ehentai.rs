@@ -5,7 +5,10 @@ def_regex2! {
     URL      => r#"(https?://e-hentai\.org/g/\d+/[^/]+/)"#
 }
 
-def_extractor! {[usable: true, pageable: true, searchable: true],
+def_extractor! {
+    state	=> [usable: true, pageable: true, searchable: true],
+    tags	=> [English, Japanese, Chinese, NSFW],
+
     fn index(&self, page: u32) -> Result<Vec<Comic>> {
         let url = format!("https://e-hentai.org/?page={}", page - 1);
 
@@ -42,16 +45,10 @@ def_extractor! {[usable: true, pageable: true, searchable: true],
 
         chapter.title = document.dom_text("#gn")?;
         let count_text = document.dom_text("div.gtb > p.gpc")?;
-        let total = match_content![
-            :text   => &count_text,
-            :regex  => &*COUNT_RE
-        ].parse::<f64>()?;
+        let total = match_content2!(&count_text, &*COUNT_RE)?.parse::<f64>()?;
         let page_count = (total / 40.0).ceil() as u32;
 
-        let url = match_content![
-            :text   => &chapter.url,
-            :regex  => &*URL_RE
-        ];
+        let url = match_content2!(&chapter.url, &*URL_RE)?;
 
         let mut view_url_list = vec![];
         for i in 0..page_count {

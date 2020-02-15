@@ -5,7 +5,10 @@ def_regex2![
 ];
 
 /// 对 www.177mh.net 内容的抓取实现
-def_extractor! {[usable: true, pageable: true, searchable: true],
+def_extractor! {
+	state	=> [usable: true, pageable: true, searchable: true],
+	tags	=> [Chinese],
+
     fn index(&self, page: u32) -> Result<Vec<Comic>> {
         let url = urlgen2!(page - 1,
             first   = "https://www.177mh.net/lianzai/index.html",
@@ -46,10 +49,7 @@ def_extractor! {[usable: true, pageable: true, searchable: true],
         let html = get(&chapter.url)?.text()?;
         let document = parse_document(&html);
         chapter.title = document.dom_text("#tab_srv + h1 > a")?;
-        let decrypt_code = match_content![
-            :text   => &html,
-            :regex  => &*DECRYPT_RE
-        ];
+        let decrypt_code = match_content2!(&html, &*DECRYPT_RE)?;
 
         let wrap_code = wrap_code!(&decrypt_code, "
             var data = {msg: msg, img_s: img_s, link_z: link_z};

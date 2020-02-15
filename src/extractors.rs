@@ -1,5 +1,4 @@
-use crate::error::*;
-use crate::models::*;
+use crate::{error::*, models::*};
 use duang::duang;
 use encoding_rs::*;
 use quick_js::{Context, JsValue};
@@ -30,6 +29,8 @@ pub trait Extractor {
     def_ableitem![:usable, :searchable, :pageable];
 
     fn read_state(&self) -> &State;
+
+    fn tags(&self) -> &Vec<Tag>;
 
     fn index(&self, _page: u32) -> Result<Vec<Comic>> {
         Ok(vec![])
@@ -320,9 +321,10 @@ def_js_helper!(to_value: [
 ]);
 
 macro_rules! def_extractor {
-    ( [$($name:ident: $value:expr),*], $($tt:tt)* ) => {
+    ( state => [$($name:ident: $value:expr),*], tags => [$($tn:ident),*], $($tt:tt)* ) => {
         pub struct Extr {
             state: State,
+            tags: Vec<Tag>,
         }
         impl Extractor for Extr {
             $($tt)*
@@ -330,10 +332,14 @@ macro_rules! def_extractor {
             fn read_state(&self) -> &State {
                 &self.state
             }
+
+            fn tags(&self) -> &Vec<Tag> {
+                &self.tags
+            }
         }
         impl Extr {
-            fn new(state: State) -> Self {
-                Self { state }
+            fn new(state: State, tags: Vec<Tag>) -> Self {
+                Self { state, tags }
             }
         }
         pub fn new_extr() -> Extr {
@@ -341,53 +347,13 @@ macro_rules! def_extractor {
             $(
                 state.insert(stringify!($name), Box::new($value));
             )*
-            Extr::new(state)
-        }
-    };
-    ( $($tt:tt)* ) => {
-        def_extractor!{ [usable: false, searchable: false, pageable: false], $($tt)* }
-    }
-}
-
-macro_rules! keyword_list {
-    ( $( :$name:ident => $value:expr ),* ) => {
-        {
-            let keyword: HashMap<&str, &dyn std::any::Any> = std::collections::HashMap::new();
+            let mut tags = vec![];
             $(
-                keyword.insert(stringify!($name), $value);
+                tags.push(Tag::$tn);
             )*
-            keyword
+            Extr::new(state, tags)
         }
     };
-}
-
-macro_rules! keyword_fetch {
-    ($keyword:expr, $key:expr, $t:ty, $default:expr) => {
-        if let Some(v) = $keyword.get($key) {
-            v.downcast_ref::<$t>().unwrap_or($default)
-        } else {
-            $default
-        }
-    };
-}
-
-trait Keyword {
-    fn get_as<T>(&self, key: &str) -> Option<&T>
-    where
-        T: 'static;
-}
-
-impl Keyword for HashMap<&str, &dyn std::any::Any> {
-    fn get_as<T>(&self, key: &str) -> Option<&T>
-    where
-        T: 'static,
-    {
-        if let Some(v) = self.get(key) {
-            v.downcast_ref::<T>()
-        } else {
-            None
-        }
-    }
 }
 
 duang!(
@@ -579,27 +545,6 @@ macro_rules! def_regex2 {
     ( $( $name:ident => $str:expr ),* ) => {
         def_regex2![ $($name => $str,)* ];
     }
-}
-
-macro_rules! match_content {
-    ( $( :$name:ident => $value:expr ),* ) => {
-        {
-            let mut keyword = keyword_list![];
-            $(
-                keyword.insert(stringify!($name), $value);
-            )*
-
-            let text = keyword_fetch!(keyword, "text", String, &*DEFAULT_STRING);
-            let re = keyword_fetch!(keyword, "regex", Regex, &*DEFAULT_REGEX);
-            let group = keyword_fetch!(keyword, "group", usize, &1);
-            let caps = re.captures(text)
-                .ok_or(err_msg("No crypro code found"))?;
-
-            caps.get(*group)
-                .ok_or(err_msg("No crypro code found"))?
-                .as_str()
-        }
-    };
 }
 
 duang!(

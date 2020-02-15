@@ -39,7 +39,10 @@ impl Topic {
 }
 
 /// 对 www.kuaikanmanhua.com 内容的抓取实现
-def_extractor! {[usable: true, searchable: true, pageable: true],
+def_extractor! {
+	state	=> [usable: true, searchable: true, pageable: true],
+	tags	=> [Chinese],
+
     fn index(&self, page: u32) -> Result<Vec<Comic>> {
         let url = format!(
             "https://www.kuaikanmanhua.com/v1/search/by_tag?since={since}&count=48&f=3&tag=0&query_category=%7B%22update_status%22:1%7D",

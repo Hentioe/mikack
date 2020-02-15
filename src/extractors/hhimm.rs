@@ -5,7 +5,10 @@ lazy_static! {
     static ref DEFAULT_DOMAIN_NO: String = "0".to_string();
 }
 
-def_extractor! {[usable: true, pageable: false, searchable: true],
+def_extractor! {
+	state	=> [usable: true, pageable: false, searchable: true],
+	tags	=> [Chinese],
+
     fn index(&self, _page: u32) -> Result<Vec<Comic>> {
         let url = "http://www.hhimm.com/top/newrating.aspx";
 

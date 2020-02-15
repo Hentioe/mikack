@@ -7,7 +7,10 @@ def_regex2![
     COVER_URL   => r#"background-image: url\((.+)\)"#
 ];
 
-def_extractor! {[usable: true, pageable: false, searchable: true],
+def_extractor! {
+	state	=> [usable: true, pageable: false, searchable: true],
+	tags	=> [Chinese],
+
     fn index(&self, _page: u32) -> Result<Vec<Comic>> {
         let url = "https://www.dm5.com/manhua-new/";
 
@@ -80,11 +83,7 @@ def_extractor! {[usable: true, pageable: false, searchable: true],
             document.dom_text(".title > span.right-arrow:last-child")?);
 
         let page_count = document.dom_text("#chapterpager > a:last-child")?.parse::<i32>()?;
-
-        let params_code = match_content![
-            :text   => &html,
-            :regex  => &*PARAMS_CODE_RE
-        ];
+        let params_code = match_content2!(&html, &*PARAMS_CODE_RE)?;
 
         let warp_params_code = wrap_code!(params_code, r#"
             var params = {cid: DM5_CID, mid: COMIC_MID, dt: DM5_VIEWSIGN_DT, sign: DM5_VIEWSIGN};

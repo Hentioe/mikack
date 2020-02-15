@@ -5,7 +5,10 @@ def_regex2![
 ];
 
 /// 对 www.2animx.com 内容的抓取实现
-def_extractor! {[usable: true, pageable: false, searchable: true],
+def_extractor! {
+	state	=> [usable: true, pageable: false, searchable: true],
+	tags	=> [Chinese],
+
     fn index(&self, _page: u32) -> Result<Vec<Comic>> {
         itemsgen2!(
             url             = "https://www.2animx.com/index-update",
@@ -41,10 +44,7 @@ def_extractor! {[usable: true, pageable: false, searchable: true],
         let html = get(&chapter.url)?.text()?;
         let document = parse_document(&html);
         chapter.set_title(document.dom_attr("img#ComicPic", "alt")?);
-        let prue_url = match_content![
-            :text   => &chapter.url,
-            :regex  => &*URL_RE
-        ].to_string();
+        let prue_url = match_content2!(&chapter.url, &*URL_RE)?.to_string();
         let total = document.dom_text(".lookpage > a:last-child")?.parse::<i32>()?;
         let fetch = Box::new(move |current_page: usize| {
             let page_html = get(&format!("{}-p-{}", prue_url, current_page))?.text()?;

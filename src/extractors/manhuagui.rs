@@ -4,7 +4,10 @@ def_regex2![
     CTYPTO => r#"window\["\\x65\\x76\\x61\\x6c"\]\((.+)\)\s+</script>"#
 ];
 
-def_extractor! {[usable: true, pageable: false, searchable: true],
+def_extractor! {
+	state	=> [usable: true, pageable: false, searchable: true],
+	tags	=> [Chinese],
+
     fn index(&self, _page: u32) -> Result<Vec<Comic>> {
         let url = "https://www.manhuagui.com/update/";
 

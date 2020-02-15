@@ -5,7 +5,10 @@ def_regex2![
 ];
 
 /// 对 www.gufengmh8.com 内容的抓取实现
-def_extractor! {[usable: true, searchable: true, pageable: true],
+def_extractor! {
+	state	=> [usable: true, searchable: true, pageable: true],
+	tags	=> [Chinese],
+
     fn index(&self, page: u32) -> Result<Vec<Comic>> {
         let url = format!("https://www.gufengmh8.com/update/{}/", page);
 

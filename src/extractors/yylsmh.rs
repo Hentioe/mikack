@@ -5,7 +5,10 @@ def_regex2![
 ];
 
 /// 对 8comic.se 内容的抓取实现
-def_extractor! {[usable: true, pageable: true, searchable: true],
+def_extractor! {
+	state	=> [usable: true, pageable: true, searchable: true],
+	tags	=> [Chinese],
+
     fn index(&self, page: u32) -> Result<Vec<Comic>> {
         let url = format!("https://8comic.se/category/連載完結/漫畫連載/page/{}/", page);
 
@@ -47,10 +50,7 @@ def_extractor! {[usable: true, pageable: true, searchable: true],
         let html = get(&chapter.url)?.text()?;
         let document = parse_document(&html);
         chapter.title = document.dom_text(".entry-title")?;
-        let params = match_content![
-            :text   => &html,
-            :regex  => &*PARAMS_RE
-        ];
+        let params = match_content2!(&html, &*PARAMS_RE)?;
         let runtime = include_str!("../../runtime/yylsmh.js");
         let page_count = document.dom_attrs("#pull > option", "value")?.len() as i32;
         let current_src = document.dom_attr("#caonima", "src")?;

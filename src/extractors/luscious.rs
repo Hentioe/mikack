@@ -25,7 +25,10 @@ impl From<&ComicItem> for Comic {
 }
 
 /// 对 www.luscious.net 内容的抓取实现
-def_extractor! {[usable: true, pageable: true, searchable: true],
+def_extractor! {
+    state	=> [usable: true, pageable: true, searchable: true],
+    tags	=> [English, Japanese, Chinese, NSFW],
+
     fn index(&self, page: u32) -> Result<Vec<Comic>> {
         let mut url = String::from(r#"https://api.luscious.net/graphql/nobatch/?operationName=AlbumList&query=+query+AlbumList($input:+AlbumListInput!)+{+album+{+list(input:+$input)+{+info+{+...FacetCollectionInfo+}+items+{+...AlbumMinimal+}+}+}+}+fragment+FacetCollectionInfo+on+FacetCollectionInfo+{+page+has_next_page+has_previous_page+total_items+total_pages+items_per_page+url_complete+}+fragment+AlbumMinimal+on+Album+{+__typename+id+title+labels+description+created+modified+like_status+status+number_of_favorites+number_of_dislikes+number_of_pictures+number_of_animated_pictures+number_of_duplicates+slug+is_manga+url+download_url+permissions+created_by+{+id+url+name+display_name+user_title+avatar+{+url+size+}+}+cover+{+width+height+size+url+}+content+{+id+title+url+}+language+{+id+title+url+}+tags+{+id+category+text+url+count+}+genres+{+id+title+slug+url+}+audiences+{+id+title+url+}+}+&variables={"input":{"display":"date_trending","filters":[{"name":"album_type","value":"manga"}],"page":"#);
         url.push_str(&page.to_string());

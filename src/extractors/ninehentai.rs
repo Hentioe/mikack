@@ -42,7 +42,10 @@ impl Book {
 }
 
 /// 对 9hentai.com 内容的抓取实现
-def_extractor! {[usable: true, pageable: true, searchable: true],
+def_extractor! {
+	state	=> [usable: true, pageable: true, searchable: true],
+	tags	=> [English, NSFW],
+
     fn index(&self, page: u32) -> Result<Vec<Comic>> {
         let mut body = String::from(r#"{"search":{"text":"","page":"#);
         body.push_str(&page.to_string());

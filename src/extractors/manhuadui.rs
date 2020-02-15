@@ -5,7 +5,10 @@ def_regex2! [
     PATH        => r#"var\s*chapterPath\s*=\s*"([^"]+)""#
 ];
 
-def_extractor! {[usable: true, pageable: true, searchable: true],
+def_extractor! {
+	state	=> [usable: true, pageable: true, searchable: true],
+	tags	=> [Chinese],
+
     fn index(&self, page: u32) -> Result<Vec<Comic>> {
         let url = format!("https://www.manhuadui.com/update/{}/", page);
 

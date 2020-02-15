@@ -31,7 +31,10 @@ def_regex2![
     DATA    => r#"var g_search_data =\s?(\[.+\]);"#
 ];
 
-def_extractor! {[usable: true, pageable: true, searchable: true],
+def_extractor! {
+	state	=> [usable: true, pageable: true, searchable: true],
+	tags	=> [Chinese],
+
     fn index(&self, page: u32) -> Result<Vec<Comic>> {
         let url = format!("https://manhua.dmzj.com/update_{}.shtml", page);
 
@@ -71,10 +74,7 @@ def_extractor! {[usable: true, pageable: true, searchable: true],
 
     fn pages_iter<'a>(&'a self, chapter: &'a mut Chapter) -> Result<ChapterPages> {
         let html = get(&chapter.url)?.text()?;
-        let code = match_content![
-            :text   => &html,
-            :regex  => &*CTYPTO_RE
-        ];
+        let code = match_content2!(&html, &*CTYPTO_RE)?;
         let wrap_code = format!("{}\n{}", &code, "
             var obj = {
                 title: `${g_comic_name} ${g_chapter_name}`,

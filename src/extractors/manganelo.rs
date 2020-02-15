@@ -1,7 +1,10 @@
 use super::*;
 
 /// 对 manganelo.com 内容的抓取实现
-def_extractor! {[usable: true, pageable: true, searchable: true],
+def_extractor! {
+	state	=> [usable: true, pageable: true, searchable: true],
+	tags	=> [English],
+
     fn index(&self, page: u32) -> Result<Vec<Comic>> {
         let url = format!("https://manganelo.com/genre-all/{}", page);
 

@@ -8,7 +8,10 @@ def_regex2![
 /// 对 www.mangabz.com 内容的抓取实现
 /// 未来计划
 /// - 支持简繁体切换
-def_extractor! {[usable: true, pageable: true, searchable: true],
+def_extractor! {
+	state	=> [usable: true, pageable: true, searchable: true],
+	tags	=> [Chinese],
+
     fn index(&self, page: u32) -> Result<Vec<Comic>> {
         let url = format!("http://www.mangabz.com/manga-list-0-0-2-p{}/", page);
 

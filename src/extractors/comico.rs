@@ -40,7 +40,10 @@ struct ChapterArticle {
 }
 
 /// 对 www.comico.com.tw 内容的抓取实现
-def_extractor! {[usable: true, searchable: true, pageable: true],
+def_extractor! {
+    state	=> [usable: true, searchable: true, pageable: true],
+    tags	=> [Chinese],
+
     fn index(&self, page: u32) -> Result<Vec<Comic>> {
         let url = "http://www.comico.com.tw/challenge/updateList.nhn?order=update";
 

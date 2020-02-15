@@ -27,6 +27,27 @@ pub struct Comic {
     pub chapters: Vec<Chapter>,
 }
 
+pub enum Tag {
+    Chinese,
+    English,
+    Japanese,
+    NSFW,
+}
+
+use std::fmt;
+
+impl fmt::Display for Tag {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        let s = match self {
+            Tag::Chinese => "中文",
+            Tag::English => "英文",
+            Tag::Japanese => "日文",
+            Tag::NSFW => "NSFW",
+        };
+        write!(f, "{}", s)
+    }
+}
+
 static DEFAULT_MIME: &'static str = "*/*";
 
 impl Page {

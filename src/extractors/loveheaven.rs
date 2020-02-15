@@ -36,7 +36,10 @@ impl From<&SearchDataItem> for Comic {
 }
 
 /// 对 loveheaven.net 内容的抓取实现
-def_extractor! {[usable: true, pageable: true, searchable: true],
+def_extractor! {
+	state	=> [usable: true, pageable: true, searchable: true],
+	tags	=> [English],
+
     fn index(&self, page: u32) -> Result<Vec<Comic>> {
         let url = format!(
             "https://loveheaven.net/manga-list.html?listType=pagination&page={}&sort=last_update&sort_type=DESC",
