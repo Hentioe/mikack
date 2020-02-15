@@ -9,8 +9,6 @@ def_regex2![
 ];
 
 /// 对 www.wnacg.org 内容的抓取实现
-/// 实现细节：
-/// - 跳过第一张封面导致一些运算值进行过偏移
 def_extractor! {[usable: true, pageable: true, searchable: true],
     fn index(&self, page: u32) -> Result<Vec<Comic>> {
         let url = format!("https://www.wnacg.org/albums-index-page-{}.html", page);
@@ -72,13 +70,13 @@ def_extractor! {[usable: true, pageable: true, searchable: true],
         let total = match_content2!(
             &document.dom_text(".uwconn > label:nth-child(2)")?,
             &*COUNT_RE
-        )?.parse::<i32>()? - 1;
+        )?.parse::<i32>()?;
 
         let fetch_page_addresses = move |page_document: &Html| -> Result<Vec<String>> {
             let mut page_addresses = vec![];
             for elem in page_document.select(&parse_selector(".cc > li")?) {
                 let name = elem
-                    .select(&parse_selector(".title > span")?)
+                    .select(&parse_selector(".title > span:last-child")?)
                     .next()
                     .ok_or(err_msg("No name DOM found"))?
                     .text()
@@ -107,9 +105,9 @@ def_extractor! {[usable: true, pageable: true, searchable: true],
             }
             Ok(page_addresses)
         };
-        let first_page_addresses = fetch_page_addresses(&document)?[1..].to_vec();
+        let first_page_addresses = fetch_page_addresses(&document)?;
         let fetch = Box::new(move |current_page: usize| {
-            let page_num = ((current_page + 1) as f64 / 12.0).ceil() as usize;
+            let page_num = (current_page as f64 / 12.0).ceil() as usize;
             let page_html = get(&make_page_url(page_num))?.text()?;
             let page_document = parse_document(&page_html);
             let mut pages = vec![];
@@ -138,11 +136,12 @@ fn test_extr() {
         assert_eq!(1, comic1.chapters.len());
         let chapter1 = &mut comic1.chapters[0];
         extr.fetch_pages_unsafe(chapter1).unwrap();
+        println!("{:?}", chapter1);
         assert_eq!(
             "(C97) [てまりきゃっと (爺わら)] お姉さんが養ってあげる [绅士仓库汉化]",
             chapter1.title
         );
-        assert_eq!(27, chapter1.pages.len());
+        assert_eq!(28, chapter1.pages.len());
         let comics = extr.search("お姉さんが養ってあげる").unwrap();
         assert!(comics.len() > 0);
         assert_eq!(comics[0].title, comic1.title);
