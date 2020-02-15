@@ -1,7 +1,8 @@
 use super::*;
 
 def_regex2![
-    PATH    => r#"t3\.wnacg\.download/data/t/(\d+/\d+)/\d+\.jpg"#,
+    SERVER  => r#"//(.+\..+\..+)/data/t/"#,
+    PATH    => r#"//.+\..+\..+/data/t/(\d+/\d+)/\d+\..+"#,
     ID      => r#"https?://www\.wnacg\.org/photos-index-(page-\d+-)?aid-(\d+)\.html"#,
     FORMAT  => r#"\.([^.]+)$"#,
     COUNT   => r#"頁數：(\d+)P"#
@@ -93,9 +94,13 @@ def_extractor! {[usable: true, pageable: true, searchable: true],
                     .ok_or(err_msg("No preview-image src found"))?;
                 let ext = match_content2!(&prevew_address, &*FORMAT_RE)?;
                 let file = format!("{}.{}", name, ext);
+                let server = match &match_content2!(&*prevew_address, &*SERVER_RE)?[..] {
+                    "t1.wnacg.download" => "img1.wnacg.download",
+                    _ => "img2.wnacg.download" // 已知的有 t2/t3 服务器映射到 img2
+                };
                 let address = format!(
-                    "https://img2.wnacg.download/data/{path}/{file}",
-                    path = path, file = file
+                    "https://{server}/data/{path}/{file}",
+                    server = server, path = path, file = file
                 );
 
                 page_addresses.push(address);
