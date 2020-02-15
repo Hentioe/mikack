@@ -128,7 +128,7 @@ fn test_extr() {
         assert_eq!(12, comics.len());
         let mut comic1 = Comic::new(
             "[雛咲葉] ワルイヤツ [COMlC 快楽天ビースト 2017年2月号][不想记名汉化][无修正]",
-            "https://www.wnacg.org/photos-index-page-1-aid-89569.html",
+            "https://www.wnacg.org/photos-index-aid-89569.html",
         );
         extr.fetch_chapters(&mut comic1).unwrap();
         assert_eq!(1, comic1.chapters.len());
