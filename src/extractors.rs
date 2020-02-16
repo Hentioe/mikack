@@ -766,6 +766,54 @@ pub fn platforms() -> &'static HashMap<String, String> {
     &*PLATFORMS
 }
 
+pub fn find_platforms(includes: &[Tag], excludes: &[Tag]) -> HashMap<String, String> {
+    (&*PLATFORMS)
+        .iter()
+        .filter(|(domain, _)| {
+            if let Some(extr) = get_extr(*domain) {
+                // 包含标签
+                if includes.len() > 0 {
+                    extr.tags()
+                        .iter()
+                        .filter(|tag: &&Tag| includes.contains(*tag))
+                        .collect::<Vec<_>>()
+                        .len()
+                        > 0
+                } else {
+                    true
+                }
+            } else {
+                false
+            }
+        })
+        .filter(|(domain, _)| {
+            if let Some(extr) = get_extr(*domain) {
+                // 排除标签
+                extr.tags()
+                    .iter()
+                    .filter(|tag: &&Tag| excludes.contains(*tag))
+                    .collect::<Vec<_>>()
+                    .len()
+                    == 0
+            } else {
+                false
+            }
+        })
+        .map(|(domain, name)| (domain.to_string(), name.to_string()))
+        .collect::<HashMap<String, String>>()
+}
+
+#[test]
+fn test_find_platforms() {
+    let platforms = find_platforms(&[Tag::Chinese], &[]);
+    assert_eq!(
+        platforms.get("www.wnacg.org"),
+        Some(&String::from("紳士漫畫"))
+    );
+    let platforms = find_platforms(&[Tag::Chinese], &[Tag::NSFW]);
+    assert_eq!(platforms.get("www.wnacg.org"), None);
+}
+
 pub fn get_extr<S: Into<String>>(domain: S) -> Option<&'static ExtractorObject> {
     EXTRACTORS.get(&domain.into())
 }

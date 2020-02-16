@@ -27,26 +27,47 @@ pub struct Comic {
     pub chapters: Vec<Chapter>,
 }
 
-pub enum Tag {
-    Chinese,
-    English,
-    Japanese,
-    NSFW,
-}
+macro_rules! def_tags {
+    ($( {$name:tt: $str:expr} ),*,) => {
+        use std::fmt;
 
-use std::fmt;
+        #[derive(PartialEq, Debug, Clone, Serialize, Deserialize)]
+        pub enum Tag {
+            $(
+                $name,
+            )*
+        }
 
-impl fmt::Display for Tag {
-    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        let s = match self {
-            Tag::Chinese => "中文",
-            Tag::English => "英文",
-            Tag::Japanese => "日文",
-            Tag::NSFW => "NSFW",
-        };
-        write!(f, "{}", s)
+        impl fmt::Display for Tag {
+            fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+                let s = match self {
+                    $( Tag::$name => $str, )*
+                };
+                write!(f, "{}", s)
+            }
+        }
+
+        impl Tag {
+            #[allow(dead_code)]
+            fn all() -> Vec<Tag> {
+                let mut tags = vec![];
+                $( tags.push(Tag::$name); )*
+
+                tags
+            }
+        }
+    };
+    ($( {$name:tt: $str:expr} ),*) => {
+        def_tags[$( $name: $str )*,];
     }
 }
+
+def_tags![
+    {Chinese: "中文"},
+    {English: "英文"},
+    {Japanese: "日文"},
+    {NSFW: "NSFW"},
+];
 
 static DEFAULT_MIME: &'static str = "*/*";
 
