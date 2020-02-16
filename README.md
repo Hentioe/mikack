@@ -111,6 +111,26 @@ for (domain, name) in extractors::platforms().iter() {
 
 其中域名是获取平台对应的 Extractor 实例的必要参数，不过对于其它 API 调用而言，名称都是无用的（一般用于 UI 显示）。
 
+#### 过滤平台列表：
+
+```rust
+use manga_rs::{extractors, models::Tag};
+
+// 过滤平台列表
+// 参数一：包含的标签
+// 参数二：不包含的标签
+extractors::find_platforms(&[Tag::Chinese], &[Tag::NSFW]); // => 非 NSFW 的中文平台列表
+```
+
+使用标签过滤平台列表，标签来自：
+
+```rust
+use manga_rs::models::Tag;
+
+let tags = Tag::all();  // => 全部标签
+tags[0].to_string();    // => 标签名称
+```
+
 #### 获取指定的 Extractor
 
 ```rust
