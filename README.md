@@ -1,6 +1,8 @@
-# manga-rs
+# mikack
 
 跨平台的漫画库，旨在提供一套通用的接口访问不同来源的在线资源。
+
+_本项目曾经临时命名为 manga-rs_
 
 ## 周边项目
 
@@ -8,11 +10,11 @@
 
 ### 基于本库实现的工具：
 
-- [manga-cli](https://github.com/Hentioe/manga-cli)（使用 Rust 的 native 程序，适用于命令行）
-- manga-mobile（使用 Flutter 或 React Native，适用于手机）
-- manga-desktop（使用 Electron，适用于桌面系统）
+- [mikack-cli](https://github.com/Hentioe/mikack-cli)（使用 Rust 的 native 程序，适用于命令行）
+- mikack-mobile（使用 Flutter 或 React Native，适用于手机）
+- mikack-desktop（使用 Electron，适用于桌面系统）
 
-注意，manga-cli 项目由于技术同构的原因直接使用了 Rust 接口，参考性较低。
+注意，mikack-cli 项目由于技术同构的原因直接使用了 Rust 接口，参考性较低。
 
 **手机版和桌面版还在预备开发中。**
 
@@ -99,7 +101,7 @@
 #### 获取平台列表：
 
 ```rust
-use manga_rs::extractors;
+use mikack::extractors;
 
 for (domain, name) in extractors::platforms().iter() {
     domain  // => 平台域名
@@ -114,7 +116,7 @@ for (domain, name) in extractors::platforms().iter() {
 #### 过滤平台列表：
 
 ```rust
-use manga_rs::{extractors, models::Tag};
+use mikack::{extractors, models::Tag};
 
 // 过滤平台列表
 // 参数一：包含的标签
@@ -125,7 +127,7 @@ extractors::find_platforms(&[Tag::Chinese], &[Tag::NSFW]); // => 非 NSFW 的中
 使用标签过滤平台列表，标签来自：
 
 ```rust
-use manga_rs::models::Tag;
+use mikack::models::Tag;
 
 let tags = Tag::all();  // => 全部标签
 tags[0].to_string();    // => 标签名称
@@ -134,7 +136,7 @@ tags[0].to_string();    // => 标签名称
 #### 获取指定的 Extractor
 
 ```rust
-use manga_rs::extractors;
+use mikack::extractors;
 
 let domain = "www.example.com";
 let extractor = extractors::get_extr(domain).expect(&format!("Unsupported platform {}", domain));
