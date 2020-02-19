@@ -58,7 +58,7 @@ _本项目曾经临时命名为 manga-rs_
 | 新新漫画网       | [www.177mh.net](https://www.177mh.net)                 |   ⭕️    |          中文          |
 | YYLS 漫畫        | [8comic.se](https://8comic.se)                         |   ⭕️    |          中文          |
 
-不支持你需要的平台？请在 [Issues](https://github.com/Hentioe/manga-rs/issues) 中告诉我。
+不支持你需要的平台？请在 [Issues](https://github.com/Hentioe/mikack/issues) 中告诉我。
 
 ## 文档说明
 
@@ -226,7 +226,7 @@ if let Some(page) = iter.next()? {
 }
 ```
 
-迭代器 API 是懒加载的，适合在线阅读用途的客户端应用。值得一提的是 [manga-cli](https://github.com/Hentioe/manga-cli) 项目也使用迭代器 API，因为它要显示加载进度。所以实际上大多数场景都推荐使用迭代器 API。
+迭代器 API 是懒加载的，适合在线阅读用途的客户端应用。值得一提的是 [mikack-cli](https://github.com/Hentioe/mikack-cli) 项目也使用迭代器 API，因为它要显示加载进度。所以实际上大多数场景都推荐使用迭代器 API。
 
 如果您不在意资源获取的延迟问题，也可以使用更简单的 `fetch_pages` 方法。它将页面列表填充到参数 `chapter` 对象中，此处不做演示。
 
