@@ -1,6 +1,7 @@
 use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
 use std::path::Path;
+use num_derive::FromPrimitive;
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct Page {
@@ -31,7 +32,7 @@ macro_rules! def_tags {
     ($( {$name:tt: $str:expr} ),*,) => {
         use std::fmt;
 
-        #[derive(PartialEq, Debug, Copy, Clone)]
+        #[derive(PartialEq, Debug, Copy, Clone, FromPrimitive)]
         pub enum Tag {
             $(
                 $name,
@@ -49,11 +50,16 @@ macro_rules! def_tags {
 
         impl Tag {
             #[allow(dead_code)]
-            pub fn all() -> Vec<Tag> {
+            pub fn all() -> Vec<Self> {
                 let mut tags = vec![];
                 $( tags.push(Tag::$name); )*
 
                 tags
+            }
+
+            #[allow(dead_code)]
+            pub fn from_i32(value: i32) -> Option<Self> {
+                num::FromPrimitive::from_i32(value)
             }
         }
     };
