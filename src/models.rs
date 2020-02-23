@@ -49,7 +49,7 @@ macro_rules! def_tags {
 
         impl Tag {
             #[allow(dead_code)]
-            fn all() -> Vec<Tag> {
+            pub fn all() -> Vec<Tag> {
                 let mut tags = vec![];
                 $( tags.push(Tag::$name); )*
 
