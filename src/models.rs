@@ -31,7 +31,7 @@ macro_rules! def_tags {
     ($( {$name:tt: $str:expr} ),*,) => {
         use std::fmt;
 
-        #[derive(PartialEq, Debug, Clone, Serialize, Deserialize)]
+        #[derive(PartialEq, Debug, Copy, Clone)]
         pub enum Tag {
             $(
                 $name,
