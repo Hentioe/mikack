@@ -6,6 +6,7 @@ use regex::Regex;
 use std::any::Any;
 use std::borrow::Cow;
 use std::collections::HashMap;
+use std::vec::Vec;
 
 macro_rules! def_ableitem {
     ( $(:$name:ident),* ) => {
@@ -766,7 +767,7 @@ pub fn platforms() -> &'static HashMap<String, String> {
     &*PLATFORMS
 }
 
-pub fn find_platforms(includes: &[Tag], excludes: &[Tag]) -> HashMap<String, String> {
+pub fn find_platforms(includes: Vec<Tag>, excludes: Vec<Tag>) -> HashMap<String, String> {
     (&*PLATFORMS)
         .iter()
         .filter(|(domain, _)| {
@@ -805,12 +806,12 @@ pub fn find_platforms(includes: &[Tag], excludes: &[Tag]) -> HashMap<String, Str
 
 #[test]
 fn test_find_platforms() {
-    let platforms = find_platforms(&[Tag::Chinese], &[]);
+    let platforms = find_platforms(vec![Tag::Chinese], vec![]);
     assert_eq!(
         platforms.get("www.wnacg.org"),
         Some(&String::from("紳士漫畫"))
     );
-    let platforms = find_platforms(&[Tag::Chinese], &[Tag::NSFW]);
+    let platforms = find_platforms(vec![Tag::Chinese], vec![Tag::NSFW]);
     assert_eq!(platforms.get("www.wnacg.org"), None);
 }
 
