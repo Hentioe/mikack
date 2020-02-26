@@ -8,10 +8,15 @@ _本项目曾经临时命名为 manga-rs_
 
 本项目仅仅是一个库，以 C ABI 兼容的形式公开接口，支持多种操作系统和编程语言。
 
-### 基于本库实现的工具：
+### 绑定和其它衍生库
+
+- [mikack-ffi](https://github.com/Hentioe/mikack-cli)（外部接口，以 C ABI 为主）
+- [mikack-dart](https://github.com/Hentioe/mikack-dart)（Dart 语言实现的绑定）
+
+### 基于本库实现的工具
 
 - [mikack-cli](https://github.com/Hentioe/mikack-cli)（使用 Rust 的 native 程序，适用于命令行）
-- mikack-mobile（使用 Flutter 或 React Native，适用于手机）
+- mikack-mobile（使用 Flutter，适用于手机）
 - mikack-desktop（使用 Electron，适用于桌面系统）
 
 注意，mikack-cli 项目由于技术同构的原因直接使用了 Rust 接口，参考性较低。
@@ -96,7 +101,7 @@ _本项目曾经临时命名为 manga-rs_
 
 这类定义了平台行为的组件被称作 Extracotr（提取器），它本至上是一个个 Rust 中的 Trait 对象。
 
-### 基本 API
+### 基本 API（Rust 原生）
 
 #### 获取平台列表：
 

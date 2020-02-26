@@ -1,7 +1,7 @@
+use num_derive::FromPrimitive;
 use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
 use std::path::Path;
-use num_derive::FromPrimitive;
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct Page {
