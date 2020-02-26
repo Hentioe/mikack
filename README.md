@@ -10,7 +10,7 @@ _本项目曾经临时命名为 manga-rs_
 
 ### 绑定和其它衍生库
 
-- [mikack-ffi](https://github.com/Hentioe/mikack-cli)（外部接口，以 C ABI 为主）
+- [mikack-ffi](https://github.com/Hentioe/mikack-ffi)（外部接口，以 C ABI 为主）
 - [mikack-dart](https://github.com/Hentioe/mikack-dart)（Dart 语言实现的绑定）
 
 ### 基于本库实现的工具
