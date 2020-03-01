@@ -2,8 +2,6 @@
 
 跨平台的漫画库，旨在提供一套通用的接口访问不同来源的在线资源。
 
-_本项目曾经临时命名为 manga-rs_
-
 ## 周边生态
 
 本项目仅仅是一个库，对其它操作系统和编程语言的支持请使用 FFI 衍生库或各种绑定。如果你是普通用户，请跳转至已开发完成的工具。
@@ -16,12 +14,12 @@ _本项目曾经临时命名为 manga-rs_
 ### 基于本库实现的工具
 
 - [mikack-cli](https://github.com/Hentioe/mikack-cli)（使用 Rust 的 native 程序，适用于命令行）
-- mikack-mobile（使用 Flutter，适用于手机）
+- [mikack-mobile](https://github.com/Hentioe/mikack-mobile)（使用 Flutter，适用于手机）
 - mikack-desktop（使用 Electron，适用于桌面系统）
 
 注意，mikack-cli 项目由于技术同构的原因直接使用了 Rust 接口，参考性较低。
 
-**手机版和桌面版还在预备开发中。**
+_桌面版开发计划还未启动。_
 
 注意：本项目占比很高的 Javascript 代码作用于某些平台资源的加解密，和具体实现/接口无关。所以没有 JS 能直接访问的接口，需要作为 native 模块通过 binding 使用。
 
