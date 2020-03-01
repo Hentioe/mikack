@@ -8,7 +8,7 @@ use std::borrow::Cow;
 use std::collections::HashMap;
 use std::vec::Vec;
 
-macro_rules! def_ableitem {
+macro_rules! def_bstate {
     ( $(:$name:ident),* ) => {
         paste::item! {
             $(
@@ -24,10 +24,25 @@ macro_rules! def_ableitem {
     };
 }
 
+macro_rules! def_status_access {
+    ( $type:pat, $key:ident ) => {
+        paste::item! {
+            fn [<get_ $key>](&self) -> Option<&$type> {
+                if let Some(item) = self.read_state().get(format!(stringify!($key)).as_str()) {
+                    item.downcast_ref::<$type>()
+                } else {
+                    None
+                }
+            }
+        }
+    };
+}
+
 type State = HashMap<&'static str, Box<dyn Any + Send + Sync>>;
 
 pub trait Extractor {
-    def_ableitem![:usable, :searchable, :pageable];
+    def_bstate![:usable, :searchable, :pageable, :https];
+    def_status_access!(&str, favicon);
 
     fn read_state(&self) -> &State;
 
@@ -1148,4 +1163,10 @@ fn test_routes() {
     assert_routes!("8comic.se",
         :chapter => "http://8comic.se/879/"
     );
+}
+
+#[test]
+fn test_favicons() {
+    let favicon = get_extr("8comic.se").unwrap().get_favicon().unwrap();
+    assert_eq!("https://8comic.se/favicon.ico", *favicon);
 }

@@ -13,18 +13,21 @@ def_regex2![
 /// 未来计划：
 /// - 可选择联通/电信
 def_extractor! {
-	state	=> [usable: true, pageable: false, searchable: true],
+	state	=> [
+		usable: true, pageable: false, searchable: true, https: false,
+		favicon: "http://comic.ikkdm.com/favicon.ico"
+	],
 	tags	=> [Chinese],
 
     fn index(&self, _page: u32) -> Result<Vec<Comic>> {
-        let url = "https://comic.kukudm.com/top100.htm";
+        let url = "http://comic.kukudm.com/top100.htm";
 
         let mut comics = itemsgen2!(
             url             = &url,
             parent_dom      = "#comicmain > dd",
             cover_dom       = "a > img",
             link_dom        = "a:nth-child(2)",
-            link_prefix     = "https://comic.kukudm.com",
+            link_prefix     = "http://comic.kukudm.com",
             encoding        = GBK
         )?;
         comics.iter_mut().for_each(|c: &mut Comic| {
@@ -39,7 +42,7 @@ def_extractor! {
     fn search(&self, keywords: &str) -> Result<Vec<Comic>> {
         let keywords_bytes = &encode_text(keywords, GBK)?[..];
         let keywords_encoded: String = byte_serialize(keywords_bytes).collect();
-        let url = format!("https://so.kukudm.com/search.asp?kw={}", keywords_encoded);
+        let url = format!("http://so.kukudm.com/search.asp?kw={}", keywords_encoded);
 
         let mut comics = itemsgen2!(
             url             = &url,
@@ -61,7 +64,7 @@ def_extractor! {
         itemsgen2!(
             url             = &comic.url,
             target_dom      = "#comiclistn > dd > a:nth-child(1)",
-            link_prefix     = "https://comic.kukudm.com",
+            link_prefix     = "http://comic.kukudm.com",
             encoding        = GBK
         )?.attach_to(comic);
 
@@ -77,7 +80,7 @@ def_extractor! {
 
         let fetch_page = |page_html: &str| -> Result<String> {
             let img_path = match_content2!(page_html, &*IMG_RE)?;
-            let address = format!("https://s2.kukudm.com/{}", img_path);
+            let address = format!("http://s2.kukudm.com/{}", img_path);
 
             Ok(address)
         };

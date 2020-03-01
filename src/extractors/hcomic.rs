@@ -3,7 +3,10 @@ use reqwest::blocking::Client;
 
 /// 对 c-upp.com 内容的抓取实现
 def_extractor! {
-    state	=> [usable: true, pageable: true, searchable: true],
+    state	=> [
+		usable: true, pageable: true, searchable: true, https: true,
+		favicon: "https://c-upp.com/favicon.ico"
+	],
     tags	=> [English, Japanese, Chinese, NSFW],
 
     fn index(&self, page: u32) -> Result<Vec<Comic>> {

@@ -6,7 +6,10 @@ def_regex2![
 
 /// 对 www.2animx.com 内容的抓取实现
 def_extractor! {
-	state	=> [usable: true, pageable: false, searchable: true],
+	state	=> [
+		usable: true, pageable: false, searchable: true, https: true,
+		favicon: "https://www.2animx.com/favicon.ico"
+	],
 	tags	=> [Chinese],
 
     fn index(&self, _page: u32) -> Result<Vec<Comic>> {

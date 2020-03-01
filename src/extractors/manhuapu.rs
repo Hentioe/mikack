@@ -8,7 +8,9 @@ def_regex2![
 
 /// 对 www.manhuapu.com 内容的抓取实现
 def_extractor! {
-	state	=> [usable: true, pageable: false, searchable: true],
+	state	=> [
+		usable: true, pageable: false, searchable: true, https: false
+	],
 	tags	=> [Chinese],
 
     fn index(&self, _page: u32) -> Result<Vec<Comic>> {

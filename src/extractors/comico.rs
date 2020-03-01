@@ -41,7 +41,10 @@ struct ChapterArticle {
 
 /// 对 www.comico.com.tw 内容的抓取实现
 def_extractor! {
-    state	=> [usable: true, searchable: true, pageable: true],
+    state	=> [
+		usable: true, searchable: true, pageable: true, https: false,
+		favicon: "http://www.comico.com.tw/favicon.ico"
+	],
     tags	=> [Chinese],
 
     fn index(&self, page: u32) -> Result<Vec<Comic>> {

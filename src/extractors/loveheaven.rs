@@ -37,7 +37,10 @@ impl From<&SearchDataItem> for Comic {
 
 /// 对 loveheaven.net 内容的抓取实现
 def_extractor! {
-	state	=> [usable: true, pageable: true, searchable: true],
+	state	=> [
+		usable: true, pageable: true, searchable: true, https: true,
+		favicon: "https://loveheaven.net/favicon.ico"
+	],
 	tags	=> [English],
 
     fn index(&self, page: u32) -> Result<Vec<Comic>> {

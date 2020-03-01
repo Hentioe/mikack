@@ -6,7 +6,10 @@ lazy_static! {
 }
 
 def_extractor! {
-	state	=> [usable: true, pageable: false, searchable: true],
+	state	=> [
+		usable: true, pageable: false, searchable: true, https: false,
+		favicon: "http://www.hhimm.com/favicon.ico"
+	],
 	tags	=> [Chinese],
 
     fn index(&self, _page: u32) -> Result<Vec<Comic>> {

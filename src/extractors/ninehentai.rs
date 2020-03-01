@@ -43,7 +43,10 @@ impl Book {
 
 /// 对 9hentai.com 内容的抓取实现
 def_extractor! {
-	state	=> [usable: true, pageable: true, searchable: true],
+	state	=> [
+		usable: true, pageable: true, searchable: true, https: true,
+		favicon: "https://9hentai.com/images/favicon/favicon-32x32.png"
+	],
 	tags	=> [English, NSFW],
 
     fn index(&self, page: u32) -> Result<Vec<Comic>> {

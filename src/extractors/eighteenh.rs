@@ -7,7 +7,10 @@ def_regex2![
 
 /// 对 18h.animezilla.com 内容的抓取实现
 def_extractor! {
-    state	=> [usable: true, pageable: true, searchable: false],
+    state	=> [
+		usable: true, pageable: true, searchable: false, https: true,
+		favicon: "https://18h.animezilla.com/favicon.ico"
+	],
     tags	=> [Chinese, NSFW],
 
     fn index(&self, page: u32) -> Result<Vec<Comic>> {

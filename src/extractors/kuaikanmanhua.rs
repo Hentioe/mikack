@@ -40,7 +40,10 @@ impl Topic {
 
 /// 对 www.kuaikanmanhua.com 内容的抓取实现
 def_extractor! {
-	state	=> [usable: true, searchable: true, pageable: true],
+	state	=> [
+		usable: true, searchable: true, pageable: true, https: true,
+		favicon: "https://www.kuaikanmanhua.com/favicon.ico"
+	],
 	tags	=> [Chinese],
 
     fn index(&self, page: u32) -> Result<Vec<Comic>> {

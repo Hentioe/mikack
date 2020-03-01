@@ -7,7 +7,10 @@ def_regex2![
 
 /// 对 www.ipufei.com 内容的抓取实现
 def_extractor! {
-	state	=> [usable: true, pageable: true, searchable: true],
+	state	=> [
+		usable: false, pageable: true, searchable: true, https: false,
+		favicon: "http://www.ipufei.com/favicon.ico"
+	],
 	tags	=> [Chinese],
 
     fn index(&self, page: u32) -> Result<Vec<Comic>> {

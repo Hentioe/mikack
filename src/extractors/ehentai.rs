@@ -6,7 +6,10 @@ def_regex2! {
 }
 
 def_extractor! {
-    state	=> [usable: true, pageable: true, searchable: true],
+    state	=> [
+		usable: true, pageable: true, searchable: true, https: true,
+		favicon: "https://e-hentai.org/favicon.ico"
+	],
     tags	=> [English, Japanese, Chinese, NSFW],
 
     fn index(&self, page: u32) -> Result<Vec<Comic>> {

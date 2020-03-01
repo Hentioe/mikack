@@ -5,7 +5,10 @@ def_regex2![
 ];
 
 def_extractor! {
-	state	=> [usable: true, pageable: false, searchable: true],
+	state	=> [
+		usable: true, pageable: false, searchable: true, https: true,
+		favicon: "https://www.manhuagui.com/favicon.ico"
+	],
 	tags	=> [Chinese],
 
     fn index(&self, _page: u32) -> Result<Vec<Comic>> {

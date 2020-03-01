@@ -6,7 +6,10 @@ def_regex2![
 
 /// 对 www.177mh.net 内容的抓取实现
 def_extractor! {
-	state	=> [usable: true, pageable: true, searchable: true],
+	state	=> [
+		usable: true, pageable: true, searchable: true, https: true,
+		favicon: "https://www.177mh.net/favicon.ico"
+	],
 	tags	=> [Chinese],
 
     fn index(&self, page: u32) -> Result<Vec<Comic>> {
