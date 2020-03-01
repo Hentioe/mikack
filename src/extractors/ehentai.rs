@@ -6,7 +6,7 @@ def_regex2! {
 }
 
 def_extractor! {
-    state	=> [
+    status	=> [
 		usable: true, pageable: true, searchable: true, https: true,
 		favicon: "https://e-hentai.org/favicon.ico"
 	],

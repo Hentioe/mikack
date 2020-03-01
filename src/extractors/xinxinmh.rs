@@ -6,7 +6,7 @@ def_regex2![
 
 /// 对 www.177mh.net 内容的抓取实现
 def_extractor! {
-	state	=> [
+	status	=> [
 		usable: true, pageable: true, searchable: true, https: true,
 		favicon: "https://www.177mh.net/favicon.ico"
 	],

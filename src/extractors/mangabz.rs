@@ -9,7 +9,7 @@ def_regex2![
 /// 未来计划
 /// - 支持简繁体切换
 def_extractor! {
-	state	=> [
+	status	=> [
 		usable: true, pageable: true, searchable: true, https: false,
 		favicon: "http://www.mangabz.com/favicon.ico"
 	],

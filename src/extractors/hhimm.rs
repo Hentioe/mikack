@@ -6,7 +6,7 @@ lazy_static! {
 }
 
 def_extractor! {
-	state	=> [
+	status	=> [
 		usable: true, pageable: false, searchable: true, https: false,
 		favicon: "http://www.hhimm.com/favicon.ico"
 	],

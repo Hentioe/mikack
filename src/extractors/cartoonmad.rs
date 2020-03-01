@@ -6,7 +6,7 @@ use url::form_urlencoded::byte_serialize;
 /// 优化空间：
 /// - 复用 pages_iter 方法的第一个 URL 内容
 def_extractor! {
-    state	=> [
+    status	=> [
 		usable: true, pageable: true, searchable: true, https: true,
 		favicon: "https://www.cartoonmad.com/favicon.ico"
 	],

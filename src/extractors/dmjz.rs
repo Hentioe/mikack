@@ -32,7 +32,7 @@ def_regex2![
 ];
 
 def_extractor! {
-	state	=> [
+	status	=> [
 		usable: true, pageable: true, searchable: true, https: true,
 		favicon: "https://manhua.dmzj.com/favicon.ico"
 	],

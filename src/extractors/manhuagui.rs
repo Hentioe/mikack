@@ -5,7 +5,7 @@ def_regex2![
 ];
 
 def_extractor! {
-	state	=> [
+	status	=> [
 		usable: true, pageable: false, searchable: true, https: true,
 		favicon: "https://www.manhuagui.com/favicon.ico"
 	],

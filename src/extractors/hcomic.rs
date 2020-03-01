@@ -3,7 +3,7 @@ use reqwest::blocking::Client;
 
 /// 对 c-upp.com 内容的抓取实现
 def_extractor! {
-    state	=> [
+    status	=> [
 		usable: true, pageable: true, searchable: true, https: true,
 		favicon: "https://c-upp.com/favicon.ico"
 	],

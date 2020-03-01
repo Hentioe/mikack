@@ -8,7 +8,7 @@ def_regex2![
 
 /// 对 www.manhuapu.com 内容的抓取实现
 def_extractor! {
-	state	=> [
+	status	=> [
 		usable: true, pageable: false, searchable: true, https: false
 	],
 	tags	=> [Chinese],

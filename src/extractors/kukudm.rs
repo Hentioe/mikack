@@ -13,7 +13,7 @@ def_regex2![
 /// 未来计划：
 /// - 可选择联通/电信
 def_extractor! {
-	state	=> [
+	status	=> [
 		usable: true, pageable: false, searchable: true, https: false,
 		favicon: "http://comic.ikkdm.com/favicon.ico"
 	],

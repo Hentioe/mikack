@@ -8,13 +8,13 @@ use std::borrow::Cow;
 use std::collections::HashMap;
 use std::vec::Vec;
 
-macro_rules! def_bstate {
+macro_rules! def_bool_status {
     ( $(:$name:ident),* ) => {
         paste::item! {
             $(
                 fn [<is_ $name>](&self) -> bool {
-                    if let Some(ableitem) = self.read_state().get(format!(stringify!($name)).as_str()) {
-                        ableitem.downcast_ref::<bool>() == Some(&true)
+                    if let Some(item) = self.read_status().get(format!(stringify!($name)).as_str()) {
+                        item.downcast_ref::<bool>() == Some(&true)
                     } else {
                         false
                     }
@@ -28,7 +28,7 @@ macro_rules! def_status_access {
     ( $type:pat, $key:ident ) => {
         paste::item! {
             fn [<get_ $key>](&self) -> Option<&$type> {
-                if let Some(item) = self.read_state().get(format!(stringify!($key)).as_str()) {
+                if let Some(item) = self.read_status().get(format!(stringify!($key)).as_str()) {
                     item.downcast_ref::<$type>()
                 } else {
                     None
@@ -38,13 +38,13 @@ macro_rules! def_status_access {
     };
 }
 
-type State = HashMap<&'static str, Box<dyn Any + Send + Sync>>;
+type Status = HashMap<&'static str, Box<dyn Any + Send + Sync>>;
 
 pub trait Extractor {
-    def_bstate![:usable, :searchable, :pageable, :https];
+    def_bool_status![:usable, :searchable, :pageable, :https];
     def_status_access!(&str, favicon);
 
-    fn read_state(&self) -> &State;
+    fn read_status(&self) -> &Status;
 
     fn tags(&self) -> &Vec<Tag>;
 
@@ -337,16 +337,16 @@ def_js_helper!(to_value: [
 ]);
 
 macro_rules! def_extractor {
-    ( state => [$($name:ident: $value:expr),*], tags => [$($tn:ident),*], $($tt:tt)* ) => {
+    ( status => [$($name:ident: $value:expr),*], tags => [$($tn:ident),*], $($tt:tt)* ) => {
         pub struct Extr {
-            state: State,
+            status: Status,
             tags: Vec<Tag>,
         }
         impl Extractor for Extr {
             $($tt)*
 
-            fn read_state(&self) -> &State {
-                &self.state
+            fn read_status(&self) -> &Status {
+                &self.status
             }
 
             fn tags(&self) -> &Vec<Tag> {
@@ -354,20 +354,20 @@ macro_rules! def_extractor {
             }
         }
         impl Extr {
-            fn new(state: State, tags: Vec<Tag>) -> Self {
-                Self { state, tags }
+            fn new(status: Status, tags: Vec<Tag>) -> Self {
+                Self { status, tags }
             }
         }
         pub fn new_extr() -> Extr {
-            let mut state = State::new();
+            let mut status = Status::new();
             $(
-                state.insert(stringify!($name), Box::new($value));
+                status.insert(stringify!($name), Box::new($value));
             )*
             let mut tags = vec![];
             $(
                 tags.push(Tag::$tn);
             )*
-            Extr::new(state, tags)
+            Extr::new(status, tags)
         }
     };
 }

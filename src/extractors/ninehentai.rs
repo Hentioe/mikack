@@ -43,7 +43,7 @@ impl Book {
 
 /// 对 9hentai.com 内容的抓取实现
 def_extractor! {
-	state	=> [
+	status	=> [
 		usable: true, pageable: true, searchable: true, https: true,
 		favicon: "https://9hentai.com/images/favicon/favicon-32x32.png"
 	],

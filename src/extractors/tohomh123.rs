@@ -14,7 +14,7 @@ def_regex2![
 
 /// 对 www.tohomh123.com 内容的抓取实现
 def_extractor! {
-	state	=> [
+	status	=> [
 		usable: true, pageable: true, searchable: true, https: true,
 		favicon: "https://www.tohomh123.com/favicon.ico"
 	],

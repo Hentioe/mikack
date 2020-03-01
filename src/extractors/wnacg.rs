@@ -10,7 +10,7 @@ def_regex2![
 
 /// 对 www.wnacg.org 内容的抓取实现
 def_extractor! {
-	state	=> [
+	status	=> [
 		usable: true, pageable: true, searchable: true, https: true,
 		favicon: "https://www.wnacg.org/favicon.ico"
 	],
