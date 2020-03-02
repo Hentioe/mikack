@@ -7,17 +7,20 @@ def_regex2![
 /// 对 www.bidongmh.com 内容的抓取实现
 def_extractor! {
     status	=> [
-		usable: true, pageable: true, searchable: true, https: true,
-		favicon: "https://www.bidongmh.com/static/images/favicon.ico"
-	],
+        usable: true, pageable: false, searchable: true, https: true,
+        favicon: "https://www.bidongmh.com/static/images/favicon.ico"
+    ],
     tags	=> [Chinese, NSFW],
 
-    fn index(&self, page: u32) -> Result<Vec<Comic>> {
-        let url = format!("https://www.bidongmh.com/update?page={}", page);
+    fn index(&self, _page: u32) -> Result<Vec<Comic>> {
+        let url = "https://www.bidongmh.com/";
 
         itemsgen2!(
-            url             = &url,
-            target_dom      = ".item > .chapter",
+            url             = url,
+            parent_dom      = ".row.mt24 .slider-horizontal .item",
+            cover_dom       = "a.thumbnail > img",
+            cover_attr      = "data-src",
+            link_dom        = "a.thumbnail",
             link_prefix     = "https://www.bidongmh.com",
             link_text_attr  = "title"
         )
@@ -65,7 +68,7 @@ fn test_extr() {
     let extr = new_extr();
     if extr.is_usable() {
         let comics = extr.index(1).unwrap();
-        assert_eq!(22, comics.len());
+        assert_eq!(48, comics.len());
         let mut comic1 = Comic::new("恋爱大排档", "https://www.bidongmh.com/book/256");
         extr.fetch_chapters(&mut comic1).unwrap();
         assert_eq!(16, comic1.chapters.len());
