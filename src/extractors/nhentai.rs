@@ -3,9 +3,9 @@ use super::*;
 /// 对 nhentai.net 内容的抓取实现
 def_extractor! {
     status	=> [
-		usable: true, pageable: true, searchable: true, https: true,
-		favicon: "https://nhentai.net/favicon.ico"
-	],
+        usable: true, pageable: true, searchable: true, https: true,
+        favicon: "https://nhentai.net/favicon.ico"
+    ],
     tags	=> [English, Japanese, Chinese, NSFW],
 
     fn index(&self, page: u32) -> Result<Vec<Comic>> {
@@ -21,10 +21,12 @@ def_extractor! {
             link_text_dom   = ".caption"
         )?;
         comics.iter_mut().for_each(|comic: &mut Comic| {
-            comic.cover = comic
-                .cover
-                .replace("//t.nhentai.net", "https://t.nhentai.net")
-                .to_string();
+            if comic.cover.starts_with("//") {
+                comic.cover = comic
+                    .cover
+                    .replace("//t.nhentai.net", "https://t.nhentai.net")
+                    .to_string();
+            }
         });
 
         Ok(comics)
