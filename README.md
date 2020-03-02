@@ -40,9 +40,9 @@ _桌面版开发计划还未启动。_
 | 古风漫画网       | [www.gufengmh8.com](https://www.gufengmh8.com)         |   ⭕️    |          中文          |
 | 喵绅士           | c-upp<i>.</i>com                                       |   ⭕️    | 英文, 日文, 中文, NSFW |
 | 汗汗酷漫         | [www.hhimm.com](http://www.hhimm.com)                  |   ⭕️    |          中文          |
+| KuKu 动漫        | [comic.ikkdm.com](http://comic.ikkdm.com)              |   ⭕️    |          中文          |
 | 扑飞漫画         | [www.ipufei.com](http://www.ipufei.com)                |   ⭕️    |          中文          |
 | 快看漫画         | [www.kuaikanmanhua.com](https://www.kuaikanmanhua.com) |   ⭕️    |          中文          |
-| KuKu 动漫        | [comic.kukudm.com](https://comic.kukudm.com)           |   ⭕️    |          中文          |
 | LoveHeaven       | [loveheaven.net](https://loveheaven.net)               |   ⭕️    |          英文          |
 | Luscious         | www<i>.</i>luscious<i>.</i>net                         |   ⭕️    | 英文, 日文, 中文, NSFW |
 | Mangabz          | [www.mangabz.com](http://www.mangabz.com)              |   ⭕️    |          中文          |

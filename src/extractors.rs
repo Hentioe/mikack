@@ -696,6 +696,10 @@ import_impl_mods![
         :domain => "www.hhimm.com",
         :name   => "汗汗酷漫"
     },
+    ikkdm: {
+        :domain => "comic.ikkdm.com",
+        :name   => "KuKu动漫"
+    },
     ipufei: {
         :domain => "www.ipufei.com",
         :name   => "扑飞漫画"
@@ -703,10 +707,6 @@ import_impl_mods![
     kuaikanmanhua: {
         :domain => "www.kuaikanmanhua.com",
         :name   => "快看漫画"
-    },
-    kukudm: {
-        :domain => "comic.kukudm.com",
-        :name   => "KuKu动漫"
     },
     loveheaven: {
         :domain => "loveheaven.net",
@@ -935,7 +935,7 @@ def_routes![
         :chapter_re => r#"^https?://www\.kuaikanmanhua\.com/web/comic/\d+"#
     },
     {
-        :domain     => "comic.kukudm.com",
+        :domain     => "comic.ikkdm.com",
         :comic_re   => r#"^https?://comic\.kukudm\.com/comiclist/\d+/index.htm"#,
         :chapter_re => r#"^https?://comic\d?\.kukudm\.com/comiclist/\d+/\d+/\d+.htm"#
     },
@@ -1097,9 +1097,9 @@ fn test_routes() {
         :comic   => "https://www.kuaikanmanhua.com/web/topic/544/",
         :chapter => "https://www.kuaikanmanhua.com/web/comic/5471/"
     );
-    assert_routes!("comic.kukudm.com",
-        :comic   => "https://comic.kukudm.com/comiclist/2555/index.htm",
-        :chapter => "https://comic.kukudm.com/comiclist/2555/66929/1.htm"
+    assert_routes!("comic.ikkdm.com",
+        :comic   => "https://comic.ikkdm.com/comiclist/2555/index.htm",
+        :chapter => "https://comic.ikkdm.com/comiclist/2555/66929/1.htm"
     );
     assert_routes!("loveheaven.net",
         :comic   => "https://loveheaven.net/manga-ichinichi-gaishutsuroku-hanchou-raw.html",

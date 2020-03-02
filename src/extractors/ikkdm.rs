@@ -9,25 +9,25 @@ def_regex2![
     IMG         => r#"src='"\+server\+"([^']+)'>""#
 ];
 
-/// 对 comic.kukudm.com 内容的抓取实现
+/// 对 comic.ikkdm.com 内容的抓取实现
 /// 未来计划：
 /// - 可选择联通/电信
 def_extractor! {
-	status	=> [
-		usable: true, pageable: false, searchable: true, https: false,
-		favicon: "http://comic.ikkdm.com/favicon.ico"
-	],
-	tags	=> [Chinese],
+    status	=> [
+        usable: true, pageable: false, searchable: true, http: true,
+        favicon: "http://comic.ikkdm.com/favicon.ico"
+    ],
+    tags	=> [Chinese],
 
     fn index(&self, _page: u32) -> Result<Vec<Comic>> {
-        let url = "http://comic.kukudm.com/top100.htm";
+        let url = "http://comic.ikkdm.com/top100.htm";
 
         let mut comics = itemsgen2!(
-            url             = &url,
+            url             = url,
             parent_dom      = "#comicmain > dd",
             cover_dom       = "a > img",
             link_dom        = "a:nth-child(2)",
-            link_prefix     = "http://comic.kukudm.com",
+            link_prefix     = "http://comic.ikkdm.com",
             encoding        = GBK
         )?;
         comics.iter_mut().for_each(|c: &mut Comic| {
@@ -64,7 +64,7 @@ def_extractor! {
         itemsgen2!(
             url             = &comic.url,
             target_dom      = "#comiclistn > dd > a:nth-child(1)",
-            link_prefix     = "http://comic.kukudm.com",
+            link_prefix     = "http://comic.ikkdm.com",
             encoding        = GBK
         )?.attach_to(comic);
 
@@ -105,9 +105,9 @@ fn test_extr() {
     if extr.is_usable() {
         let comics = extr.index(1).unwrap();
         assert_eq!(100, comics.len());
-        let mut comic1 = Comic::new("妖精的尾巴", "http://kukudm.com/comiclist/346/");
+        let mut comic1 = Comic::new("妖精的尾巴", "https://kukudm.com/comiclist/346/");
         extr.fetch_chapters(&mut comic1).unwrap();
-        assert_eq!(648, comic1.chapters.len());
+        assert_eq!(652, comic1.chapters.len());
         let chapter1 = &mut comic1.chapters[3];
         extr.fetch_pages_unsafe(chapter1).unwrap();
         assert_eq!("妖精的尾巴 4话", chapter1.title);
