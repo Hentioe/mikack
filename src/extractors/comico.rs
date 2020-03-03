@@ -125,7 +125,6 @@ fn test_extr() {
         extr.fetch_pages_unsafe(chapter1).unwrap();
         assert_eq!("三毛與捲毛第二季01 煩人警察", chapter1.title);
         assert_eq!(20, chapter1.pages.len());
-
         let comics = extr.search("三毛與捲毛第二季").unwrap();
         assert!(comics.len() > 0);
         assert_eq!(comics[0].title, comic1.title);
