@@ -45,10 +45,12 @@ def_extractor! {
             link_text_dom   = ".caption"
         )?;
         comics.iter_mut().for_each(|comic: &mut Comic| {
-            comic.cover = comic
-                .cover
-                .replace("//t.nhentai.net", "https://t.nhentai.net")
-                .to_string();
+            if comic.cover.starts_with("//") {
+                comic.cover = comic
+                    .cover
+                    .replace("//t.nhentai.net", "https://t.nhentai.net")
+                    .to_string();
+            }
         });
 
         Ok(comics)
