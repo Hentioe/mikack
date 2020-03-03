@@ -532,6 +532,7 @@ duang!(
 trait AttachTo<T> {
     fn attach_to(self, target: &mut T);
     fn reversed_attach_to(self, target: &mut T);
+    fn headers_clear(self) -> Self;
 }
 
 impl AttachTo<Comic> for Vec<Chapter> {
@@ -545,6 +546,13 @@ impl AttachTo<Comic> for Vec<Chapter> {
     fn reversed_attach_to(mut self, target: &mut Comic) {
         self.reverse();
         self.attach_to(target);
+    }
+
+    fn headers_clear(mut self) -> Self {
+        for chapter in &mut self {
+            chapter.page_headers.clear();
+        }
+        self
     }
 }
 

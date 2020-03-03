@@ -42,7 +42,7 @@ def_extractor! {
             target_dom      = r#"ul[id^="chapter-list-"] > li > a"#,
             target_text_dom = "span",
             link_prefix     = "https://www.gufengmh8.com"
-        )?.attach_to(comic);
+        )?.headers_clear().attach_to(comic);
 
         Ok(())
     }
@@ -83,7 +83,6 @@ fn test_extr() {
         extr.fetch_pages_unsafe(chapter1).unwrap();
         assert_eq!("东京食尸鬼re 01话", chapter1.title);
         assert_eq!(42, chapter1.pages.len());
-
         let comics = extr.search("东京食尸鬼").unwrap();
         assert!(comics.len() > 0);
         assert_eq!(comics[0].title, comic1.title);
