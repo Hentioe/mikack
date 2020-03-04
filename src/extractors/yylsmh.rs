@@ -43,7 +43,8 @@ def_extractor! {
     fn fetch_chapters(&self, comic: &mut Comic) -> Result<()> {
         itemsgen2!(
             url             = &comic.url,
-            target_dom      = ".entry-content tbody td > a"
+            target_dom      = ".entry-content tbody td > a",
+            link_prefix     = "https://8comic.se"
         )?.attach_to(comic);
 
         Ok(())
