@@ -83,8 +83,8 @@ pub trait Extractor {
 }
 
 pub struct ChapterPages<'a> {
-    chapter: &'a mut Chapter,
-    current_page: usize,
+    pub chapter: &'a mut Chapter,
+    pub current_page: usize,
     fetch: Box<dyn Fn(usize) -> Result<Vec<Page>>>,
     pub total: i32,
 }
