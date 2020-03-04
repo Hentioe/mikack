@@ -6,11 +6,11 @@ def_regex2! [
 ];
 
 def_extractor! {
-	status	=> [
-		usable: true, pageable: true, searchable: true, https: true,
-		favicon: "https://www.manhuadui.com/favicon.ico"
-	],
-	tags	=> [Chinese],
+    status	=> [
+        usable: true, pageable: true, searchable: true, https: true,
+        favicon: "https://www.manhuadui.com/favicon.ico"
+    ],
+    tags	=> [Chinese],
 
     fn index(&self, page: u32) -> Result<Vec<Comic>> {
         let url = format!("https://www.manhuadui.com/update/{}/", page);
@@ -62,12 +62,29 @@ def_extractor! {
             decrypt20180904(chapterImages)
         ", encode_text), :end);
 
-        let path = match_content2!(&html, &*PATH_RE)?;
-
         let mut addresses = vec![];
-        for fname in eval_value(&wrap_code)?.as_array()? {
-            let address = format!("https://img01.eshanyao.com/{}/{}",path, fname.as_string()?);
-            addresses.push(address);
+        if let Ok(path) = match_content2!(&html, &*PATH_RE) {
+            for fname in eval_value(&wrap_code)?.as_array()? {
+                let address = format!("https://img01.eshanyao.com/{}/{}", path, fname.as_string()?);
+                addresses.push(address);
+            }
+
+        } else {
+            let mut headers_updated = false;
+            for addr in eval_value(&wrap_code)?.as_array()? {
+                let addr = addr.as_string()?.clone();
+                if !headers_updated {
+                    if addr.starts_with("http://images.dmzj.com") {
+                        chapter.page_headers.clear();
+                        chapter.page_headers.insert(
+                            String::from("Referer"),
+                            String::from("https://manhua.dmzj.com/")
+                        );
+                    }
+                    headers_updated = true;
+                }
+                addresses.push(addr);
+            }
         }
 
         Ok(ChapterPages::full(chapter, addresses))
@@ -81,18 +98,17 @@ fn test_extr() {
         let comics = extr.index(1).unwrap();
         assert_eq!(36, comics.len());
 
-        let mut comic1 =
-            Comic::from_link("源君物语", "https://www.manhuadui.com/manhua/yuanjunwuyu/");
-        extr.fetch_chapters(&mut comic1).unwrap();
-        assert_eq!(358, comic1.chapters.len());
-        let chapter1 = &mut Chapter::from_link(
-            "",
-            "https://www.manhuadui.com/manhua/jingjiechufazhe/435634.html",
+        let mut comic1 = Comic::from_link(
+            "爱管闲事的JK与只有头的杜拉罕",
+            "https://www.manhuadui.com/manhua/aiguanxianshideJKyuzhiyoutoudedulahan/",
         );
+        extr.fetch_chapters(&mut comic1).unwrap();
+        assert_eq!(9, comic1.chapters.len());
+        let chapter1 = &mut comic1.chapters[0];
         extr.fetch_pages_unsafe(chapter1).unwrap();
-        assert_eq!("境界触发者 189话", chapter1.title);
-        assert_eq!(20, chapter1.pages.len());
-        let comics = extr.search("源君物语").unwrap();
+        assert_eq!("爱管闲事的JK与只有头的杜拉罕 01话", chapter1.title);
+        assert_eq!(27, chapter1.pages.len());
+        let comics = extr.search("爱管闲事的JK与只有头的杜拉罕").unwrap();
         assert!(comics.len() > 0);
         assert_eq!(comics[0].title, comic1.title);
         assert_eq!(comics[0].url, comic1.url);
