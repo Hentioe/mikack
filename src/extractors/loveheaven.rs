@@ -36,12 +36,14 @@ impl From<&SearchDataItem> for Comic {
 }
 
 /// 对 loveheaven.net 内容的抓取实现
+/// 未来计划：
+/// - 可登录，以获取完整章节列表
 def_extractor! {
-	status	=> [
-		usable: true, pageable: true, searchable: true, https: true,
-		favicon: "https://loveheaven.net/favicon.ico"
-	],
-	tags	=> [English],
+    status	=> [
+        usable: true, pageable: true, searchable: true, https: true,
+        favicon: "https://loveheaven.net/favicon.ico"
+    ],
+    tags	=> [English],
 
     fn index(&self, page: u32) -> Result<Vec<Comic>> {
         let url = format!(
@@ -78,8 +80,8 @@ def_extractor! {
     fn fetch_chapters(&self, comic: &mut Comic) -> Result<()> {
         itemsgen2!(
             url             = &comic.url,
-            target_dom      = r#"td > a.chapter"#,
-            link_prefix     = "https://loveheaven.net/"
+            target_dom      = r#"small > div:nth-child(3) > a"#,
+            link_prefix     = "https://loveheaven.net"
         )?.reversed_attach_to(comic);
 
         Ok(())
@@ -105,14 +107,15 @@ fn test_extr() {
             "https://loveheaven.net/manga-ichinichi-gaishutsuroku-hanchou-raw.html",
         );
         extr.fetch_chapters(comic1).unwrap();
-        assert_eq!(52, comic1.chapters.len());
+        assert_eq!(1, comic1.chapters.len());
+        assert_eq!("Read The Last Chapter", comic1.chapters[0].title);
         let chapter1 = &mut Chapter::from_link(
             "",
             "https://loveheaven.net/read-ichinichi-gaishutsuroku-hanchou-raw-chapter-64.html",
         );
         extr.fetch_pages_unsafe(chapter1).unwrap();
         assert_eq!(
-            "Ichinichi Gaishutsuroku Hanchou - Raw chap 64",
+            "Ichinichi Gaishutsuroku Hanchou - Raw Chapter 64",
             chapter1.title
         );
         assert_eq!(19, chapter1.pages.len());
