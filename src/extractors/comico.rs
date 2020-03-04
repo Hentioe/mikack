@@ -2,7 +2,7 @@ use super::*;
 use serde::Deserialize;
 
 def_regex2![
-    COMIC_ID  => r#"https?://www\.comico\.com\.tw/(\d+)"#
+    COMIC_ID  => r#"https?://www\.comico\.com\.tw/(challenge/)?(\d+)"#
 ];
 
 #[derive(Debug, Deserialize)]
@@ -79,7 +79,7 @@ def_extractor! {
     }
 
     fn fetch_chapters(&self, comic: &mut Comic) -> Result<()> {
-        let id = match_content2!(&comic.url, &*COMIC_ID_RE)?;
+        let id = match_content2!(&comic.url, &*COMIC_ID_RE, group = 2)?;
         let url = "http://www.comico.com.tw/api/getArticleListAll.nhn";
 
         let client = Client::new();
