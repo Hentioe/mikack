@@ -44,7 +44,7 @@ def_extractor! {
         itemsgen2!(
             url             = &comic.url,
             target_dom      = ".entry-content tbody td > a",
-            link_prefix     = "https"
+            link_prefix     = "https:"
         )?.attach_to(comic);
 
         Ok(())
