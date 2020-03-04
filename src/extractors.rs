@@ -210,7 +210,7 @@ impl HtmlExt for Html {
                 "Attr `{}` not found in `{}`",
                 attr, selector
             )))?;
-            attrs.push(attr_s.to_string());
+            attrs.push(attr_s.trim().to_string());
         }
 
         Ok(attrs)

@@ -91,7 +91,7 @@ def_extractor! {
         let html = get(&chapter.url)?.text()?;
         let document = parse_document(&html);
         chapter.title = document.dom_attr(r#"li[itemprop="itemListElement"]:last-child > a"#, "title")?;
-        let addresses = document.dom_attrs(".chapter-img", "src")?;
+        let addresses = document.dom_attrs(".chapter-img", "data-src")?;
         Ok(ChapterPages::full(chapter, addresses))
     }
 }
