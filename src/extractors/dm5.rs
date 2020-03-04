@@ -66,11 +66,21 @@ def_extractor! {
     }
 
     fn fetch_chapters(&self, comic: &mut Comic) -> Result<()> {
-        itemsgen2!(
-            url         = &comic.url,
-            target_dom  = "#chapterlistload ul > li > a[title]",
-            link_prefix = "https://www.dm5.com"
-        )?.reversed_attach_to(comic);
+        let html = &get(&comic.url)?.text()?;
+        if html.contains("view-win-list") {
+            itemsgen2!(
+                html        = html,
+                target_dom  = "#chapterlistload ul > li > a[title]",
+                link_prefix = "https://www.dm5.com"
+            )?.reversed_attach_to(comic);
+        } else {
+            itemsgen2!(
+                html            = html,
+                target_dom      = "#chapterlistload ul > li > a[title]",
+                link_text_dom   = ".info > .title",
+                link_prefix     = "https://www.dm5.com"
+            )?.attach_to(comic);
+        }
 
         Ok(())
     }
@@ -128,6 +138,9 @@ fn test_extr() {
         let mut comic1 = Comic::from_link("风云全集", "https://www.dm5.com/manhua-fengyunquanji/");
         extr.fetch_chapters(&mut comic1).unwrap();
         assert_eq!(670, comic1.chapters.len());
+        let mut comic2 = Comic::from_link("霸道顾少，请轻撩", "https://www.dm5.com/manhua-badaogushao-qingqingliao/");
+        extr.fetch_chapters(&mut comic2).unwrap();
+        assert_eq!(28, comic2.chapters.len());
         let chapter1 = &mut comic1.chapters[642];
         extr.fetch_pages_unsafe(chapter1).unwrap();
         assert_eq!("风云全集 第648卷 下", chapter1.title);
