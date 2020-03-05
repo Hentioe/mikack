@@ -708,8 +708,8 @@ import_impl_mods![
         :domain => "comic.ikkdm.com",
         :name   => "KuKu动漫"
     },
-    ipufei: {
-        :domain => "www.ipufei.com",
+    pufei8: {
+        :domain => "www.pufei8.com",
         :name   => "扑飞漫画"
     },
     kuaikanmanhua: {
@@ -933,7 +933,7 @@ def_routes![
         :chapter_re => r#"^https?://www\.hhimm\.com/cool\d+/\d+\.html"#
     },
     {
-        :domain     => "www.ipufei.com",
+        :domain     => "www.pufei8.com",
         :comic_re   => r#"^https?://www\.ipufei\.com/manhua/\d+/index\.html"#,
         :chapter_re => r#"^https?://www\.ipufei\.com/manhua/\d+/\d+\.html"#
     },
@@ -1097,9 +1097,9 @@ fn test_routes() {
         :comic   => "http://www.hhimm.com/manhua/40325.html",
         :chapter => "http://www.hhimm.com/cool373925/1.html?s=3"
     );
-    assert_routes!("www.ipufei.com",
-        :comic   => "http://www.ipufei.com/manhua/600/index.html",
-        :chapter => "http://www.ipufei.com/manhua/600/45661.html"
+    assert_routes!("www.pufei8.com",
+        :comic   => "http://www.pufei8.com/manhua/600/index.html",
+        :chapter => "http://www.pufei8.com/manhua/600/45661.html"
     );
     assert_routes!("www.kuaikanmanhua.com",
         :comic   => "https://www.kuaikanmanhua.com/web/topic/544/",

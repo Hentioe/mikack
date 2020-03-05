@@ -5,18 +5,18 @@ def_regex2![
     PACKED  => r#"packed="([^"]+)""#
 ];
 
-/// 对 www.ipufei.com 内容的抓取实现
+/// 对 www.pufei8.com 内容的抓取实现
 def_extractor! {
 	status	=> [
-		usable: false, pageable: true, searchable: true, https: false,
-		favicon: "http://www.ipufei.com/favicon.ico"
+		usable: true, pageable: true, searchable: true, https: false,
+		favicon: "http://www.pufei8.com/favicon.ico"
 	],
 	tags	=> [Chinese],
 
     fn index(&self, page: u32) -> Result<Vec<Comic>> {
         let url = urlgen2!(page,
-            first   = "http://www.ipufei.com/shaonianrexue/index.html",
-            next    = "http://www.ipufei.com/shaonianrexue/index_{}.html"
+            first   = "http://www.pufei8.com/shaonianrexue/index.html",
+            next    = "http://www.pufei8.com/shaonianrexue/index_{}.html"
         );
 
         itemsgen2!(
@@ -26,12 +26,12 @@ def_extractor! {
             cover_dom       = "p.cover > a > img",
             cover_attr      = "_src",
             link_dom        = "dt > a",
-            link_prefix     = "http://www.ipufei.com"
+            link_prefix     = "http://www.pufei8.com"
         )
     }
 
     fn search(&self, keywords: &str) -> Result<Vec<Comic>> {
-        let url = "http://www.ipufei.com/e/search/index.php";
+        let url = "http://www.pufei8.com/e/search/index.php";
         let bytes = &encode_text(keywords, GBK)?[..];
         let keyboard_part = Part::bytes(bytes.to_vec());
         let form = Form::new()
@@ -55,7 +55,7 @@ def_extractor! {
             cover_dom       = "p.cover > a > img",
             cover_attr      = "_src",
             link_dom        = "dt > a",
-            link_prefix     = "http://www.ipufei.com"
+            link_prefix     = "http://www.pufei8.com"
         )
     }
 
@@ -64,7 +64,7 @@ def_extractor! {
             url             = &comic.url,
             encoding        = GBK,
             target_dom      = ".plist > ul > li > a",
-            link_prefix     = "http://www.ipufei.com"
+            link_prefix     = "http://www.pufei8.com"
         )?.reversed_attach_to(comic);
 
         Ok(())
@@ -94,7 +94,7 @@ fn test_extr() {
     if extr.is_usable() {
         let comics = extr.index(1).unwrap();
         assert_eq!(25, comics.len());
-        let mut comic1 = Comic::new("俺物语", "http://www.ipufei.com/manhua/600/index.html");
+        let mut comic1 = Comic::new("俺物语", "http://www.pufei8.com/manhua/600/index.html");
         extr.fetch_chapters(&mut comic1).unwrap();
         assert_eq!(65, comic1.chapters.len());
         let chapter1 = &mut comic1.chapters[0];
