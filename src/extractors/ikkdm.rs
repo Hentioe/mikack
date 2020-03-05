@@ -5,7 +5,7 @@ def_regex2![
     NAME        => r#"(.+)\[\d+\]?$"#,
     NAME2       => r#"(.+)漫画(电信|联通)$"#,
     TITLE       => "共(\\d+)页",
-    URL         => r#"(https?://comic\.kukudm\.com/comiclist/\d+/\d+)/\d+\.htm"#,
+    URL         => r#"(https?://comic\.ikkdm\.com/comiclist/\d+/\d+)/\d+\.htm"#,
     IMG         => r#"src='"\+server\+"([^']+)'>""#
 ];
 
@@ -80,7 +80,7 @@ def_extractor! {
 
         let fetch_page = |page_html: &str| -> Result<String> {
             let img_path = match_content2!(page_html, &*IMG_RE)?;
-            let address = format!("http://s2.kukudm.com/{}", img_path);
+            let address = format!("http://v2.kukudm.com/{}", img_path);
 
             Ok(address)
         };
@@ -105,7 +105,7 @@ fn test_extr() {
     if extr.is_usable() {
         let comics = extr.index(1).unwrap();
         assert_eq!(100, comics.len());
-        let mut comic1 = Comic::new("妖精的尾巴", "https://kukudm.com/comiclist/346/");
+        let mut comic1 = Comic::new("妖精的尾巴", "http://kukudm.com/comiclist/346/");
         extr.fetch_chapters(&mut comic1).unwrap();
         assert_eq!(652, comic1.chapters.len());
         let chapter1 = &mut comic1.chapters[3];
