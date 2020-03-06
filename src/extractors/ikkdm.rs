@@ -6,7 +6,7 @@ def_regex2![
     NAME2       => r#"(.+)漫画(电信|联通)$"#,
     TITLE       => "共(\\d+)页",
     URL         => r#"(https?://comic\.ikkdm\.com/comiclist/\d+/\d+)/\d+\.htm"#,
-    IMG         => r#"src='"\+server\+"([^']+)'>""#
+    IMG         => r#"(?i)src='"\+.+\+"([^']+)'"#
 ];
 
 /// 对 comic.ikkdm.com 内容的抓取实现
@@ -112,6 +112,10 @@ fn test_extr() {
         extr.fetch_pages_unsafe(chapter1).unwrap();
         assert_eq!("妖精的尾巴 4话", chapter1.title);
         assert_eq!(20, chapter1.pages.len());
+        let chapter2 = &mut Chapter::from_link("", "http://comic.ikkdm.com/comiclist/2843/75129/1.htm");
+        extr.fetch_pages_unsafe(chapter2).unwrap();
+        assert_eq!("不死勇者罗曼史 5话", chapter2.title);
+        assert_eq!(20, chapter2.pages.len());
         let comics = extr.search("妖精的尾巴").unwrap();
         assert!(comics.len() > 0);
         assert_eq!(comics[0].title, comic1.title);
