@@ -101,7 +101,7 @@ def_extractor! {
         } else {
             let page_count = 
                 if document.dom_count("#chapterpager > a:last-child")? == 0 {
-                    0
+                    1
                 }
                 else {
                     document.dom_text("#chapterpager > a:last-child")?.parse::<i32>()?
