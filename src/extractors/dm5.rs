@@ -94,38 +94,43 @@ def_extractor! {
        chapter.title = format!("{} {}",
             document.dom_text(".title > span.right-arrow")?,
             document.dom_text(".title > span.right-arrow:last-child")?);
-
-        let page_count = document.dom_text("#chapterpager > a:last-child")?.parse::<i32>()?;
-        let params_code = match_content2!(&html, &*PARAMS_CODE_RE)?;
-
-        let warp_params_code = wrap_code!(params_code, r#"
-            var params = {cid: DM5_CID, mid: COMIC_MID, dt: DM5_VIEWSIGN_DT, sign: DM5_VIEWSIGN};
-            params
-        "#, :end);
-        let obj = eval_as_obj(&warp_params_code)?;
-        let cid = obj.get_as_int("cid")?.to_string();
-        let mid = obj.get_as_int("mid")?.to_string();
-
-        let fetch = Box::new(move |current_page: usize| {
-            let query_params: String = form_urlencoded::Serializer::new(String::new())
-                .append_pair("cid", &cid)
-                .append_pair("page", &current_page.to_string())
-                .append_pair("_cid", &cid)
-                .append_pair("_mid", &mid)
-                .append_pair("_dt", obj.get_as_string("dt")?)
-                .append_pair("_sign", obj.get_as_string("sign")?)
-                .finish();
-
-            let api_url = format!("{}chapterfun.ashx?{}", url, query_params);
-            let client = reqwest::blocking::Client::new();
-            let eval_code = client.get(&api_url).header(REFERER, &url).send()?.text()?;
-            let wrap_eval_code = format!("var pages = {}; pages", eval_code);
-            let eval_r = eval_value(&wrap_eval_code)?;
-            let pages = eval_r.as_array()?;
-            Ok(vec![Page::new(current_page - 1, pages[0].as_string()?)])
-        });
-
-        Ok(ChapterPages::new(chapter, page_count, vec![], fetch))
+        
+        if document.dom_count("#barChapter")? > 0 { // 包含全部图片资源（无需翻页）
+            let addresses = document.dom_attrs("#barChapter > img", "data-src")?;
+            Ok(ChapterPages::full(chapter, addresses))
+        } else {
+            let page_count = document.dom_text("#chapterpager > a:last-child")?.parse::<i32>()?;
+            let params_code = match_content2!(&html, &*PARAMS_CODE_RE)?;
+    
+            let warp_params_code = wrap_code!(params_code, r#"
+                var params = {cid: DM5_CID, mid: COMIC_MID, dt: DM5_VIEWSIGN_DT, sign: DM5_VIEWSIGN};
+                params
+            "#, :end);
+            let obj = eval_as_obj(&warp_params_code)?;
+            let cid = obj.get_as_int("cid")?.to_string();
+            let mid = obj.get_as_int("mid")?.to_string();
+    
+            let fetch = Box::new(move |current_page: usize| {
+                let query_params: String = form_urlencoded::Serializer::new(String::new())
+                    .append_pair("cid", &cid)
+                    .append_pair("page", &current_page.to_string())
+                    .append_pair("_cid", &cid)
+                    .append_pair("_mid", &mid)
+                    .append_pair("_dt", obj.get_as_string("dt")?)
+                    .append_pair("_sign", obj.get_as_string("sign")?)
+                    .finish();
+    
+                let api_url = format!("{}chapterfun.ashx?{}", url, query_params);
+                let client = reqwest::blocking::Client::new();
+                let eval_code = client.get(&api_url).header(REFERER, &url).send()?.text()?;
+                let wrap_eval_code = format!("var pages = {}; pages", eval_code);
+                let eval_r = eval_value(&wrap_eval_code)?;
+                let pages = eval_r.as_array()?;
+                Ok(vec![Page::new(current_page - 1, pages[0].as_string()?)])
+            });
+    
+            Ok(ChapterPages::new(chapter, page_count, vec![], fetch))
+        }
     }
 }
 
@@ -145,6 +150,10 @@ fn test_extr() {
         extr.fetch_pages_unsafe(chapter1).unwrap();
         assert_eq!("风云全集 第648卷 下", chapter1.title);
         assert_eq!(14, chapter1.pages.len());
+        let chapter2 = &mut Chapter::from_link("", "https://www.dm5.com/m893482/");
+        extr.fetch_pages_unsafe(chapter2).unwrap();
+        assert_eq!("神武天尊 第1回", chapter2.title);
+        assert_eq!(39, chapter2.pages.len());
         let comics = extr.search("风云全集").unwrap();
         assert!(comics.len() > 0);
         assert_eq!(comics[0].title, comic1.title);
