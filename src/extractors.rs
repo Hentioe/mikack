@@ -708,10 +708,6 @@ import_impl_mods![
         :domain => "comic.ikkdm.com",
         :name   => "KuKu动漫"
     },
-    pufei8: {
-        :domain => "www.pufei8.com",
-        :name   => "扑飞漫画"
-    },
     kuaikanmanhua: {
         :domain => "www.kuaikanmanhua.com",
         :name   => "快看漫画"
@@ -759,6 +755,14 @@ import_impl_mods![
     one77pic: {
         :domain => "www.177pic.info",
         :name   => "177漫畫"
+    },
+    onemanhua: {
+        :domain => "www.onemanhua.com",
+        :name   => "ONE漫画"
+    },
+    pufei8: {
+        :domain => "www.pufei8.com",
+        :name   => "扑飞漫画"
     },
     qimiaomh: {
         :domain => "www.qimiaomh.com",

@@ -73,7 +73,7 @@ fn test_extr() {
         assert_eq!(100, comics.len());
         let mut comic1 = Comic::new("侠行九天", "http://www.manhuapu.com/rexue/xiaxingjiutian/");
         extr.fetch_chapters(&mut comic1).unwrap();
-        assert_eq!(152, comic1.chapters.len());
+        assert_eq!(156, comic1.chapters.len());
         let chapter1 = &mut comic1.chapters[0];
         extr.fetch_pages_unsafe(chapter1).unwrap();
         assert_eq!("侠行九天 番外1 身世篇", chapter1.title);
