@@ -938,8 +938,8 @@ def_routes![
     },
     {
         :domain     => "www.pufei8.com",
-        :comic_re   => r#"^https?://www\.ipufei\.com/manhua/\d+/index\.html"#,
-        :chapter_re => r#"^https?://www\.ipufei\.com/manhua/\d+/\d+\.html"#
+        :comic_re   => r#"^https?://www\.pufei8\.com/manhua/\d+/index\.html"#,
+        :chapter_re => r#"^https?://www\.pufei8\.com/manhua/\d+/\d+\.html"#
     },
     {
         :domain     => "www.kuaikanmanhua.com",
@@ -1007,6 +1007,11 @@ def_routes![
         :chapter_re => r#"^https?://www\.177pic\.info/html/\d+/\d+/\d+\.html"#
     },
     {
+        :domain     => "www.onemanhua.com",
+        :comic_re   => r#"^https?://www\.onemanhua\.com/\d+"#,
+        :chapter_re => r#"^https?://www\.onemanhua\.com/\d+/\d+/\d+\.html"#
+    },
+    {
         :domain     => "www.qimiaomh.com",
         :comic_re   => r#"^https?://www\.qimiaomh\.com/manhua/\d+\.html"#,
         :chapter_re => r#"^https?://www\.qimiaomh\.com/manhua/\d+/\d+\.html"#
@@ -1042,8 +1047,8 @@ def_routes![
 macro_rules! assert_routes {
     ($domain:expr, :comic => $comic_url:expr, :chapter => $chapter_url:expr) => {
         assert_eq!(
-            DomainRoute::Comic(String::from($domain)),
-            domain_route($comic_url).unwrap()
+            Some(DomainRoute::Comic(String::from($domain))),
+            domain_route($comic_url)
         );
         assert_eq!(
             DomainRoute::Chapter(String::from($domain)),
@@ -1054,6 +1059,12 @@ macro_rules! assert_routes {
         assert_eq!(
             DomainRoute::Chapter(String::from($domain)),
             domain_route($chapter_url).unwrap()
+        );
+    };
+    ($domain:expr, :comic => $comic_url:expr) => {
+        assert_eq!(
+            DomainRoute::Comic(String::from($domain)),
+            domain_route($comic_url).unwrap()
         );
     };
 }
@@ -1152,6 +1163,10 @@ fn test_routes() {
     );
     assert_routes!("www.177pic.info",
         :chapter => "http://www.177pic.info/html/2020/01/3307768.html"
+    );
+    assert_routes!("www.onemanhua.com",
+        :comic   => "https://www.onemanhua.com/12436/",
+        :chapter => "https://www.onemanhua.com/12436/1/1.html"
     );
     assert_routes!("www.qimiaomh.com",
         :comic   => "https://www.qimiaomh.com/manhua/6531.html",

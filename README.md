@@ -53,6 +53,7 @@ _桌面版开发计划还未启动。_
 | nhentai          | nhentai<i>.</i>net                                     |   ⭕️    | 英文, 日文, 中文, NSFW |
 | 9hentai          | 9hentai<i>.</i>com                                     |   ⭕️    |       英文, NSFW       |
 | 177 漫畫         | www<i>.</i>177pic<i>.</i>info                          |   ⭕️    |    中文, 日文, NSFW    |
+| ONE 漫画         | [www.onemanhua.com](https://www.onemanhua.com)         |   ⭕️    |          中文          |
 | 扑飞漫画         | [www.pufei8.com](http://www.pufei8.com)                |   ⭕️    |          中文          |
 | 奇妙漫画         | [www.qimiaomh.com](https://www.qimiaomh.com)           |   ⭕️    |          中文          |
 | 土豪漫画         | [www.tohomh123.com](https://www.tohomh123.com)         |   ⭕️    |          中文          |

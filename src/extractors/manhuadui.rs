@@ -54,7 +54,7 @@ def_extractor! {
 
         let encode_text = match_content2!(&html, &*ENCODE_TEXT_RE)?;
 
-        let runtime = include_str!("../../runtime/manhuadui.js");
+        let runtime = format!("{}\n{}", include_str!("../../assets/lib/crypto-js.js"), include_str!("../../assets/runtime/manhuadui.js"));
         let wrap_code = wrap_code!(runtime, format!("
             var chapterImages =
             \"{}\";
