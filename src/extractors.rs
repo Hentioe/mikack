@@ -772,6 +772,10 @@ import_impl_mods![
         :domain => "www.tohomh123.com",
         :name   => "土豪漫画"
     },
+    twhentai: {
+        :domain => "twhentai.com",
+        :name   => "TW Hentai"
+    },
     twoanimx: {
         :domain => "www.2animx.com",
         :name   => "二次元動漫"
@@ -948,8 +952,8 @@ def_routes![
     },
     {
         :domain     => "comic.ikkdm.com",
-        :comic_re   => r#"^https?://comic\.kukudm\.com/comiclist/\d+/index.htm"#,
-        :chapter_re => r#"^https?://comic\d?\.kukudm\.com/comiclist/\d+/\d+/\d+.htm"#
+        :comic_re   => r#"^https?://comic\.ikkdm\.com/comiclist/\d+/index.htm"#,
+        :chapter_re => r#"^https?://comic\d?\.ikkdm\.com/comiclist/\d+/\d+/\d+.htm"#
     },
     {
         :domain     => "loveheaven.net",
@@ -1020,6 +1024,11 @@ def_routes![
         :domain     => "www.tohomh123.com",
         :comic_re   => r#"^https?://www\.tohomh123\.com/.+"#,
         :chapter_re => r#"^https?://www\.tohomh123\.com/[^/]+/\d+\.html"#
+    },
+    {
+        :domain     => "twhentai.com",
+        :comic_re   => r#"^-NONE-$"#,
+        :chapter_re => r#"^https?://twhentai\.com/[^/]+/\d+"#
     },
     {
         :domain     => "www.2animx.com",
@@ -1121,8 +1130,8 @@ fn test_routes() {
         :chapter => "https://www.kuaikanmanhua.com/web/comic/5471/"
     );
     assert_routes!("comic.ikkdm.com",
-        :comic   => "https://comic.ikkdm.com/comiclist/2555/index.htm",
-        :chapter => "https://comic.ikkdm.com/comiclist/2555/66929/1.htm"
+        :comic   => "http://comic.ikkdm.com/comiclist/2555/index.htm",
+        :chapter => "http://comic.ikkdm.com/comiclist/2555/66929/1.htm"
     );
     assert_routes!("loveheaven.net",
         :comic   => "https://loveheaven.net/manga-ichinichi-gaishutsuroku-hanchou-raw.html",
@@ -1175,6 +1184,9 @@ fn test_routes() {
     assert_routes!("www.tohomh123.com",
         :comic   => "https://www.tohomh123.com/guangzhizi/",
         :chapter => "https://www.tohomh123.com/guangzhizi/1.html"
+    );
+    assert_routes!("twhentai.com",
+        :chapter => "http://twhentai.com/hentai_doujin/68098/"
     );
     assert_routes!("www.2animx.com",
         :comic   => "http://www.2animx.com/index-comic-name-%E9%A2%A8%E9%9B%B2%E5%85%A8%E9%9B%86-id-7212",
