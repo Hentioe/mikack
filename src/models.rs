@@ -115,6 +115,16 @@ impl Chapter {
         }
     }
 
+    pub fn from_url<S: Into<String>>(url: S) -> Self {
+        Self {
+            title: String::new(),
+            url: url.into(),
+            which: 0,
+            pages: vec![],
+            page_headers: HashMap::new(),
+        }
+    }
+
     pub fn title<S: Into<String>>(title: S) -> String {
         title.into().trim().to_string()
     }

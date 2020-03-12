@@ -7,7 +7,7 @@ def_regex2![
 
 /// 对 www.onemanhua.com 内容的抓取实现
 /// 优化空间
-/// - 服用最后一页的数据
+/// - 复用最后一页的数据
 def_extractor! {
     status	=> [
         usable: true, pageable: true, searchable: true, https: false
@@ -64,13 +64,20 @@ def_extractor! {
 
             Ok(page_addresses)
         };
-        // 计算总数
-        let last_page_num = match_content2!(&document.dom_attr(".pagination > li:last-child > a", "href")?, &*PAGE_NUM_RE)?.parse::<usize>()?;
-        let last_page_html = get(&format!("{}_p{}/", pure_url, last_page_num))?.text()?;
-        let last_page_document = parse_document(&last_page_html);
-        let total = get_page_addresses(&last_page_document)?.len() + (last_page_num - 1) * 16;
-
         let first_addresses = get_page_addresses(&document)?;
+        // 计算总数
+        let last_page_num = if let Ok(last_page_href) = document.dom_attr(".pagination > li:last-child > a", "href") {
+            match_content2!(&last_page_href, &*PAGE_NUM_RE)?.parse::<usize>()?
+        } else {
+            1
+        };
+        let total = if last_page_num > 1 {
+            let last_page_html = get(&format!("{}_p{}/", pure_url, last_page_num))?.text()?;
+            let last_page_document = parse_document(&last_page_html);
+            get_page_addresses(&last_page_document)?.len() + (last_page_num - 1) * 16
+        } else {
+            first_addresses.len()
+        };
 
         let fetch = Box::new(move |current_page: usize| {
             let page_num = (current_page as f64 / 16.0f64).ceil() as usize;
@@ -96,14 +103,23 @@ fn test_extr() {
     if extr.is_usable() {
         let comics = extr.index(1).unwrap();
         assert_eq!(16, comics.len());
-        let comic1 = &mut Comic::new("[中文H漫](#にじそうさく3) [French letter (藤崎ひかり)] シスタークレアと秘密の催眠アプリ (シスター・クレア) [中国翻訳]", "http://twhentai.com/hentai_doujin/68098/");
+        let title = "[中文H漫][Pd] 奖品天使 (オーバーウォッチ) [中国語]";
+        let comic1 = &mut Comic::new(title, "http://twhentai.com/hentai_doujin/21989/");
         extr.fetch_chapters(comic1).unwrap();
         assert_eq!(1, comic1.chapters.len());
         let chapter1 = &mut comic1.chapters[0];
+        chapter1.title.clear();
         extr.fetch_pages_unsafe(chapter1).unwrap();
-        assert_eq!("[中文H漫](#にじそうさく3) [French letter (藤崎ひかり)] シスタークレアと秘密の催眠アプリ (シスター・クレア) [中国翻訳]", chapter1.title);
-        assert_eq!(23, chapter1.pages.len());
-        let comics = extr.search("秘密の催眠").unwrap();
+        assert_eq!(title, chapter1.title);
+        assert_eq!(19, chapter1.pages.len());
+        let chapter2 = &mut Chapter::from_url("http://twhentai.com/hentai_doujin/19402/");
+        extr.fetch_pages_unsafe(chapter2).unwrap();
+        assert_eq!(
+            "[中文H漫][HM] Mercy Therapy (Overwatch) [Chinese] [里番acg汉化组]",
+            chapter2.title
+        );
+        assert_eq!(10, chapter2.pages.len());
+        let comics = extr.search("奖品天使").unwrap();
         assert!(comics.len() > 0);
         assert_eq!(comics[0].title, comic1.title);
         assert_eq!(comics[0].url, comic1.url);
