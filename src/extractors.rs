@@ -774,7 +774,7 @@ import_impl_mods![
     },
     twhentai: {
         :domain => "twhentai.com",
-        :name   => "TW Hentai"
+        :name   => "台灣成人H漫"
     },
     twoanimx: {
         :domain => "www.2animx.com",

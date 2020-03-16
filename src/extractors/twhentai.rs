@@ -12,7 +12,7 @@ def_extractor! {
     status	=> [
         usable: true, pageable: true, searchable: true, https: false
     ],
-    tags	=> [Chinese, NSFW],
+    tags	=> [Chinese, Japanese, NSFW],
 
     fn index(&self, page: u32) -> Result<Vec<Comic>> {
         let url = format!("http://twhentai.com/hentai_doujin/page_{}.html", page);
