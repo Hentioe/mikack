@@ -16,6 +16,7 @@
 - [mikack-cli](https://github.com/Hentioe/mikack-cli)（使用 Rust 的 native 程序，适用于命令行）
 - [mikack-mobile](https://github.com/Hentioe/mikack-mobile)（使用 Flutter，适用于手机）
 - mikack-desktop（使用 Electron，适用于桌面系统）
+- [mikack-favicon](https://github.com/Hentioe/mikack-favicon)（给客户端提供统一的平台图标）
 
 _其中 mikack-cli 项目由于技术同构的原因直接使用了 Rust 接口，参考性较低。而桌面版的开发计划还未启动。_
 
