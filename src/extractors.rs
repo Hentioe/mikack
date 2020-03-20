@@ -790,7 +790,7 @@ import_impl_mods![
         :name   => "紳士漫畫"
     },
     wuqimh: {
-        :domain => "www.wuqimh.org",
+        :domain => "www.wuqimh.com",
         :name   => "57漫画网"
     },
     xinxinmh: {
