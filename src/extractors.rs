@@ -40,19 +40,20 @@ macro_rules! def_status_access {
 
 type Status = HashMap<&'static str, Box<dyn Any + Send + Sync>>;
 
+#[allow(unused_variables)]
 pub trait Extractor {
-    def_bool_status![:usable, :searchable, :pageable, :https];
+    def_bool_status![:usable, :searchable, :pageable, :paginable_search, :https];
     def_status_access!(&str, favicon);
 
     fn read_status(&self) -> &Status;
 
     fn tags(&self) -> &Vec<Tag>;
 
-    fn index(&self, _page: u32) -> Result<Vec<Comic>> {
+    fn index(&self, page: u32) -> Result<Vec<Comic>> {
         Ok(vec![])
     }
 
-    fn fetch_chapters(&self, _comic: &mut Comic) -> Result<()> {
+    fn fetch_chapters(&self, comic: &mut Comic) -> Result<()> {
         Ok(())
     }
 
@@ -77,8 +78,12 @@ pub trait Extractor {
         Ok(())
     }
 
-    fn search(&self, _keywords: &str) -> Result<Vec<Comic>> {
+    fn search(&self, keywords: &str) -> Result<Vec<Comic>> {
         Ok(vec![])
+    }
+
+    fn paginated_search(&self, keywords: &str, page: u32) -> Result<Vec<Comic>> {
+        self.search(keywords)
     }
 }
 
@@ -783,6 +788,10 @@ import_impl_mods![
     wnacg: {
         :domain => "www.wnacg.org",
         :name   => "紳士漫畫"
+    },
+    wuqimh: {
+        :domain => "www.wuqimh.org",
+        :name   => "57漫画网"
     },
     xinxinmh: {
         :domain => "www.177mh.net",
