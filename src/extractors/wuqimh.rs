@@ -39,7 +39,7 @@ def_extractor! {
 
         let group_count = document.dom_count(r#"div[id^="chpater-list-"]"#)?;
         for i in 0..group_count { //展平所有分组
-            let grouped_items =  GroupedItems {
+            let selector =  GroupedItemsSelector {
                 document: Rc::clone(&document),
                 group_dom: &format!("#{id} > ul", id = format!("chpater-list-{}", i + 1)),
                 items_dom: "li > a",
@@ -47,7 +47,7 @@ def_extractor! {
                 items_url_prefix: "http://www.wuqimh.com",
                 ..Default::default()
             };
-            comic.chapters.append(&mut grouped_items.gen::<Chapter>()?.reversed_flatten(i));
+            comic.chapters.append(&mut selector.gen::<Chapter>()?.reversed_flatten(i));
         }
 
         Ok(())

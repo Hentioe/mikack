@@ -5,11 +5,11 @@ def_regex2![
 ];
 
 def_extractor! {
-	status	=> [
-		usable: true, pageable: false, searchable: true, https: true,
-		favicon: "https://www.manhuagui.com/favicon.ico"
-	],
-	tags	=> [Chinese],
+    status	=> [
+        usable: true, pageable: false, searchable: true, https: true,
+        favicon: "https://www.manhuagui.com/favicon.ico"
+    ],
+    tags	=> [Chinese],
 
     fn index(&self, _page: u32) -> Result<Vec<Comic>> {
         let url = "https://www.manhuagui.com/update/";
@@ -38,11 +38,19 @@ def_extractor! {
     }
 
     fn fetch_chapters(&self, comic: &mut Comic) -> Result<()> {
-        itemsgen2!(
-            url             = &comic.url,
-            target_dom      = "li > a.status0",
-            link_prefix     = "https://www.manhuagui.com"
-        )?.reversed_attach_to(comic);
+        let html = &get(&comic.url)?.text()?;
+        let document = parse_document(&html);
+        for (i, elem) in document.select(&parse_selector(r#"div[id^="chapter-list-"]"#)?).enumerate() {
+            let selector =  GroupedItemsSelector {
+                document: Rc::new(parse_document(&elem.html())),
+                group_dom: "ul",
+                items_dom: "li > a",
+                items_title_attr: "title",
+                items_url_prefix: "https://www.manhuagui.com",
+                ..Default::default()
+            };
+            comic.chapters.append(&mut selector.gen()?.reversed_flatten(i));
+        }
 
         Ok(())
     }
@@ -92,15 +100,15 @@ fn test_extr() {
     let extr = new_extr();
     if extr.is_usable() {
         let comics = extr.index(1).unwrap();
-        assert_eq!(727, comics.len());
+        assert!(comics.len() > 0);
 
         let mut comic1 = Comic::from_link("食戟之灵", "https://www.manhuagui.com/comic/2863/");
         extr.fetch_chapters(&mut comic1).unwrap();
         assert_eq!(298, comic1.chapters.len());
         let chapter1 = &mut comic1.chapters[0];
         extr.fetch_pages_unsafe(chapter1).unwrap();
-        assert_eq!("食戟之灵第01卷", chapter1.title);
-        assert_eq!(211, chapter1.pages.len());
+        assert_eq!("食戟之灵番外 贪吃2", chapter1.title);
+        assert_eq!(6, chapter1.pages.len());
         let comics = extr.search("食戟之灵").unwrap();
         assert!(comics.len() > 0);
         assert_eq!(comics[0].title, comic1.title);

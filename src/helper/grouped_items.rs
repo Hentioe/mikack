@@ -1,12 +1,10 @@
-use crate::{
-    error::*,
-    models::{FromLink, SetWhich},
-};
-use scraper::{Html, Selector};
+use super::*;
+use crate::models::{FromLink, SetWhich};
+use scraper::Html;
 use std::default::Default;
 pub use std::rc::Rc;
 
-pub struct GroupedItems<'a> {
+pub struct GroupedItemsSelector<'a> {
     pub document: Rc<Html>,
     pub group_dom: &'a str,
     pub inside_group_name_dom: &'a str,
@@ -19,7 +17,7 @@ pub struct GroupedItems<'a> {
 
 type GroupedItemsType<T> = (String, Vec<T>);
 
-impl<'a> GroupedItems<'a> {
+impl<'a> GroupedItemsSelector<'a> {
     pub fn gen<T: FromLink>(&self) -> Result<Vec<GroupedItemsType<T>>> {
         let mut grouped_items = vec![];
         let outide_names = if !self.outside_group_name_dom.is_empty() {
@@ -144,7 +142,7 @@ impl<T: FromLink + SetWhich + Clone> Flatten<T> for Vec<GroupedItemsType<T>> {
     }
 }
 
-impl Default for GroupedItems<'_> {
+impl Default for GroupedItemsSelector<'_> {
     fn default() -> Self {
         Self {
             document: Rc::new(Html::parse_document("")),
@@ -157,9 +155,4 @@ impl Default for GroupedItems<'_> {
             items_url_prefix: Default::default(),
         }
     }
-}
-
-fn parse_selector(selectors: &str) -> Result<Selector> {
-    Ok(Selector::parse(selectors)
-        .map_err(|_e| err_msg(format!("The selectors `{}` parsing failed", selectors)))?)
 }
