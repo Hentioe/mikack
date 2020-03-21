@@ -1,7 +1,7 @@
 use num_derive::FromPrimitive;
 use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
-use std::path::Path;
+use std::{default::Default, path::Path};
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct Page {
@@ -11,7 +11,7 @@ pub struct Page {
     pub fmime: String,
 }
 
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Default, Debug, Clone, Serialize, Deserialize)]
 pub struct Chapter {
     pub title: String,
     pub url: String,
@@ -21,11 +21,29 @@ pub struct Chapter {
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
+pub enum ComicState {
+    Unknown = 0,
+    Completed,
+    Ongoing,
+}
+
+impl Default for ComicState {
+    fn default() -> Self {
+        ComicState::Unknown
+    }
+}
+
+#[derive(Default, Debug, Clone, Serialize, Deserialize)]
 pub struct Comic {
     pub title: String,
     pub url: String,
     pub cover: String,
     pub chapters: Vec<Chapter>,
+    pub author: String,
+    pub description: String,
+    pub tags: Vec<String>,
+    pub last_updated_date: i64,
+    pub state: ComicState,
 }
 
 macro_rules! def_tags {
@@ -72,6 +90,7 @@ def_tags![
     {Chinese: "中文"},
     {English: "英文"},
     {Japanese: "日文"},
+    {Wallpaper: "壁纸"},
     {NSFW: "NSFW"},
 ];
 
@@ -110,18 +129,8 @@ impl Chapter {
             title: Self::title(title),
             url: url.clone(),
             which,
-            pages: vec![],
             page_headers,
-        }
-    }
-
-    pub fn from_url<S: Into<String>>(url: S) -> Self {
-        Self {
-            title: String::new(),
-            url: url.into(),
-            which: 0,
-            pages: vec![],
-            page_headers: HashMap::new(),
+            ..Default::default()
         }
     }
 
@@ -144,12 +153,11 @@ impl Chapter {
 }
 
 impl Comic {
-    pub fn new<S: Into<String>>(title: S, url: S) -> Self {
+    pub fn new<T: Into<String>, U: Into<String>>(title: T, url: U) -> Self {
         Self {
             title: title.into(),
             url: url.into(),
-            cover: String::from(""),
-            chapters: vec![],
+            ..Default::default()
         }
     }
 
@@ -158,7 +166,7 @@ impl Comic {
             title: title.into(),
             url: url.into(),
             cover: cover.into(),
-            chapters: vec![],
+            ..Default::default()
         }
     }
 
@@ -173,12 +181,43 @@ impl From<&Comic> for Chapter {
     }
 }
 
+pub trait FromUrl {
+    fn from_url<S: Into<String>>(url: S) -> Self;
+}
 pub trait FromLink {
     fn from_link<S: Into<String>>(text: S, href: S) -> Self;
 }
 
 pub trait SetCover {
     fn set_cover<S: Into<String>>(&mut self, address: S);
+}
+
+pub trait SetWhich {
+    fn set_which(&mut self, which: usize);
+}
+
+impl FromUrl for Comic {
+    fn from_url<S: Into<String>>(url: S) -> Self {
+        Self {
+            url: url.into(),
+            ..Default::default()
+        }
+    }
+}
+
+impl FromUrl for Chapter {
+    fn from_url<S: Into<String>>(url: S) -> Self {
+        Self {
+            url: url.into(),
+            ..Default::default()
+        }
+    }
+}
+
+impl SetWhich for Chapter {
+    fn set_which(&mut self, which: usize) {
+        self.which = which as u32
+    }
 }
 
 impl FromLink for Comic {

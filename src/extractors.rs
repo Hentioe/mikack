@@ -8,6 +8,8 @@ use std::borrow::Cow;
 use std::collections::HashMap;
 use std::vec::Vec;
 
+pub use crate::helper::grouped_items::*;
+
 macro_rules! def_bool_status {
     ( $(:$name:ident),* ) => {
         paste::item! {
@@ -42,7 +44,8 @@ type Status = HashMap<&'static str, Box<dyn Any + Send + Sync>>;
 
 #[allow(unused_variables)]
 pub trait Extractor {
-    def_bool_status![:usable, :searchable, :pageable, :paginable_search, :https];
+    def_bool_status![:usable, :searchable, :pageable, :pageable_search, :https];
+
     def_status_access!(&str, favicon);
 
     fn read_status(&self) -> &Status;
