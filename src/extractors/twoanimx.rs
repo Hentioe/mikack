@@ -6,11 +6,11 @@ def_regex2![
 
 /// 对 www.2animx.com 内容的抓取实现
 def_extractor! {
-	status	=> [
-		usable: true, pageable: false, searchable: true, https: true,
-		favicon: "https://www.2animx.com/favicon.ico"
-	],
-	tags	=> [Chinese],
+    status	=> [
+        usable: true, pageable: false, searchable: true, https: true,
+        favicon: "https://www.2animx.com/favicon.ico"
+    ],
+    tags	=> [Chinese],
 
     fn index(&self, _page: u32) -> Result<Vec<Comic>> {
         itemsgen2!(
@@ -46,9 +46,15 @@ def_extractor! {
     fn pages_iter<'a>(&'a self, chapter: &'a mut Chapter) -> Result<ChapterPages> {
         let html = get(&chapter.url)?.text()?;
         let document = parse_document(&html);
-        chapter.set_title(document.dom_attr("img#ComicPic", "alt")?);
+        chapter.set_title(format!("{} - {}",
+            document.dom_text(".b > a:last-child")?, document.dom_attr("img#ComicPic", "alt")?
+        ));
         let prue_url = match_content2!(&chapter.url, &*URL_RE)?.to_string();
-        let total = document.dom_text(".lookpage > a:last-child")?.parse::<i32>()?;
+        let total = if let Ok(last_page) = document.dom_text(".lookpage > a:last-child") {
+            last_page.parse::<i32>()?
+        } else {
+            1
+        };
         let fetch = Box::new(move |current_page: usize| {
             let page_html = get(&format!("{}-p-{}", prue_url, current_page))?.text()?;
             let page_document = parse_document(&page_html);
@@ -81,8 +87,12 @@ fn test_extr() {
         assert_eq!(670, comic1.chapters.len());
         let chapter1 = &mut comic1.chapters[23];
         extr.fetch_pages_unsafe(chapter1).unwrap();
-        assert_eq!("風雲全集 第23卷", chapter1.title);
+        assert_eq!("風雲全集 - 風雲全集 第23卷", chapter1.title);
         assert_eq!(26, chapter1.pages.len());
+        let chapter2 = &mut Chapter::from_url("https://www.2animx.com/index-look-name-7%E5%A4%A9%E5%90%8E%E7%99%BC%E7%8F%BE%E8%AE%8A%E4%B8%8D%E5%9B%9E%E7%94%B7%E4%BA%BA%E7%9A%84%E5%B9%BC%E5%A5%B3-cid-45376-id-574522");
+        extr.fetch_pages_unsafe(chapter2).unwrap();
+        assert_eq!("7天后發現變不回男人的幼女 - 第1話（1P）", chapter2.title);
+        assert_eq!(1, chapter2.pages.len());
         let comics = extr.search("风云全集").unwrap();
         assert!(comics.len() > 0);
         assert_eq!(comics[0].title, comic1.title);
