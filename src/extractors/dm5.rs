@@ -8,11 +8,11 @@ def_regex2![
 ];
 
 def_extractor! {
-	status	=> [
-		usable: true, pageable: false, searchable: true, https: true,
-		favicon: "https://www.dm5.com/favicon.ico"
-	],
-	tags	=> [Chinese],
+    status	=> [
+        usable: true, pageable: false, searchable: true, https: true,
+        favicon: "https://www.dm5.com/favicon.ico"
+    ],
+    tags	=> [Chinese],
 
     fn index(&self, _page: u32) -> Result<Vec<Comic>> {
         let url = "https://www.dm5.com/manhua-new/";
@@ -78,7 +78,8 @@ def_extractor! {
                 html            = html,
                 target_dom      = "#chapterlistload ul > li > a[title]",
                 link_text_dom   = ".info > .title",
-                link_prefix     = "https://www.dm5.com"
+                link_prefix     = "https://www.dm5.com",
+                ignore_contains = ".detail-lock" // 排除付费章节
             )?.attach_to(comic);
         }
 
@@ -94,12 +95,12 @@ def_extractor! {
        chapter.title = format!("{} {}",
             document.dom_text(".title > span.right-arrow")?,
             document.dom_text(".title > span.right-arrow:last-child")?);
-        
+
         if document.dom_count("#barChapter")? > 0 { // 包含全部图片资源（无需翻页）
             let addresses = document.dom_attrs("#barChapter > img", "data-src")?;
             Ok(ChapterPages::full(chapter, addresses))
         } else {
-            let page_count = 
+            let page_count =
                 if document.dom_count("#chapterpager > a:last-child")? == 0 {
                     1
                 }
@@ -107,7 +108,7 @@ def_extractor! {
                     document.dom_text("#chapterpager > a:last-child")?.parse::<i32>()?
                 };
             let params_code = match_content2!(&html, &*PARAMS_CODE_RE)?;
-    
+
             let warp_params_code = wrap_code!(params_code, r#"
                 var params = {cid: DM5_CID, mid: COMIC_MID, dt: DM5_VIEWSIGN_DT, sign: DM5_VIEWSIGN};
                 params
@@ -135,12 +136,12 @@ def_extractor! {
 
             let mut first_page_addresses = vec![];
             first_page_addresses.push(fetch_url(1)?);
-    
+
             let fetch = Box::new(move |current_page: usize| {
                 let address = fetch_url(current_page)?;
                 Ok(vec![Page::new(current_page - 1, address)])
             });
-    
+
             Ok(ChapterPages::new(chapter, page_count, first_page_addresses, fetch))
         }
     }
@@ -155,21 +156,25 @@ fn test_extr() {
         let mut comic1 = Comic::from_link("风云全集", "https://www.dm5.com/manhua-fengyunquanji/");
         extr.fetch_chapters(&mut comic1).unwrap();
         assert_eq!(670, comic1.chapters.len());
-        let mut comic2 = Comic::from_link("霸道顾少，请轻撩", "https://www.dm5.com/manhua-badaogushao-qingqingliao/");
+        let mut comic2 = Comic::from_url("https://www.dm5.com/manhua-badaogushao-qingqingliao/");
         extr.fetch_chapters(&mut comic2).unwrap();
-        assert_eq!(28, comic2.chapters.len());
+        assert_eq!(11, comic2.chapters.len());
         let chapter1 = &mut comic1.chapters[642];
         extr.fetch_pages_unsafe(chapter1).unwrap();
         assert_eq!("风云全集 第648卷 下", chapter1.title);
         assert_eq!(14, chapter1.pages.len());
-        let chapter2 = &mut Chapter::from_link("", "https://www.dm5.com/m893482/");
+        let chapter2 = &mut Chapter::from_url("https://www.dm5.com/m893482/");
         extr.fetch_pages_unsafe(chapter2).unwrap();
         assert_eq!("神武天尊 第1回", chapter2.title);
         assert_eq!(39, chapter2.pages.len());
-        let chapter3 = &mut Chapter::from_link("", "https://www.dm5.com/m896094/");
+        let chapter3 = &mut Chapter::from_url("https://www.dm5.com/m896094/");
         extr.fetch_pages_unsafe(chapter3).unwrap();
         assert_eq!("公主链接小四格 第1话 为了谁？", chapter3.title);
         assert_eq!(1, chapter3.pages.len());
+        let mut comic3 =
+            Comic::from_url("https://www.dm5.com/manhua-yitaishuangbao-guaigemamidaihuijia/");
+        extr.fetch_chapters(&mut comic3).unwrap();
+        assert_eq!(34, comic3.chapters.len());
         let comics = extr.search("风云全集").unwrap();
         assert!(comics.len() > 0);
         assert_eq!(comics[0].title, comic1.title);

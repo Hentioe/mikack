@@ -349,7 +349,8 @@ duang!(
         link_attr: &str = "href",
         link_prefix: &str = "",
         link_text_attr: &str = "",
-        link_text_dom: &str = ""
+        link_text_dom: &str = "",
+        ignore_contains: &str = ""
     ) -> Result<Vec<T>> {
         let html = if html.is_empty() {
             if url.is_empty() {
@@ -462,7 +463,16 @@ duang!(
             if target_dom.is_empty() {
                 panic!("Missing `target_dom` parameter");
             }
-            let link_elems = document.select(&parse_selector(target_dom)?).collect::<Vec<_>>();
+            let target_dom_selecors = parse_selector(target_dom)?;
+            let target_dom_select = document.select(&target_dom_selecors);
+            let link_elems = if !ignore_contains.is_empty() {
+                let ignore_selector = parse_selector(ignore_contains)?;
+                target_dom_select.filter(|select| {
+                    select.select(&ignore_selector).next() == None
+                }).collect::<Vec<_>>()
+            } else {
+                target_dom_select.collect::<Vec<_>>()
+            };
             for link_elem in link_elems {
                 items.push(from_link(&link_elem)?);
             }
