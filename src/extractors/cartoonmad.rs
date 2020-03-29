@@ -43,14 +43,18 @@ def_extractor! {
             .send()?
             .decode_text(BIG5)?;
 
-        itemsgen2!(
+        if let Ok(items) = itemsgen2!(
             html            = &html,
             parent_dom      = r#"table[width="890"] td[colspan="2"] td[align="center"]"#,
             cover_dom       = "img",
             cover_prefix    = "https://www.cartoonmad.com",
             link_dom        = "a.a1",
             link_prefix     = "https://www.cartoonmad.com/"
-        )
+        ) {
+            Ok(items)
+        } else {
+            Ok(vec![])
+        }
     }
 
     fn fetch_chapters(&self, comic: &mut Comic) -> Result<()> {

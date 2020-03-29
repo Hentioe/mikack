@@ -53,15 +53,16 @@ def_extractor! {
     fn search(&self, keywords: &str) -> Result<Vec<Comic>> {
         let url = format!("https://sacg.dmzj.com/comicsum/search.php?s={}", keywords);
         let html = get(&url)?.text()?;
-        let search_data = match_content2!(&html, &*DATA_RE)?;
-        let search_data_json = format!("{{ \"search_data\": {} }}", search_data);
-        let json: SearchJson = serde_json::from_str(&search_data_json)?;
-
         let mut comics = vec![];
-        for c in json.search_data {
-            comics.push(Comic::from(c));
+        if let Ok(search_data) = match_content2!(&html, &*DATA_RE) {
+            let search_data_json = format!("{{ \"search_data\": {} }}", search_data);
+            let json: SearchJson = serde_json::from_str(&search_data_json)?;
+    
+            for c in json.search_data {
+                comics.push(Comic::from(c));
+            }
+    
         }
-
         Ok(comics)
     }
 
