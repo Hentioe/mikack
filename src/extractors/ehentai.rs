@@ -7,20 +7,21 @@ def_regex2! {
 
 def_extractor! {
     status	=> [
-		usable: true, pageable: true, searchable: true, https: true,
-		favicon: "https://e-hentai.org/favicon.ico"
-	],
+        usable: true, pageable: true, searchable: true, https: true,
+        favicon: "https://e-hentai.org/favicon.ico"
+    ],
     tags	=> [English, Japanese, Chinese, NSFW],
 
     fn index(&self, page: u32) -> Result<Vec<Comic>> {
         let url = format!("https://e-hentai.org/?page={}", page - 1);
 
         itemsgen2!(
-            url         = &url,
-            parent_dom  = ".itg > tbody > tr:not(:nth-child(1)):not(:nth-child(15))",
-            cover_dom   = ".glthumb img",
-            cover_attrs = &["data-src", "src"],
-            link_dom    = ".glname > a",
+            url                 = &url,
+            parent_dom          = ".itg > tbody > tr:not(:nth-child(1))",
+            cover_dom           = ".glthumb img",
+            cover_attrs         = &["data-src", "src"],
+            link_dom            = ".glname > a",
+            ignore_contains     = ".itd"
         )
     }
 
@@ -28,11 +29,12 @@ def_extractor! {
         let url = format!("https://e-hentai.org/?f_search={}", keywords);
 
         itemsgen2!(
-            url         = &url,
-            parent_dom  = ".itg > tbody > tr:not(:nth-child(1)):not(:nth-child(15))",
-            cover_dom   = ".glthumb img",
-            cover_attrs = &["data-src", "src"],
-            link_dom    = ".glname > a",
+            url                 = &url,
+            parent_dom          = ".itg > tbody > tr:not(:nth-child(1))",
+            cover_dom           = ".glthumb img",
+            cover_attrs         = &["data-src", "src"],
+            link_dom            = ".glname > a",
+            ignore_contains     = ".itd"
         )
     }
 

@@ -419,7 +419,16 @@ duang!(
 
         let mut items = vec![];
         if !parent_dom.is_empty() {
-            let parent_elems = document.select(&parse_selector(parent_dom)?).collect::<Vec<_>>();
+            let parent_dom_selecors = parse_selector(parent_dom)?;
+            let parent_dom_select = document.select(&parent_dom_selecors);
+            let parent_elems = if !ignore_contains.is_empty() {
+                let ignore_selector = parse_selector(ignore_contains)?;
+                parent_dom_select.filter(|select| {
+                    select.select(&ignore_selector).next() == None
+                }).collect::<Vec<_>>()
+            } else {
+                parent_dom_select.collect::<Vec<_>>()
+            };
             for (i, parent_elem) in parent_elems.iter().enumerate() {
                 let link_elem = if let Some(elem) = parent_elem.select(&parse_selector(link_dom)?).next() {
                     elem
