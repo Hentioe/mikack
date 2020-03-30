@@ -41,8 +41,18 @@ def_extractor! {
     }
 
     fn fetch_chapters(&self, comic: &mut Comic) -> Result<()> {
+        let html = &get(&comic.url)?.text()?;
+
+        if comic.cover.is_empty() {
+            let document = parse_document(html);
+            let cover = format!("https:{}",
+                document.dom_attr(".rich-content tbody > tr:first-child td:first-child > img", "src")?
+            );
+            comic.cover = cover;
+        }
+
         itemsgen2!(
-            url             = &comic.url,
+            html            = html,
             target_dom      = ".entry-content tbody td > a",
             link_prefix     = "https:"
         )?.attach_to(comic);
@@ -81,7 +91,7 @@ fn test_extr() {
         let comic1 = &mut Comic::from_link("生存遊戲", "https://8comic.se/15798/");
         extr.fetch_chapters(comic1).unwrap();
         assert_eq!(15, comic1.chapters.len());
-        let chapter1 = &mut Chapter::from_link("", "https://8comic.se/1113/");
+        let chapter1 = &mut Chapter::from_url("https://8comic.se/1113/");
         extr.fetch_pages_unsafe(chapter1).unwrap();
         assert_eq!("火影忍者 – 556 話", chapter1.title);
         assert_eq!(15, chapter1.pages.len());
