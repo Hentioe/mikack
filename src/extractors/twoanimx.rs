@@ -89,7 +89,9 @@ fn test_extr() {
         extr.fetch_pages_unsafe(chapter1).unwrap();
         assert_eq!("風雲全集 - 風雲全集 第23卷", chapter1.title);
         assert_eq!(26, chapter1.pages.len());
-        let chapter2 = &mut Chapter::from_url("https://www.2animx.com/index-look-name-7%E5%A4%A9%E5%90%8E%E7%99%BC%E7%8F%BE%E8%AE%8A%E4%B8%8D%E5%9B%9E%E7%94%B7%E4%BA%BA%E7%9A%84%E5%B9%BC%E5%A5%B3-cid-45376-id-574522");
+        let chapter2 = &mut Chapter::from_url(
+            "https://www.2animx.com/index-look-name-7天后發現變不回男人的幼女-cid-45376-id-574522",
+        );
         extr.fetch_pages_unsafe(chapter2).unwrap();
         assert_eq!("7天后發現變不回男人的幼女 - 第1話（1P）", chapter2.title);
         assert_eq!(1, chapter2.pages.len());

@@ -1,4 +1,5 @@
 use num_derive::FromPrimitive;
+use percent_encoding::{utf8_percent_encode, CONTROLS};
 use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
 use std::{default::Default, path::Path};
@@ -121,15 +122,22 @@ impl Page {
 }
 
 impl Chapter {
-    pub fn new<S: Into<String>>(title: S, url: S, which: u32) -> Self {
+    pub fn make_headers(url: &str) -> HashMap<String, String> {
         let mut page_headers = HashMap::new();
-        let url = url.into();
-        page_headers.insert(String::from("Referer"), url.clone());
+        let urlencoded = utf8_percent_encode(url, &CONTROLS).collect();
+        page_headers.insert(String::from("Referer"), urlencoded);
+
+        page_headers
+    }
+
+    pub fn new<S: Into<String>>(title: S, url: S, which: u32) -> Self {
+        let url = &url.into();
+
         Self {
             title: Self::title(title),
-            url: url.clone(),
+            url: url.to_owned(),
             which,
-            page_headers,
+            page_headers: Self::make_headers(&url),
             ..Default::default()
         }
     }
@@ -207,8 +215,10 @@ impl FromUrl for Comic {
 
 impl FromUrl for Chapter {
     fn from_url<S: Into<String>>(url: S) -> Self {
+        let url = &url.into();
         Self {
-            url: url.into(),
+            url: url.to_owned(),
+            page_headers: Self::make_headers(url),
             ..Default::default()
         }
     }
