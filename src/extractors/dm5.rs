@@ -9,7 +9,7 @@ def_regex2![
 
 def_extractor! {
     status	=> [
-        usable: true, pageable: false, searchable: true, https: true,
+        usable: true, pageable: false, searchable: true, https: true, pageable_search: true,
         favicon: "https://www.dm5.com/favicon.ico"
     ],
     tags	=> [Chinese],
@@ -35,17 +35,24 @@ def_extractor! {
         Ok(comics)
     }
 
-    fn search(&self, keywords: &str) -> Result<Vec<Comic>> {
-        let url = format!("https://www.dm5.com/search?title={}", keywords);
+    fn paginated_search(&self, keywords: &str, page: u32) -> Result<Vec<Comic>> {
+        let url = format!("https://www.dm5.com/search?title={}&page={}", keywords, page);
         let html = get(&url)?.text()?;
         let document = parse_document(&html);
         let mut comics = vec![];
 
-        let banner_cover = document.dom_attr(".banner_detail_form > .cover > img", "src")?;
-        let banner_title = document.dom_text(".banner_detail_form .title > a")?;
-        let banner_url = format!("https://www.dm5.com{}", document.dom_attr(".banner_detail_form .title > a", "href")?);
+        if page == 1 {
+            let banner_cover = if let Ok(cover) = document
+            .dom_attr(".banner_detail_form > .cover > img", "src") {
+                cover
+            } else {
+                return Ok(vec![]);
+            };
+            let banner_title = document.dom_text(".banner_detail_form .title > a")?;
+            let banner_url = format!("https://www.dm5.com{}", document.dom_attr(".banner_detail_form .title > a", "href")?);
 
-        comics.push(Comic::from_index(banner_title, banner_url, banner_cover));
+            comics.push(Comic::from_index(banner_title, banner_url, banner_cover));
+        }
 
         comics.append(&mut itemsgen2!(
             html        = &html,
@@ -175,7 +182,7 @@ fn test_extr() {
             Comic::from_url("https://www.dm5.com/manhua-yitaishuangbao-guaigemamidaihuijia/");
         extr.fetch_chapters(&mut comic3).unwrap();
         assert_eq!(34, comic3.chapters.len());
-        let comics = extr.search("风云全集").unwrap();
+        let comics = extr.paginated_search("风云全集", 1).unwrap();
         assert!(comics.len() > 0);
         assert_eq!(comics[0].title, comic1.title);
         assert_eq!(comics[0].url, comic1.url);
