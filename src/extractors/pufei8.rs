@@ -75,7 +75,7 @@ def_extractor! {
         let document = parse_document(&html);
         chapter.set_title(document.dom_text("h1")?);
         let packed = match_content2!(&html, &*PACKED_RE)?;
-        let wrap_code = wrap_code!(include_str!("../../runtime/ipufei.js"), format!("
+        let wrap_code = wrap_code!(include_str!("../../assets/runtime/ipufei.js"), format!("
             var data = decode('{packed}');
             data
         ", packed = packed), :end);

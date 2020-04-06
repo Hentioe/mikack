@@ -74,7 +74,7 @@ def_extractor! {
             let html = get(&page_url)?.text()?;
             let document = parse_document(&html);
             let img_name_attr = document.dom_attr("#iBodyQ img", "name")?;
-            let runtime = include_str!("../../runtime/hhimm.js");
+            let runtime = include_str!("../../assets/runtime/hhimm.js");
             let wrap_code = wrap_code!(runtime, format!("
                 var location = {{ hostname: '{}' }};
                 unsuan('{}')

@@ -65,7 +65,7 @@ def_extractor! {
         let document = parse_document(&html);
         chapter.title = document.dom_text(".entry-title")?;
         let params = match_content2!(&html, &*PARAMS_RE)?;
-        let runtime = include_str!("../../runtime/yylsmh.js");
+        let runtime = include_str!("../../assets/runtime/yylsmh.js");
         let page_count = document.dom_attrs("#pull > option", "value")?.len() as i32;
         let current_src = document.dom_attr("#caonima", "src")?;
         let wrap_code = wrap_code!(runtime, format!("

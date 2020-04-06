@@ -57,7 +57,7 @@ def_extractor! {
 
     fn pages_iter<'a>(&'a self, chapter: &'a mut Chapter) -> Result<ChapterPages> {
         let html = get(&chapter.url)?.text()?;
-        let runtime = include_str!("../../runtime/manhuagui.js");
+        let runtime = include_str!("../../assets/runtime/manhuagui.js");
         let crypty_code = match_content2!(&html, &*CTYPTO_RE)?;
         let wrap_code = format!("{}\n{}", &runtime, format!("
             DATA = null;
