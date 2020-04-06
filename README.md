@@ -1,6 +1,6 @@
 # mikack
 
-跨平台的图集（以漫画为主）检索库，旨在提供一套通用的接口访问不同来源的在线资源。
+跨平台的图集检索库（以漫画为主），旨在提供一套通用的接口访问不同来源的在线资源。
 
 ## 周边生态
 
@@ -37,7 +37,7 @@ _其中 mikack-cli 项目由于技术同构的原因直接使用了 Rust 接口�
 | 古风漫画网       | [www.gufengmh8.com](https://www.gufengmh8.com)         |    ✓     |    ✓     |          中文          |
 | 喵绅士           | c-upp<i>.</i>com                                       |    ✓     |    ✓     | 英文, 日文, 中文, NSFW |
 | 汗汗酷漫         | [www.hhimm.com](http://www.hhimm.com)                  |    ✓     |    ✓     |          中文          |
-| KuKu 动漫        | [comic.ikkdm.com](http://comic.ikkdm.com)              |    ✓     |    ✓     |          中文          |
+| KuKu 动漫        | [comic.ikkdm.com](http://comic.kkkkdm.com)             |    ✓     |    ✓     |          中文          |
 | 快看漫画         | [www.kuaikanmanhua.com](https://www.kuaikanmanhua.com) |    ✓     |    ✓     |          中文          |
 | LoveHeaven       | [loveheaven.net](https://loveheaven.net)               |    ✓     |    ✓     |          英文          |
 | Luscious         | www<i>.</i>luscious<i>.</i>net                         |    ✓     |    ✓     | 英文, 日文, 中文, NSFW |
