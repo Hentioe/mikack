@@ -11,6 +11,8 @@ pub struct GroupedItemsSelector<'a> {
     pub outside_group_name_dom: &'a str,
     pub items_dom: &'a str,
     pub items_title_attr: &'a str,
+    pub items_title_dom: &'a str,
+    pub items_title_dom_attr: &'a str,
     pub items_url_attr: &'a str,
     pub items_url_prefix: &'a str,
 }
@@ -67,20 +69,41 @@ impl<'a> GroupedItemsSelector<'a> {
             };
             let mut items = vec![];
             for (i, item) in group.select(&parse_selector(self.items_dom)?).enumerate() {
-                let title = if self.items_title_attr.is_empty() {
-                    // 直接取文本
-                    item.text().next().ok_or(err_msg(format!(
-                        "No item title text found at location `{}`",
-                        i
-                    )))?
-                } else {
-                    // 取指定属性
+                let title = if !self.items_title_attr.is_empty() {
+                    // 取指定属性值
                     item.value()
                         .attr(self.items_title_attr)
                         .ok_or(err_msg(format!(
                             "No item title attribute `{}` found at location `{}`",
                             self.items_title_attr, i
                         )))?
+                } else if !self.items_title_dom.is_empty() {
+                    let title_dom = item
+                        .select(&parse_selector(self.items_title_dom)?)
+                        .next()
+                        .ok_or(err_msg(format!("No title dom found at location `{}`", i)))?;
+                    if self.items_title_dom_attr.is_empty() {
+                        // 直接取标题 dom 文本
+                        title_dom.text().next().ok_or(err_msg(format!(
+                            "No item title dom text found at location `{}`",
+                            i
+                        )))?
+                    } else {
+                        // 直接取标题 dom 指定属性值
+                        title_dom
+                            .value()
+                            .attr(self.items_title_dom_attr)
+                            .ok_or(err_msg(format!(
+                                "No item title dom attribute `{}` found at location `{}`",
+                                self.items_title_dom_attr, i
+                            )))?
+                    }
+                } else {
+                    // 直接取文本
+                    item.text().next().ok_or(err_msg(format!(
+                        "No item title text found at location `{}`",
+                        i
+                    )))?
                 };
                 let mut url = item
                     .value()
@@ -151,6 +174,8 @@ impl Default for GroupedItemsSelector<'_> {
             outside_group_name_dom: Default::default(),
             items_dom: Default::default(),
             items_title_attr: Default::default(),
+            items_title_dom: Default::default(),
+            items_title_dom_attr: Default::default(),
             items_url_attr: "href",
             items_url_prefix: Default::default(),
         }

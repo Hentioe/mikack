@@ -714,6 +714,10 @@ import_impl_mods![
         :domain => "9hentai.com",
         :name   => "9hentai"
     },
+    ninetymh: {
+        :domain => "www.90mh.com",
+        :name   => "90漫画网"
+    },
     one77pic: {
         :domain => "www.177pic.info",
         :name   => "177漫畫"
