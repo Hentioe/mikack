@@ -49,7 +49,7 @@ _其中 mikack-cli 项目由于技术同构的原因直接使用了 Rust 接口�
 | 漫画铺           | [www.manhuapu.com](http://www.manhuapu.com)            |    ✓     |    ✓     |          中文          |
 | nhentai          | nhentai<i>.</i>net                                     |    ✓     |    ✓     | 英文, 日文, 中文, NSFW |
 | 9hentai          | 9hentai<i>.</i>com                                     |    ✓     |    ✓     |       英文, NSFW       |
-| 90 漫画网        | [www.90mh.com](http://www.90mh.com)                    |          |    ✓     |          中文          |
+| 90 漫画网        | [www.90mh.com](http://www.90mh.com)                    |    ✓     |    ✓     |          中文          |
 | 177 漫畫         | www<i>.</i>177pic<i>.</i>info                          |    ✓     |    ✓     |    中文, 日文, NSFW    |
 | ONE 漫画         | [www.onemanhua.com](https://www.onemanhua.com)         |    ✓     |    ✓     |          中文          |
 | 扑飞漫画         | [www.pufei8.com](http://www.pufei8.com)                |    ✓     |    ✓     |          中文          |

@@ -976,6 +976,11 @@ def_routes![
         :chapter_re => r#"^https?://9hentai\.com/g/\d+"#
     },
     {
+        :domain     => "www.90mh.com",
+        :comic_re   => r#"^https?://www\.90mh\.com/manhua/.+"#,
+        :chapter_re => r#"^https?://www\.90mh\.com/manhua/[^/]+/\d+\.html"#
+    },
+    {
         :domain     => "www.177pic.info",
         :comic_re   => r#"^-NONE-$"#,
         :chapter_re => r#"^https?://www\.177pic\.info/html/\d+/\d+/\d+\.html"#

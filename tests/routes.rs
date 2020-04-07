@@ -118,6 +118,10 @@ fn test_routes() {
     assert_routes!("9hentai.com",
         :chapter => "https://9hentai.com/g/60726/"
     );
+    assert_routes!("www.90mh.com",
+        :comic   => "http://www.90mh.com/manhua/taguoriji/",
+        :chapter => "http://www.90mh.com/manhua/taguoriji/127184.html"
+    );
     assert_routes!("www.177pic.info",
         :chapter => "http://www.177pic.info/html/2020/01/3307768.html"
     );
