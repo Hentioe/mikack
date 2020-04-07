@@ -58,7 +58,7 @@ _其中 mikack-cli 项目由于技术同构的原因直接使用了 Rust 接口�
 | 台灣成人 H 漫    | twhentai<i>.</i>com                                    |    ✓     |    ✓     |    中文, 日文, NSFW    |
 | 二次元動漫       | [www.2animx.com](http://www.2animx.com)                |    ✓     |    ✓     |          中文          |
 | 紳士漫畫         | www<i>.</i>wnacg<i>.</i>org                            |    ✓     |    ✓     |       中文, NSFW       |
-| 57 漫画网        | [www.wuqimh.com](http://www.wuqimh.com/)               |          |    ✓     |          中文          |
+| 57 漫画网        | [www.wuqimh.com](http://www.wuqimh.com/)               |    ✓     |    ✓     |          中文          |
 | 新新漫画网       | [www.177mh.net](https://www.177mh.net)                 |    ✓     |    ✓     |          中文          |
 | YYLS 漫畫        | [8comic.se](https://8comic.se)                         |    ✓     |    ✓     |          中文          |
 
