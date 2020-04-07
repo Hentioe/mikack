@@ -1,9 +1,13 @@
 use super::*;
 
+def_regex2![
+    CODE    => r#"(eval\(.+\))"#
+];
+
 /// 对 www.wuqimh.com 内容的抓取实现
 def_extractor! {
     status	=> [
-        usable: false, pageable: false, searchable: true, https: false, pageable_search: true,
+        usable: true, pageable: false, searchable: true, https: false, pageable_search: true,
         favicon: "http://www.wuqimh.com/favicon.ico"
     ],
     tags	=> [Chinese],
@@ -53,8 +57,31 @@ def_extractor! {
         Ok(())
     }
 
-    // fn pages_iter<'a>(&'a self, chapter: &'a mut Chapter) -> Result<ChapterPages> {
-    // }
+    fn pages_iter<'a>(&'a self, chapter: &'a mut Chapter) -> Result<ChapterPages> {
+        let html = get(&chapter.url)?.text()?;
+        let code = match_content2!(&html, &*CODE_RE)?;
+
+        let wrap_code = format!("
+            {code}
+
+            var data = {{name: `${{cInfo.btitle}} ${{cInfo.ctitle}}`, list: cInfo.fs }};
+            data
+        ", code = code);
+
+        let data = eval_as_obj(&wrap_code)?;
+
+        chapter.set_title(data.get_as_string("name")?);
+
+
+        let mut addresses = vec![];
+
+        for path in data.get_as_array("list")?.iter() {
+            let address = format!("http://images.lancaier.com{}", path.as_string()?);
+            addresses.push(address);
+        }
+
+        Ok(ChapterPages::full(chapter, addresses))
+    }
 }
 
 #[test]
@@ -66,10 +93,10 @@ fn test_extr() {
         let comic1 = &mut Comic::new("进击的巨人", "http://www.wuqimh.com/118/");
         extr.fetch_chapters(comic1).unwrap();
         assert_eq!(168, comic1.chapters.len());
-        // let chapter1 = &mut comic1.chapters[0];
-        // extr.fetch_pages_unsafe(chapter1).unwrap();
-        // assert_eq!("进击的巨人00话", chapter1.title);
-        // assert_eq!(35, chapter1.pages.len());
+        let chapter1 = &mut comic1.chapters[0];
+        extr.fetch_pages_unsafe(chapter1).unwrap();
+        assert_eq!("进击的巨人 00话", chapter1.title);
+        assert_eq!(35, chapter1.pages.len());
         let comics = extr.paginated_search("进击的巨人", 1).unwrap();
         assert!(comics.len() > 0);
         assert_eq!(comics[0].title, comic1.title);
