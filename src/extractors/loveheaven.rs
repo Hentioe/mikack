@@ -80,8 +80,8 @@ def_extractor! {
     fn fetch_chapters(&self, comic: &mut Comic) -> Result<()> {
         itemsgen2!(
             url             = &comic.url,
-            target_dom      = r#"small > div:nth-child(3) > a"#,
-            link_prefix     = "https://loveheaven.net"
+            target_dom      = r#"td > a.chapter"#,
+            link_prefix     = "https://loveheaven.net/",
         )?.reversed_attach_to(comic);
 
         Ok(())
@@ -107,10 +107,12 @@ fn test_extr() {
             "https://loveheaven.net/manga-ichinichi-gaishutsuroku-hanchou-raw.html",
         );
         extr.fetch_chapters(comic1).unwrap();
-        assert_eq!(1, comic1.chapters.len());
-        assert_eq!("Read The Last Chapter", comic1.chapters[0].title);
-        let chapter1 = &mut Chapter::from_link(
-            "",
+        assert_eq!(55, comic1.chapters.len());
+        assert_eq!(
+            "Ichinichi Gaishutsuroku Hanchou - Raw Chapter 14",
+            comic1.chapters[0].title
+        );
+        let chapter1 = &mut Chapter::from_url(
             "https://loveheaven.net/read-ichinichi-gaishutsuroku-hanchou-raw-chapter-64.html",
         );
         extr.fetch_pages_unsafe(chapter1).unwrap();
