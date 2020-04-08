@@ -72,7 +72,8 @@ def_extractor! {
         itemsgen2!(
             url             = &url,
             parent_dom      = r#"div[class^="list-article"] li[class$="_item"]"#,
-            cover_dom       = "img.list-article02__cover-img",
+            cover_dom       = "div.list-article02__cover-inner",
+            cover_attr      = "data-img-url",
             link_dom        = "a.list-article02__item-inner",
             link_text_attr  = "title"
         )
