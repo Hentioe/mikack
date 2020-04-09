@@ -43,6 +43,7 @@ _其中 mikack-cli 项目由于技术同构的原因直接使用了 Rust 接口�
 | Luscious         | www<i>.</i>luscious<i>.</i>net                         |    ✓     |    ✓     | 英文, 日文, 中文, NSFW |
 | Mangabz          | [www.mangabz.com](http://www.mangabz.com)              |    ✓     |    ✓     |          中文          |
 | Manganelo        | [manganelo.com](https://manganelo.com)                 |    ✓     |    ✓     |          英文          |
+| Mangareader      | [www.mangareader.net](http://www.mangareader.net)      |          |    ✓     |          英文          |
 | 漫画 DB          | [www.manhuadb.com](https://www.manhuadb.com)           |    ✓     |    ✓     |          中文          |
 | 漫画堆           | [www.manhuadui.com](https://www.manhuadui.com)         |    ✓     |    ✓     |          中文          |
 | 漫画柜           | [www.manhuagui.com](https://www.manhuagui.com)         |    ✓     |    ✓     |          中文          |

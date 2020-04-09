@@ -1,9 +1,5 @@
 use super::*;
 
-def_regex2![
-    COVER => r#"background: url("([^"]+)")"#
-];
-
 /// 对 www.bidongmh.com 内容的抓取实现
 def_extractor! {
     status	=> [

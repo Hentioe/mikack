@@ -690,6 +690,10 @@ import_impl_mods![
         :domain => "manganelo.com",
         :name   => "Manganelo"
     },
+    mangareader: {
+        :domain => "www.mangareader.net",
+        :name   => "Mangareader"
+    },
     manhuadui: {
         :domain => "www.manhuadui.com",
         :name   => "漫画堆"
