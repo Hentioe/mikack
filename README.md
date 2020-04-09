@@ -48,6 +48,7 @@ _其中 mikack-cli 项目由于技术同构的原因直接使用了 Rust 接口�
 | 漫画堆           | [www.manhuadui.com](https://www.manhuadui.com)         |    ✓     |    ✓     |          中文          |
 | 漫画柜           | [www.manhuagui.com](https://www.manhuagui.com)         |    ✓     |    ✓     |          中文          |
 | 漫画铺           | [www.manhuapu.com](http://www.manhuapu.com)            |    ✓     |    ✓     |          中文          |
+| 漫客栈           | [www.mkzhan.com](https://www.mkzhan.com)               |          |    ✓     |          中文          |
 | nhentai          | nhentai<i>.</i>net                                     |    ✓     |    ✓     | 英文, 日文, 中文, NSFW |
 | 9hentai          | 9hentai<i>.</i>com                                     |    ✓     |    ✓     |       英文, NSFW       |
 | 90 漫画网        | [www.90mh.com](http://www.90mh.com)                    |    ✓     |    ✓     |          中文          |

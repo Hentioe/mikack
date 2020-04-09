@@ -710,6 +710,10 @@ import_impl_mods![
         :domain => "www.manhuapu.com",
         :name   => "漫画铺"
     },
+    mkzhan: {
+        :domain => "www.mkzhan.com",
+        :name   => "漫客栈"
+    },
     nhentai: {
         :domain => "nhentai.net",
         :name   => "nhentai"
