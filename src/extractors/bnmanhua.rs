@@ -1,5 +1,4 @@
 use super::*;
-use reqwest::blocking::Client;
 
 def_regex2![
     DATA  => r#"<script>.+z_img=('[^']+')"#
@@ -8,9 +7,9 @@ def_regex2![
 /// 对 www.bnmanhua.com 内容的抓取实现
 def_extractor! {
     status	=> [
-		usable: true, pageable: true, searchable: true, https: true,
-		favicon: "https://www.bnmanhua.com/favicon.ico"
-	],
+        usable: true, pageable: true, searchable: true, https: true, pageable_search: true,
+        favicon: "https://www.bnmanhua.com/favicon.ico"
+    ],
     tags	=> [Chinese],
 
     fn index(&self, page: u32) -> Result<Vec<Comic>> {
@@ -27,19 +26,15 @@ def_extractor! {
         )
     }
 
-    fn search(&self, keywords: &str) -> Result<Vec<Comic>> {
-        let url = "https://www.bnmanhua.com/index.php?m=vod-search";
-        let mut params = HashMap::new();
-        params.insert("wd", &keywords);
-        let client = Client::new();
-        let html = client
-            .post(url)
-            .form(&params)
-            .send()?
-            .text()?;
+    fn paginated_search(&self, keywords: &str, page: u32) -> Result<Vec<Comic>> {
+        let url = &if page == 1 {
+            format!("https://www.bnmanhua.com/index.php?m=vod-search-wd-{}.html", keywords)
+        } else {
+            format!("https://www.bnmanhua.com/index.php?m=vod-search-pg-{}-wd-{}.html", page, keywords)
+        };
 
         itemsgen2!(
-            html            = &html,
+            url             = url,
             parent_dom      = ".plist02 > li",
             cover_dom       = "a > img",
             cover_attr      = "data-src",
@@ -72,7 +67,12 @@ def_extractor! {
         let data = eval_value(&wrap_code)?;
         let mut addresses = vec![];
         for path in data.as_array()? {
-            addresses.push(format!("https://img.yaoyaoliao.com/{}", path.as_string()?));
+            let address = path.as_string()?;
+            if !address.starts_with("http") {
+                addresses.push(format!("https://img.yaoyaoliao.com/{}", address));
+            } else {
+                addresses.push(address.to_owned());
+            }
         }
 
         Ok(ChapterPages::full(chapter, addresses))
@@ -92,7 +92,11 @@ fn test_extr() {
         extr.fetch_pages_unsafe(chapter1).unwrap();
         assert_eq!("天降魔女(02 买不买下他？)", chapter1.title);
         assert_eq!(32, chapter1.pages.len());
-        let comics = extr.search("天降魔女").unwrap();
+        let chapter2 = &mut Chapter::from_url("https://www.bnmanhua.com/comic/2393/1316201.html");
+        extr.fetch_pages_unsafe(chapter2).unwrap();
+        assert_eq!("进击的巨人(第128话叛徒)", chapter2.title);
+        assert_eq!(42, chapter2.pages.len());
+        let comics = extr.paginated_search("天降魔女", 1).unwrap();
         assert!(comics.len() > 0);
         assert_eq!(comics[0].title, comic1.title);
         assert_eq!(comics[0].url, comic1.url);
