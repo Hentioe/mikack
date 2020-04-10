@@ -57,6 +57,7 @@ _其中 mikack-cli 项目由于技术同构的原因直接使用了 Rust 接口�
 | 扑飞漫画         | [www.pufei8.com](http://www.pufei8.com)                |    ✓     |    ✓     |          中文          |
 | 奇妙漫画         | [www.qimiaomh.com](https://www.qimiaomh.com)           |    ✓     |    ✓     |          中文          |
 | 土豪漫画         | [www.tohomh123.com](https://www.tohomh123.com)         |    ✓     |    ✓     |          中文          |
+| TVBS 漫畫        | [www.tvbsmh.com](https://www.tvbsmh.com)               |          |    ✓     |          中文          |
 | 台灣成人 H 漫    | twhentai<i>.</i>com                                    |    ✓     |    ✓     |    中文, 日文, NSFW    |
 | 二次元動漫       | [www.2animx.com](http://www.2animx.com)                |    ✓     |    ✓     |          中文          |
 | 紳士漫畫         | www<i>.</i>wnacg<i>.</i>org                            |    ✓     |    ✓     |       中文, NSFW       |

@@ -746,6 +746,10 @@ import_impl_mods![
         :domain => "www.tohomh123.com",
         :name   => "土豪漫画"
     },
+    tvbsmh: {
+        :domain => "www.tvbsmh.com",
+        :name   => "TVBS漫畫"
+    },
     twhentai: {
         :domain => "twhentai.com",
         :name   => "台灣成人H漫"

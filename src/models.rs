@@ -130,7 +130,7 @@ impl Chapter {
         page_headers
     }
 
-    pub fn new<S: Into<String>>(title: S, url: S, which: u32) -> Self {
+    pub fn new<S1: Into<String>, S2: Into<String>>(title: S1, url: S2, which: u32) -> Self {
         let url = &url.into();
 
         Self {
