@@ -46,10 +46,19 @@ def_extractor! {
         Ok(())
     }
 
-    // fn pages_iter<'a>(&'a self, chapter: &'a mut Chapter) -> Result<ChapterPages> {
-    //     let html = get(&chapter.url)?.text()?;
-    //     let document = parse_document(&html);
-    // }
+    fn pages_iter<'a>(&'a self, chapter: &'a mut Chapter) -> Result<ChapterPages> {
+        let html = get(&chapter.url)?.text()?;
+        let document = parse_document(&html);
+
+        chapter.title = format!("{} {}",
+            document.dom_text("a.j-comic-title")?,
+            document.dom_text("a.last-crumb")?,
+        );
+
+        let addresses = document.dom_attrs(".rd-article__pic > img", "data-src")?;
+
+        Ok(ChapterPages::full(chapter, addresses))
+    }
 }
 
 #[test]
@@ -61,10 +70,10 @@ fn test_extr() {
         let comic1 = &mut Comic::new("绝品小神医", "https://www.mkzhan.com/212800/");
         extr.fetch_chapters(comic1).unwrap();
         assert_eq!(40, comic1.chapters.len());
-        // let chapter1 = &mut comic1.chapters[0];
-        // extr.fetch_pages_unsafe(chapter1).unwrap();
-        // assert_eq!("绝品小神医 第1话", chapter1.title);
-        // assert_eq!(25, chapter1.pages.len());
+        let chapter1 = &mut comic1.chapters[0];
+        extr.fetch_pages_unsafe(chapter1).unwrap();
+        assert_eq!("绝品小神医 第1话", chapter1.title);
+        assert_eq!(25, chapter1.pages.len());
         let comics = extr.paginated_search("绝品小神医", 1).unwrap();
         assert!(comics.len() > 0);
         assert_eq!(comics[0].title, comic1.title);
