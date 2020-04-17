@@ -105,7 +105,7 @@ impl<'a> ChapterPages<'a> {
         fetch: Box<dyn Fn(usize) -> Result<Vec<Page>>>,
     ) -> Self {
         for (i, address) in init_addresses.iter().enumerate() {
-            chapter.pages.push(Page::new(i as usize, address));
+            chapter.pages.push(Page::new((i + 1) as usize, address));
         }
         ChapterPages {
             chapter,

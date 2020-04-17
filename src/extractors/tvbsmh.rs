@@ -2,8 +2,15 @@ use super::*;
 use serde::Deserialize;
 
 def_regex2![
-    ID      => r#"https?://www\.tvbsmh\.com/comic-([^-]+)-.+"#,
-    NAME    => r#"https?://www\.tvbsmh\.com/comic-[^-]+-([^?]+)"#
+    COMIC_URL_CARTOON   => r#"https?://www\.tvbsmh\.com/comic-([^-]+)-.+"#,
+    COMIC_URL_NAME      => r#"https?://www\.tvbsmh\.com/comic-[^-]+-([^?]+)"#,
+    CHAPTER_URL_CARTOON => r#"https?://www\.tvbsmh\.com/series-([^-]+)"#,
+    CHAPTER_URL_CHAPTER => r#"https?://www\.tvbsmh\.com/series-[^-]+-(\d+)"#,
+    CHAPTER_URL_NAME    => r#"https?://www\.tvbsmh\.com/series-[^-]+-\d+-\d+-([^\?]+)"#,
+    TOTAL               => r#"var TOTAL_PAGE = "([^"]+)";"#,
+    KEY                 => r#"var KEY = "([^"]+)";"#,
+    CARTOON_ID          => r#"var CARTOON_ID = "([^"]+)";"#,
+    CHAPTER_ID          => r#"var CHAPTER_ID = "([^"]+)";"#
 ];
 
 #[derive(Debug, Deserialize)]
@@ -67,8 +74,8 @@ def_extractor! {
     }
 
     fn fetch_chapters(&self, comic: &mut Comic) -> Result<()> {
-        let id = &match_content2!(&comic.url, &*ID_RE)?;
-        let name = &match_content2!(&comic.url, &*NAME_RE)?;
+        let id = &match_content2!(&comic.url, &*COMIC_URL_CARTOON_RE)?;
+        let name = &match_content2!(&comic.url, &*COMIC_URL_NAME_RE)?;
         let client = Client::new();
         let mut params: HashMap<_, &str> = HashMap::new();
         params.insert("cartoon_id", id);
@@ -90,10 +97,71 @@ def_extractor! {
         Ok(())
     }
 
-    // fn pages_iter<'a>(&'a self, chapter: &'a mut Chapter) -> Result<ChapterPages> {
-    //     let html = get(&chapter.url)?.text()?;
-    //     let document = parse_document(&html);
-    // }
+    fn pages_iter<'a>(&'a self, chapter: &'a mut Chapter) -> Result<ChapterPages> {
+        let cartoon_id = match_content2!(&chapter.url, &*CHAPTER_URL_CARTOON_RE)?;
+        let chapter_id = match_content2!(&chapter.url, &*CHAPTER_URL_CHAPTER_RE)?;
+        let name = match_content2!(&chapter.url, &*CHAPTER_URL_NAME_RE)?;
+        let gen_url = move |page: usize| {
+            format!("https://www.tvbsmh.com/series-{cartoon_id}-{chapter_id}-{page}-{name}",
+                cartoon_id = cartoon_id, chapter_id = chapter_id, page = page, name = name
+            )
+        };
+        chapter.url = gen_url(1); // 强制修正为第一页
+        let html = get(&chapter.url)?.text()?;
+        let document = parse_document(&html);
+
+        chapter.title = format!("{} {}",
+            document.dom_text(".bookname a:nth-child(5)")?,
+            document.dom_text(".bookname a:nth-child(7)")?,
+        );
+
+        let total = match_content2!(&html, &*TOTAL_RE)?.parse::<usize>()?;
+
+        let fetch_addresses = move |page: usize, page_html: &str| -> Result<Vec<String>> {
+            let key = match_content2!(&page_html, &*KEY_RE)?;
+            let cartoon_id = match_content2!(&page_html, &*CARTOON_ID_RE)?;
+            let chapter_id = match_content2!(&page_html, &*CHAPTER_ID_RE)?;
+            let page_s = &page.to_string();
+            let client = Client::new();
+            let mut params: HashMap<_, &str> = HashMap::new();
+            params.insert("key", &key);
+            params.insert("cartoon_id", &cartoon_id);
+            params.insert("chapter_id", &chapter_id);
+            params.insert("page", page_s);
+            let data = client
+                .post("https://www.tvbsmh.com/comicseries/getpictrue.html")
+                .header("x-requested-with", "XMLHttpRequest")
+                .form(&params)
+                .send()?
+                .text()?;
+            let wrap_code = format!("
+                DATA = {data};
+                DATA
+            ", data = data);
+
+            let addresses_data = eval_as_obj(&wrap_code)?;
+
+            Ok(vec![
+                addresses_data.get_as_string("current")?.clone(),
+                addresses_data.get_as_string("next")?.clone(),
+            ])
+        };
+
+        let first_addresses = fetch_addresses(1, &html)?;
+
+        let fetch = Box::new(move |current_page: usize| {
+            let page_html = get(&gen_url(current_page))?.text()?;
+            let addresses = fetch_addresses(current_page, &page_html)?;
+
+            Ok(addresses
+                .iter()
+                .enumerate()
+                .map(|(i, address)| Page::new(current_page + i, address))
+                .collect::<Vec<_>>())
+        });
+
+        Ok(ChapterPages::new(chapter, total as i32, first_addresses, fetch))
+    }
 }
 
 #[test]
@@ -105,10 +173,10 @@ fn test_extr() {
         let comic1 = &mut Comic::new("三國誌異", "https://www.tvbsmh.com/comic-noczp-三國誌異");
         extr.fetch_chapters(comic1).unwrap();
         assert_eq!(64, comic1.chapters.len());
-        // let chapter1 = &mut comic1.chapters[0];
-        // extr.fetch_pages_unsafe(chapter1).unwrap();
-        // assert_eq!("三國誌異 第1回", chapter1.title);
-        // assert_eq!(25, chapter1.pages.len());
+        let chapter1 = &mut comic1.chapters[0];
+        extr.fetch_pages_unsafe(chapter1).unwrap();
+        assert_eq!("三國誌異 第一回", chapter1.title);
+        assert_eq!(40, chapter1.pages.len());
         let comics = extr.paginated_search("三國誌異", 1).unwrap();
         assert!(comics.len() > 0);
         assert_eq!(comics[0].title, comic1.title);
