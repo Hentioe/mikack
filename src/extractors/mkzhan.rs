@@ -74,6 +74,11 @@ fn test_extr() {
         extr.fetch_pages_unsafe(chapter1).unwrap();
         assert_eq!("绝品小神医 第1话", chapter1.title);
         assert_eq!(25, chapter1.pages.len());
+        let comic2 = &mut Comic::from_url("https://www.mkzhan.com/215422/");
+        extr.fetch_chapters(comic2).unwrap();
+        // TODO: 修复章节标题为空
+        // println!("{:?}", comic2);
+        assert_eq!(35, comic2.chapters.len());
         let comics = extr.paginated_search("绝品小神医", 1).unwrap();
         assert!(comics.len() > 0);
         assert_eq!(comics[0].title, comic1.title);
