@@ -31,7 +31,7 @@ impl From<&ComicItem> for Comic {
 /// 对 www.luscious.net 内容的抓取实现
 def_extractor! {
     status	=> [
-        usable: true, pageable: true, searchable: true, https: true,
+        usable: true, pageable: true, searchable: true, https: true, pageable_search: true,
         favicon: "https://www.luscious.net/favicon.ico"
     ],
     tags	=> [English, Japanese, Chinese, NSFW],
@@ -50,12 +50,14 @@ def_extractor! {
         Ok(comics)
     }
 
-    fn search(&self, keywords: &str) -> Result<Vec<Comic>> {
-        let mut url = String::from(r#"https://api.luscious.net/graphql/nobatch/?operationName=LandingPageAlbumSearch&query=+query+LandingPageAlbumSearch($id:+String!,+$limit:+Int)+{+landing_page_album+{+search(search_string:+$id,+limit:+$limit)+{+...+on+LandingPage+{+title+description+sections+{+...+on+AlbumTopHits+{+title+url+items+{+...AlbumMinimal+}+}+...+on+VideoTopHits+{+title+url+items+{+...VideoMinimal+}+}+}+}+...+on+MutationError+{+errors+{+code+message+}+}+}+}+}+fragment+AlbumMinimal+on+Album+{+__typename+id+title+labels+description+created+modified+like_status+status+number_of_favorites+number_of_dislikes+number_of_pictures+number_of_animated_pictures+number_of_duplicates+slug+is_manga+url+download_url+permissions+created_by+{+id+url+name+display_name+user_title+avatar+{+url+size+}+}+cover+{+width+height+size+url+}+content+{+id+title+url+}+language+{+id+title+url+}+tags+{+id+category+text+url+count+}+genres+{+id+title+slug+url+}+audiences+{+id+title+url+}+}+fragment+VideoMinimal+on+Video+{+__typename+id+url+permissions+title+slug+labels+description+created+width+height+number_of_favorites+number_of_dislikes+number_of_comments+sample_video_url+poster_url+duration+like_status+status+translation_status+created_by+{+id+url+name+display_name+user_title+avatar+{+url+size+}+}+content+{+id+title+url+}+tags+{+id+category+text+url+}+genres+{+id+title+slug+url+}+}+&variables={"id":""#);
+    fn paginated_search(&self, keywords: &str, page: u32) -> Result<Vec<Comic>> {
+        let mut url = String::from(r#"https://api.luscious.net/graphql/nobatch/?operationName=AlbumList&query=+query+AlbumList($input:+AlbumListInput!)+{+album+{+list(input:+$input)+{+info+{+...FacetCollectionInfo+}+items+{+...AlbumMinimal+}+}+}+}+fragment+FacetCollectionInfo+on+FacetCollectionInfo+{+page+has_next_page+has_previous_page+total_items+total_pages+items_per_page+url_complete+}+fragment+AlbumMinimal+on+Album+{+__typename+id+title+labels+description+created+modified+like_status+moderation_status+number_of_favorites+number_of_dislikes+number_of_pictures+number_of_animated_pictures+number_of_duplicates+slug+is_manga+url+download_url+permissions+created_by+{+id+url+name+display_name+user_title+avatar+{+url+size+}+}+cover+{+width+height+size+url+}+content+{+id+title+url+}+language+{+id+title+url+}+tags+{+category+text+url+count+}+genres+{+id+title+slug+url+}+audiences+{+id+title+url+}+}+&variables={"input":{"display":"search_score","filters":[{"name":"album_type","value":"manga"},{"name":"audience_ids","value":"+1+10+2+3+5+6+8+9"},{"name":"language_ids","value":"+1+100+101+2+3+4+5+6+8+9+99"},{"name":"search_query","value":""#);
         url.push_str(keywords);
-        url.push_str(r#""}"#);
+        url.push_str(r#""}],"page":"#);
+        url.push_str(&page.to_string());
+        url.push_str(r#"}}"#);
         let json_v = get(&url)?.json::<Value>()?;
-        let items = json_v["data"]["landing_page_album"]["search"]["sections"][0]["items"].clone();
+        let items = json_v["data"]["album"]["list"]["items"].clone();
         if matches!(items, Value::Null) { // 空结果
             return Ok(vec![]);
         }
@@ -117,7 +119,9 @@ fn test_extr() {
         chapter1.title
     );
     assert_eq!(26, chapter1.pages.len());
-    let comics = extr.search("Teitoku wa Semai Toko Suki").unwrap();
+    let comics = extr
+        .paginated_search("Teitoku wa Semai Toko Suki", 1)
+        .unwrap();
     assert!(comics.len() > 0);
     assert_eq!(comics[0].title, comic1.title);
     assert_eq!(comics[0].url, comic1.url);
