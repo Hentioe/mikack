@@ -7,7 +7,7 @@ def_regex2! {
 
 def_extractor! {
     status	=> [
-        usable: true, pageable: true, searchable: true, https: true,
+        usable: true, pageable: true, searchable: true, https: true, pageable_search: true,
         favicon: "https://e-hentai.org/favicon.ico"
     ],
     tags	=> [English, Japanese, Chinese, NSFW],
@@ -25,8 +25,8 @@ def_extractor! {
         )
     }
 
-    fn search(&self, keywords: &str) -> Result<Vec<Comic>> {
-        let url = format!("https://e-hentai.org/?f_search={}", keywords);
+    fn paginated_search(&self, keywords: &str, page: u32) -> Result<Vec<Comic>> {
+        let url = format!("https://e-hentai.org/?page={}&f_search={}", page - 1, keywords);
 
         itemsgen2!(
             url                 = &url,
@@ -81,17 +81,18 @@ fn test_extr() {
     if extr.is_usable() {
         let comics = extr.index(1).unwrap();
         assert_eq!(25, comics.len());
-
-        let title =
-            "[Reverse Noise (Yamu)] Shizuka na Yoru ni Futarikiri (Touhou Project) [Digital]";
-        let mut comic1 = Comic::from_link(title, "https://e-hentai.org/g/1550508/b913d30dcb/");
+        let comic1_title = "[Super Melons] Carnal debts (Dragon Ball Z) [Ongoing]";
+        let mut comic1 =
+            Comic::from_link(comic1_title, "https://e-hentai.org/g/1617973/3224dd8125/");
         extr.fetch_chapters(&mut comic1).unwrap();
         assert_eq!(1, comic1.chapters.len());
         let chapter1 = &mut comic1.chapters[0];
         extr.fetch_pages_unsafe(chapter1).unwrap();
-        assert_eq!(title, chapter1.title);
-        assert_eq!(25, chapter1.pages.len());
-        let comics = extr.search("Shizuka na Yoru ni Futarikiri").unwrap();
+        assert_eq!(comic1_title, chapter1.title);
+        assert_eq!(42, chapter1.pages.len());
+        let comics = extr
+            .paginated_search("[Super Melons] Carnal debts (Dragon Ball Z)", 1)
+            .unwrap();
         assert!(comics.len() > 0);
         assert_eq!(comics[0].title, comic1.title);
         assert_eq!(comics[0].url, comic1.url);
