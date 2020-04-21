@@ -1,6 +1,7 @@
 use super::*;
 
 /// 对 www.bidongmh.com 内容的抓取实现
+/// TODO: 待进一步观察稳定性，考虑移除支持
 def_extractor! {
     status	=> [
         usable: true, pageable: false, searchable: true, https: true,
