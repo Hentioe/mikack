@@ -3,7 +3,7 @@ use super::*;
 /// 对 nhentai.net 内容的抓取实现
 def_extractor! {
     status	=> [
-        usable: true, pageable: true, searchable: true, https: true,
+        usable: true, pageable: true, searchable: true, https: true,  pageable_search: true,
         favicon: "https://nhentai.net/favicon.ico"
     ],
     tags	=> [English, Japanese, Chinese, NSFW],
@@ -32,8 +32,8 @@ def_extractor! {
         Ok(comics)
     }
 
-    fn search(&self, keywords: &str) -> Result<Vec<Comic>> {
-        let url = format!("https://nhentai.net/search/?q={}", keywords);
+    fn paginated_search(&self, keywords: &str, page: u32) -> Result<Vec<Comic>> {
+        let url = format!("https://nhentai.net/search/?q={}&page={}", keywords, page);
 
         let mut comics = itemsgen2!(
             url             = &url,
@@ -99,7 +99,7 @@ fn test_extr() {
             chapter1.title
         );
         assert_eq!(22, chapter1.pages.len());
-        let comics = extr.search("Touhou Deisuikan 1 Usami Renko").unwrap();
+        let comics = extr.paginated_search("Touhou Deisuikan 1 Usami Renko", 1).unwrap();
         assert!(comics.len() > 0);
         assert_eq!(comics[0].title, comic1.title);
         assert_eq!(comics[0].url, comic1.url);
