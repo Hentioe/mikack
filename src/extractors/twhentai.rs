@@ -5,12 +5,12 @@ def_regex2![
     URL         => r#"(https?://twhentai\.com/[^/]+/\d+)"#
 ];
 
-/// 对 www.onemanhua.com 内容的抓取实现
+/// 对 twhentai.com 内容的抓取实现
 /// 优化空间
 /// - 复用最后一页的数据
 def_extractor! {
     status	=> [
-        usable: true, pageable: true, searchable: true, https: false
+        usable: true, pageable: true, searchable: true, https: false, pageable_search: true
     ],
     tags	=> [Chinese, Japanese, NSFW],
 
@@ -27,8 +27,8 @@ def_extractor! {
         )
     }
 
-    fn search(&self, keywords: &str) -> Result<Vec<Comic>> {
-        let url = format!("http://twhentai.com/search/{}/", keywords);
+    fn paginated_search(&self, keywords: &str, page: u32) -> Result<Vec<Comic>> {
+        let url = format!("http://twhentai.com/search/{}/{}/", keywords, page);
 
         itemsgen2!(
             url             = &url,
@@ -119,7 +119,7 @@ fn test_extr() {
             chapter2.title
         );
         assert_eq!(10, chapter2.pages.len());
-        let comics = extr.search("奖品天使").unwrap();
+        let comics = extr.paginated_search("奖品天使", 1).unwrap();
         assert!(comics.len() > 0);
         assert_eq!(comics[0].title, comic1.title);
         assert_eq!(comics[0].url, comic1.url);
