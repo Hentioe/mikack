@@ -8,11 +8,11 @@ def_regex2![
 
 /// 对 www.177pic.info 内容的抓取实现
 def_extractor! {
-	status	=> [
-		usable: true, pageable: true, searchable: true, https: false,
-		favicon: "http://www.177pic.info/wp-content/themes/azzxx/img/favicon.ico"
-	],
-	tags	=> [Chinese, Japanese, NSFW],
+    status	=> [
+        usable: true, pageable: true, searchable: true, https: false, pageable_search: true,
+        favicon: "http://www.177pic.info/wp-content/themes/azzxx/img/favicon.ico"
+    ],
+    tags	=> [Chinese, Japanese, NSFW],
 
     fn index(&self, page: u32) -> Result<Vec<Comic>> {
         let url = format!("http://www.177pic.info/page/{}/", page);
@@ -25,8 +25,8 @@ def_extractor! {
         )
     }
 
-    fn search(&self, keywords: &str) -> Result<Vec<Comic>> {
-        let url = format!("http://www.177pic.info/?s={}", keywords);
+    fn paginated_search(&self, keywords: &str, page: u32) -> Result<Vec<Comic>> {
+        let url = format!("http://www.177pic.info/page/{}/?s={}", page, keywords);
 
         itemsgen2!(
             url             = &url,
@@ -94,8 +94,9 @@ fn test_extr() {
         let comics = extr.index(1).unwrap();
         assert_eq!(28, comics.len());
 
+        let comic1_title = "[だらぶち] 絶対強者 ch.1-4 [66P]";
         let comic1 = &mut Comic::from_link(
-            "[だらぶち] 絶対強者 ch.1-4 [66P]",
+            comic1_title,
             "http://www.177pic.info/html/2020/01/3254890.html",
         );
         extr.fetch_chapters(comic1).unwrap();
@@ -103,9 +104,9 @@ fn test_extr() {
 
         let chapter1 = &mut comic1.chapters[0];
         extr.fetch_pages_unsafe(chapter1).unwrap();
-        assert_eq!("[だらぶち] 絶対強者 ch.1-4 [66P]", chapter1.title);
+        assert_eq!(comic1_title, chapter1.title);
         assert_eq!(66, chapter1.pages.len());
-        let comics = extr.search("絶対強者").unwrap();
+        let comics = extr.paginated_search("絶対強者", 1).unwrap();
         assert!(comics.len() > 0);
         assert_eq!(comics[0].title, comic1.title);
         assert_eq!(comics[0].url, comic1.url);
