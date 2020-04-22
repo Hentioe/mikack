@@ -10,11 +10,11 @@ def_regex2![
 
 /// 对 www.wnacg.org 内容的抓取实现
 def_extractor! {
-	status	=> [
-		usable: true, pageable: true, searchable: true, https: true,
-		favicon: "https://www.wnacg.org/favicon.ico"
-	],
-	tags	=> [Chinese, NSFW],
+    status	=> [
+        usable: true, pageable: true, searchable: true, https: true, pageable_search: true,
+        favicon: "https://www.wnacg.org/favicon.ico"
+    ],
+    tags	=> [Chinese, NSFW],
 
     fn index(&self, page: u32) -> Result<Vec<Comic>> {
         let url = format!("https://www.wnacg.org/albums-index-page-{}.html", page);
@@ -34,8 +34,8 @@ def_extractor! {
         Ok(comics)
     }
 
-    fn search(&self, keywords: &str) -> Result<Vec<Comic>> {
-        let url = format!("https://www.wnacg.org/albums-index-page-1-sname-{}.html", keywords);
+    fn paginated_search(&self, keywords: &str, page: u32) -> Result<Vec<Comic>> {
+        let url = format!("https://www.wnacg.org/albums-index-page-{}-sname-{}.html", page, keywords);
 
         let mut comics = itemsgen2!(
             url             = &url,
@@ -145,7 +145,9 @@ fn test_extr() {
             chapter1.title
         );
         assert_eq!(27, chapter1.pages.len());
-        let comics = extr.search("ワルイヤツ").unwrap();
+        let comics = extr
+            .paginated_search("雛咲葉 快楽天ビースト 无修正", 1)
+            .unwrap();
         assert!(comics.len() > 0);
         assert_eq!(comics[0].title, comic1.title);
         assert_eq!(comics[0].url, comic1.url);
