@@ -2,9 +2,9 @@ use super::*;
 use reqwest::header::CONTENT_TYPE;
 use url::form_urlencoded::byte_serialize;
 
-/// 对 www.cartoonmad.com 内容的抓取实现
-/// 优化空间：
-/// - 复用 pages_iter 方法的第一个 URL 内容
+// 对 www.cartoonmad.com 内容的抓取实现
+// 优化空间：
+// - 复用 pages_iter 方法的第一个 URL 内容
 def_extractor! {
     status	=> [
 		usable: true, pageable: true, searchable: true, https: true,

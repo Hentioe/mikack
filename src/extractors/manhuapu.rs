@@ -6,7 +6,7 @@ def_regex2![
     DATA    => r#"qTcms_S_m_murl_e="([^"]+)""#
 ];
 
-/// 对 www.manhuapu.com 内容的抓取实现
+// 对 www.manhuapu.com 内容的抓取实现
 def_extractor! {
 	status	=> [
 		usable: true, pageable: false, searchable: true, https: false

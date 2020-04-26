@@ -5,7 +5,7 @@ def_regex2![
     PACKED  => r#"packed="([^"]+)""#
 ];
 
-/// 对 www.pufei8.com 内容的抓取实现
+// 对 www.pufei8.com 内容的抓取实现
 def_extractor! {
 	status	=> [
 		usable: true, pageable: true, searchable: true, https: false,

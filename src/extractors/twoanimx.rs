@@ -4,7 +4,7 @@ def_regex2![
     URL  => r#"(.+-cid-\d+-id-\d+)"#
 ];
 
-/// 对 www.2animx.com 内容的抓取实现
+// 对 www.2animx.com 内容的抓取实现
 def_extractor! {
     status	=> [
         usable: true, pageable: false, searchable: true, https: true,

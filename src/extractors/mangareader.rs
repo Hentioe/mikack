@@ -5,7 +5,7 @@ def_regex2![
     CHAPTER_URL => r#"(https?://www\.mangareader\.net/[^/]+/\d+)"#
 ];
 
-/// 对 www.mangareader.net 内容的抓取实现
+// 对 www.mangareader.net 内容的抓取实现
 def_extractor! {
     status	=> [
         usable: true, pageable: true, searchable: true, https: false, pageable_search: true,

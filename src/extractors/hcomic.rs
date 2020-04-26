@@ -1,8 +1,8 @@
 use super::*;
 use reqwest::{blocking::Client, header::LOCATION, redirect::Policy};
 
-/// 对 ahmog.com 内容的抓取实现
-/// TODO: 从 c-upp.com 修正到最新的域名
+// 对 ahmog.com 内容的抓取实现
+// TODO: 从 c-upp.com 修正到最新的域名
 def_extractor! {
     status	=> [
         usable: true, pageable: true, searchable: true, https: true, pageable_search: true,

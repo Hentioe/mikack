@@ -11,7 +11,7 @@ def_regex2![
     SCRIPT  => r#"<script>(var did.+templatepath[^;]+;)</script>"#
 ];
 
-/// 对 www.qimiaomh.com 内容的抓取实现
+// 对 www.qimiaomh.com 内容的抓取实现
 def_extractor! {
 	status	=> [
 		usable: true, pageable: true, searchable: true, https: true,

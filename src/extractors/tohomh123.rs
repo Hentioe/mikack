@@ -12,7 +12,7 @@ def_regex2![
     SCRIPT  => r#"<script type="text/javascript">\s+(var imgDomain[\s\S]+var bqimg[^<]+)</script>"#
 ];
 
-/// 对 www.tohomh123.com 内容的抓取实现
+// 对 www.tohomh123.com 内容的抓取实现
 def_extractor! {
 	status	=> [
 		usable: true, pageable: true, searchable: true, https: true,

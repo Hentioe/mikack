@@ -40,7 +40,7 @@ impl ChapterItem {
     }
 }
 
-/// 对 www.tvbsmh.com 内容的抓取实现
+// 对 www.tvbsmh.com 内容的抓取实现
 def_extractor! {
     status	=> [
         usable: true, pageable: false, searchable: true, https: true, pageable_search: true,

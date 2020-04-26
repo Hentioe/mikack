@@ -4,7 +4,7 @@ def_regex2![
     CODE    => r#"<script>(;var siteName = "[\s\S]?";.+;)</script>"#
 ];
 
-/// 对 www.90mh.com 内容的抓取实现
+// 对 www.90mh.com 内容的抓取实现
 def_extractor! {
     status	=> [
         usable: true, pageable: true, searchable: true, https: false, pageable_search: true,

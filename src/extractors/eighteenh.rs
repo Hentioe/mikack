@@ -5,7 +5,7 @@ def_regex2![
     LAST => r#"https?://18h.animezilla.com/manga/\d+/(\d+)"#
 ];
 
-/// 对 18h.animezilla.com 内容的抓取实现
+// 对 18h.animezilla.com 内容的抓取实现
 def_extractor! {
     status	=> [
 		usable: true, pageable: true, searchable: false, https: true,

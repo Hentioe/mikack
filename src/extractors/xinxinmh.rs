@@ -4,7 +4,7 @@ def_regex2![
     DECRYPT => r#"<script type="text/javascript">[\s\n]+(eval.+)[\s\n]+</script>"#
 ];
 
-/// 对 www.177mh.net 内容的抓取实现
+// 对 www.177mh.net 内容的抓取实现
 def_extractor! {
 	status	=> [
 		usable: true, pageable: true, searchable: true, https: true,

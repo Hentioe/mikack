@@ -9,9 +9,9 @@ def_regex2![
     IMG         => r#"(?i)src='"\+.+\+"([^']+)'"#
 ];
 
-/// 对 comic.kkkkdm.com 内容的抓取实现
-/// 未来计划：
-/// - 可选择联通/电信
+// 对 comic.kkkkdm.com 内容的抓取实现
+// 未来计划：
+// - 可选择联通/电信
 def_extractor! {
     status	=> [
         usable: true, pageable: false, searchable: true, http: true, pageable_search: true,

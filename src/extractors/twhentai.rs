@@ -5,9 +5,9 @@ def_regex2![
     URL         => r#"(https?://twhentai\.com/[^/]+/\d+)"#
 ];
 
-/// 对 twhentai.com 内容的抓取实现
-/// 优化空间
-/// - 复用最后一页的数据
+// 对 twhentai.com 内容的抓取实现
+// 优化空间
+// - 复用最后一页的数据
 def_extractor! {
     status	=> [
         usable: true, pageable: true, searchable: true, https: false, pageable_search: true

@@ -4,7 +4,7 @@ def_regex2![
     CODE    => r#"(eval\(.+\))"#
 ];
 
-/// 对 www.wuqimh.com 内容的抓取实现
+// 对 www.wuqimh.com 内容的抓取实现
 def_extractor! {
     status	=> [
         usable: true, pageable: false, searchable: true, https: false, pageable_search: true,

@@ -4,7 +4,7 @@ def_regex2![
     PARAMS   => r#"javascript:openimg\(('\d+','\d+'),'8','2'\);"#
 ];
 
-/// 对 8comic.se 内容的抓取实现
+// 对 8comic.se 内容的抓取实现
 def_extractor! {
     status	=> [
         usable: true, pageable: true, searchable: true, https: true,

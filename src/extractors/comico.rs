@@ -39,7 +39,7 @@ struct ChapterArticle {
     subtitle: String,
 }
 
-/// 对 www.comico.com.tw 内容的抓取实现
+// 对 www.comico.com.tw 内容的抓取实现
 def_extractor! {
     status	=> [
 		usable: true, searchable: true, pageable: true, https: false,

@@ -7,7 +7,7 @@ def_regex2! [
     IMG_DATA     => r#"<script>\s?var img_data =\s+'([^']+)';</script>"#
 ];
 
-/// 对 www.manhuadb.com 内容的抓取实现
+// 对 www.manhuadb.com 内容的抓取实现
 def_extractor! {
 	status	=> [
 		usable: true, pageable: true, searchable: true, https: true,

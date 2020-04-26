@@ -41,7 +41,7 @@ impl Book {
     }
 }
 
-/// 对 9hentai.com 内容的抓取实现
+// 对 9hentai.com 内容的抓取实现
 def_extractor! {
 	status	=> [
 		usable: true, pageable: true, searchable: true, https: true,

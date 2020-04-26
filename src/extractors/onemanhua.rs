@@ -4,7 +4,7 @@ def_regex2![
     ENCRYPTED_DATA => r#"C_DATA='([^']+)'"#
 ];
 
-/// 对 www.onemanhua.com 内容的抓取实现
+// 对 www.onemanhua.com 内容的抓取实现
 def_extractor! {
     status	=> [
         usable: true, pageable: true, searchable: true, https: true,

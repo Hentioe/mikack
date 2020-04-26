@@ -8,7 +8,7 @@ def_regex2![
     NEXT    => r#"imagePreload\.src = '([^']+)';"#
 ];
 
-/// 对 www.wnacg.org 内容的抓取实现
+// 对 www.wnacg.org 内容的抓取实现
 def_extractor! {
     status	=> [
         usable: true, pageable: true, searchable: true, https: true, pageable_search: true,

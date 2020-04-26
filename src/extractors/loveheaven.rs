@@ -35,9 +35,9 @@ impl From<&SearchDataItem> for Comic {
     }
 }
 
-/// 对 loveheaven.net 内容的抓取实现
-/// 未来计划：
-/// - 可登录，以获取完整章节列表
+// 对 loveheaven.net 内容的抓取实现
+// 未来计划：
+// - 可登录，以获取完整章节列表
 def_extractor! {
     status	=> [
         usable: true, pageable: true, searchable: true, https: true,

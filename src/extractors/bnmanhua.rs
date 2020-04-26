@@ -4,7 +4,7 @@ def_regex2![
     DATA  => r#"<script>.+z_img=('[^']+')"#
 ];
 
-/// 对 www.bnmanhua.com 内容的抓取实现
+// 对 www.bnmanhua.com 内容的抓取实现
 def_extractor! {
     status	=> [
         usable: true, pageable: true, searchable: true, https: true, pageable_search: true,
