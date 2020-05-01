@@ -67,7 +67,7 @@ Not supporting the platform you want to see? Let me know in [Issues](https://git
 
 Sources no longer supported:
 
-| NAME      | DOMAIN                         | REASON |     TAGS      |
-| :-------- | :----------------------------- | :----: | :-----------: |
-| 壁咚漫画  | www<i>.</i>bidongmh<i>.</i>com |  Died  | Chinese, NSFW |
-| YYLS 漫畫 | [8comic.se](https://8comic.se) |  Died  |    Chinese    |
+| NAME      | DOMAIN                         | REASON? |     TAGS      |
+| :-------- | :----------------------------- | :-----: | :-----------: |
+| 壁咚漫画  | www<i>.</i>bidongmh<i>.</i>com |  Died   | Chinese, NSFW |
+| YYLS 漫畫 | [8comic.se](https://8comic.se) |  Died   |    Chinese    |
