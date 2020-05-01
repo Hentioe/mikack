@@ -26,7 +26,6 @@ The status of the following list tracks the latest implementation of the master 
 
 | NAME             | DOMAIN                                                 | READABLE? | SEARCHABLE? |               TAGS               |
 | :--------------- | :----------------------------------------------------- | :-------: | :---------: | :------------------------------: |
-| 壁咚漫画         | www<i>.</i>bidongmh<i>.</i>com                         |     ✓     |      ✓      |          Chinese, NSFW           |
 | 百年漫画         | [www.bnmanhua.com](https://www.bnmanhua.com)           |     ✓     |      ✓      |             Chinese              |
 | 動漫狂           | [www.cartoonmad.com](https://www.cartoonmad.com)       |     ✓     |      ✓      |             Chinese              |
 | comico           | [www.comico.com.tw](http://www.comico.com.tw)          |     ✓     |      ✓      |             Chinese              |
@@ -63,6 +62,12 @@ The status of the following list tracks the latest implementation of the master 
 | 紳士漫畫         | www<i>.</i>wnacg<i>.</i>org                            |     ✓     |      ✓      |          Chinese, NSFW           |
 | 57 漫画网        | [www.wuqimh.com](http://www.wuqimh.com/)               |     ✓     |      ✓      |             Chinese              |
 | 新新漫画网       | [www.177mh.net](https://www.177mh.net)                 |     ✓     |      ✓      |             Chinese              |
-| YYLS 漫畫        | [8comic.se](https://8comic.se)                         |     ✓     |      ✓      |             Chinese              |
 
 Not supporting the platform you want to see? Let me know in [Issues](https://github.com/Hentioe/mikack/issues).
+
+Sources no longer supported:
+
+| NAME      | DOMAIN                         | REASON |     TAGS      |
+| :-------- | :----------------------------- | :----: | :-----------: |
+| 壁咚漫画  | www<i>.</i>bidongmh<i>.</i>com |  Died  | Chinese, NSFW |
+| YYLS 漫畫 | [8comic.se](https://8comic.se) |  Died  |    Chinese    |

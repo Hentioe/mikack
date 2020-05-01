@@ -24,3 +24,86 @@ num = "0.2.1"
 num-derive = "0.3.0"
 num-traits = "0.2.11"
 percent-encoding = "2.1.0"
+quote = "1.0"
+
+[features]
+default = ["sources-all"]
+sources-all = [
+    # "www.bidongmh.com", // 上游已无法访问
+    "www.bnmanhua.com",
+    "www.cartoonmad.com",
+    "www.comico.com.tw",
+    "www.dm5.com",
+    "manhua.dmzj.com",
+    "e-hentai.org",
+    "18h.animezilla.com",
+    "www.gufengmh8.com",
+    "c-upp.com",
+    "www.hhimm.com",
+    "comic.ikkdm.com",
+    "www.kuaikanmanhua.com",
+    "loveheaven.net",
+    "www.luscious.net",
+    "www.mangabz.com",
+    "manganelo.com",
+    "www.mangareader.net",
+    "www.manhuadui.com",
+    "www.manhuadb.com",
+    "www.manhuagui.com",
+    "www.manhuapu.com",
+    "www.mkzhan.com",
+    "nhentai.net",
+    "9hentai.com",
+    "www.90mh.com",
+    "www.177pic.info",
+    "www.onemanhua.com",
+    "www.pufei8.com",
+    "www.qimiaomh.com",
+    "www.tohomh123.com",
+    "www.tvbsmh.com",
+    "twhentai.com",
+    "www.2animx.com",
+    "www.wnacg.org",
+    "www.wuqimh.com",
+    "www.177mh.net",
+    # "8comic.se", // 上游已无法访问
+]
+
+"www.bidongmh.com" = []
+"www.bnmanhua.com" = []
+"www.cartoonmad.com" = []
+"www.comico.com.tw" = []
+"www.dm5.com" = []
+"manhua.dmzj.com" = []
+"e-hentai.org" = []
+"18h.animezilla.com" = []
+"www.gufengmh8.com" = []
+"c-upp.com" = []
+"www.hhimm.com" = []
+"comic.ikkdm.com" = []
+"www.kuaikanmanhua.com" = []
+"loveheaven.net" = []
+"www.luscious.net" = []
+"www.mangabz.com" = []
+"manganelo.com" = []
+"www.mangareader.net" = []
+"www.manhuadui.com" = []
+"www.manhuadb.com" = []
+"www.manhuagui.com" = []
+"www.manhuapu.com" = []
+"www.mkzhan.com" = []
+"nhentai.net" = []
+"9hentai.com" = []
+"www.90mh.com" = []
+"www.177pic.info" = []
+"www.onemanhua.com" = []
+"www.pufei8.com" = []
+"www.qimiaomh.com" = []
+"www.tohomh123.com" = []
+"www.tvbsmh.com" = []
+"twhentai.com" = []
+"www.2animx.com" = []
+"www.wnacg.org" = []
+"www.wuqimh.com" = []
+"www.177mh.net" = []
+"8comic.se" = []

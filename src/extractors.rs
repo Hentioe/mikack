@@ -599,12 +599,14 @@ type ExtractorObject = Box<dyn Extractor + Sync + Send>;
 macro_rules! import_impl_mods {
     ( $($module:ident: {:domain => $domain:expr, :name => $name:expr}),* ) => {
         $(
+            #[cfg(feature = $domain)]
             pub mod $module;
         )*
         lazy_static!{
             pub static ref PLATFORMS: HashMap<String, String> = {
                 let mut platforms = HashMap::new();
                 $(
+                    #[cfg(feature = $domain)]
                     platforms.insert($domain.to_string(), $name.to_string());
                 )*
                 platforms
@@ -613,6 +615,7 @@ macro_rules! import_impl_mods {
             pub static ref EXTRACTORS: HashMap<String, ExtractorObject> = {
                 let mut extractros: HashMap<String, ExtractorObject> = HashMap::new();
                 $(
+                    #[cfg(feature = $domain)]
                     extractros.insert($domain.to_string(), Box::new($module::new_extr()));
                 )*
                 extractros
