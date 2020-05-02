@@ -1,4 +1,5 @@
 use super::*;
+use std::str;
 
 def_regex2![
     ENCRYPTED_DATA => r#"C_DATA='([^']+)'"#
@@ -68,7 +69,8 @@ def_extractor! {
                     start: mh_info.startimg,
                     total: mh_info.totalimg,
                     comic_name: mh_info.mhname,
-                    chapter_name: mh_info.pagename
+                    chapter_name: mh_info.pagename,
+                    urls: image_info.urls__direct
                 }};
                 data
             ",
@@ -81,28 +83,40 @@ def_extractor! {
         let title = format!("{} {}", data.get_as_string("comic_name")?,data.get_as_string("chapter_name")?);
         chapter.set_title(title);
 
-        let start = *data.get_as_int("start")?;
-        let total = *data.get_as_int("total")?;
-        let domain = data.get_as_string("domain")?;
-        let path = data.get_as_string("path")?;
+        let urls_data = data.get_as_string("urls")?;
+        let addresses = if urls_data.is_empty() {
+            let start = *data.get_as_int("start")?;
+            let total = *data.get_as_int("total")?;
+            let domain = data.get_as_string("domain")?;
+            let path = data.get_as_string("path")?;
+            let mut addresses = vec![];
+            for i in 0..total {
+                let n = start + i;
+                let fname = if n < 10 {
+                    format!("000{}", n)
+                } else if n < 100 {
+                    format!("00{}", n)
+                } else if n < 1000 {
+                    format!("0{}", n)
+                } else {
+                    n.to_string()
+                };
+                let addr = format!("https://{domain}/comic/{path}{fname}.jpg",
+                    domain = domain, path = path, fname = fname
+                );
+                addresses.push(addr);
+            }
 
-        let mut addresses = vec![];
-        for i in 0..total {
-            let n = start + i;
-            let fname = if n < 10 {
-                format!("000{}", n)
-            } else if n < 100 {
-                format!("00{}", n)
-            } else if n < 1000 {
-                format!("0{}", n)
-            } else {
-                n.to_string()
-            };
-            let addr = format!("https://{domain}/comic/{path}{fname}.jpg",
-                domain = domain, path = path, fname = fname
-            );
-            addresses.push(addr);
-        }
+            addresses
+        } else {
+            let urls_decoded_bytes = &base64::decode(&urls_data)?[..];
+            let urls_decoded_str = str::from_utf8(urls_decoded_bytes)?;
+
+            urls_decoded_str
+                .split("|SEPARATER|")
+                .map(|s| { s.to_string() })
+                .collect::<_>()
+        };
 
         Ok(ChapterPages::full(chapter, addresses))
     }
@@ -116,11 +130,16 @@ fn test_extr() {
         assert_eq!(30, comics.len());
         let mut comic1 = Comic::new("最后的召唤师", "https://www.onemanhua.com/12436/");
         extr.fetch_chapters(&mut comic1).unwrap();
-        assert_eq!(418, comic1.chapters.len());
+        assert_eq!(434, comic1.chapters.len());
         let chapter1 = &mut comic1.chapters[0];
         extr.fetch_pages_unsafe(chapter1).unwrap();
         assert_eq!("最后的召唤师 第1话1 契约", chapter1.title);
         assert_eq!(15, chapter1.pages.len());
+        let chapter2 = &mut Chapter::from_url("https://www.ohmanhua.com/10449/1/177.html");
+        extr.fetch_pages_unsafe(chapter2).unwrap();
+        println!("{:?}", chapter2);
+        assert_eq!("一拳超人 第174话 还没输！", chapter2.title);
+        assert_eq!(24, chapter2.pages.len());
         let comics = extr.search("最后的召唤师").unwrap();
         assert!(comics.len() > 0);
         assert_eq!(comics[0].title, comic1.title);
