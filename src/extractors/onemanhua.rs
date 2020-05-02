@@ -5,16 +5,16 @@ def_regex2![
     ENCRYPTED_DATA => r#"C_DATA='([^']+)'"#
 ];
 
-// 对 www.onemanhua.com 内容的抓取实现
+// 对 www.ohmanhua.com 内容的抓取实现
 def_extractor! {
     status	=> [
         usable: true, pageable: true, searchable: true, https: true,
-        favicon: "https://www.onemanhua.com/favicon.png"
+        favicon: "https://www.ohmanhua.com/favicon.png"
     ],
     tags	=> [Chinese],
 
     fn index(&self, page: u32) -> Result<Vec<Comic>> {
-        let url = format!("https://www.onemanhua.com/show?orderBy=update&page={}", page);
+        let url = format!("https://www.ohmanhua.com/show?orderBy=update&page={}", page);
 
         itemsgen2!(
             url             = &url,
@@ -22,12 +22,12 @@ def_extractor! {
             cover_dom       = "a.fed-list-pics",
             cover_attr      = "data-original",
             link_dom        = "a.fed-list-title",
-            link_prefix     = "https://www.onemanhua.com"
+            link_prefix     = "https://www.ohmanhua.com"
         )
     }
 
     fn search(&self, keywords: &str) -> Result<Vec<Comic>> {
-        let url = format!("https://www.onemanhua.com/search?searchString={}", keywords);
+        let url = format!("https://www.ohmanhua.com/search?searchString={}", keywords);
 
         itemsgen2!(
             url             = &url,
@@ -35,7 +35,7 @@ def_extractor! {
             cover_dom       = "a.fed-list-pics",
             cover_attr      = "data-original",
             link_dom        = "h1 > a",
-            link_prefix     = "https://www.onemanhua.com"
+            link_prefix     = "https://www.ohmanhua.com"
         )
     }
 
@@ -43,7 +43,7 @@ def_extractor! {
         itemsgen2!(
             url             = &comic.url,
             target_dom      = ".all_data_list > ul > li > a",
-            link_prefix     = "https://www.onemanhua.com"
+            link_prefix     = "https://www.ohmanhua.com"
         )?.reversed_attach_to(comic);
 
         Ok(())
@@ -128,7 +128,7 @@ fn test_extr() {
     if extr.is_usable() {
         let comics = extr.index(1).unwrap();
         assert_eq!(30, comics.len());
-        let mut comic1 = Comic::new("最后的召唤师", "https://www.onemanhua.com/12436/");
+        let mut comic1 = Comic::new("最后的召唤师", "https://www.ohmanhua.com/12436/");
         extr.fetch_chapters(&mut comic1).unwrap();
         assert_eq!(434, comic1.chapters.len());
         let chapter1 = &mut comic1.chapters[0];
@@ -138,6 +138,7 @@ fn test_extr() {
         let chapter2 = &mut Chapter::from_url("https://www.ohmanhua.com/10449/1/177.html");
         extr.fetch_pages_unsafe(chapter2).unwrap();
         assert_eq!("一拳超人 第174话 还没输！", chapter2.title);
+        println!("{:?}", chapter2);
         assert_eq!(24, chapter2.pages.len());
         let comics = extr.search("最后的召唤师").unwrap();
         assert!(comics.len() > 0);
