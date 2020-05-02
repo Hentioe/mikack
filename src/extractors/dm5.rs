@@ -74,7 +74,7 @@ def_extractor! {
 
     fn fetch_chapters(&self, comic: &mut Comic) -> Result<()> {
         let html = &get(&comic.url)?.text()?;
-        if html.contains("view-win-list") {
+        if html.contains("order desc inverted") {
             itemsgen2!(
                 html        = html,
                 target_dom  = "#chapterlistload ul > li > a[title]",
