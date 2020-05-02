@@ -74,17 +74,24 @@ def_extractor! {
 
     fn fetch_chapters(&self, comic: &mut Comic) -> Result<()> {
         let html = &get(&comic.url)?.text()?;
-        if html.contains("order desc inverted") {
+        if html.contains("view-win-list") {
             itemsgen2!(
-                html        = html,
-                target_dom  = "#chapterlistload ul > li > a[title]",
-                link_prefix = "https://www.dm5.com"
+                html            = html,
+                target_dom      = "#chapterlistload ul > li > a[title]",
+                link_prefix     = "https://www.dm5.com"
+            )?.reversed_attach_to(comic);
+        } else if html.contains("order desc inverted") {
+            itemsgen2!(
+                html            = html,
+                target_dom      = "#chapterlistload ul > li > a[title]",
+                link_text_dom   = ".info > .title", // 标题在子节点中
+                link_prefix     = "https://www.dm5.com"
             )?.reversed_attach_to(comic);
         } else {
             itemsgen2!(
                 html            = html,
                 target_dom      = "#chapterlistload ul > li > a[title]",
-                link_text_dom   = ".info > .title",
+                link_text_dom   = ".info > .title", // 标题在子节点中
                 link_prefix     = "https://www.dm5.com",
                 ignore_contains = ".detail-lock" // 排除付费章节
             )?.attach_to(comic);
@@ -178,9 +185,11 @@ fn test_extr() {
         extr.fetch_pages_unsafe(chapter3).unwrap();
         assert_eq!("公主链接小四格 第1话 为了谁？", chapter3.title);
         assert_eq!(1, chapter3.pages.len());
-        let mut comic3 =
-            Comic::from_url("https://www.dm5.com/manhua-yitaishuangbao-guaigemamidaihuijia/");
-        extr.fetch_chapters(&mut comic3).unwrap();
+        let comic3 =
+            &mut Comic::from_url("https://www.dm5.com/manhua-yitaishuangbao-guaigemamidaihuijia/");
+        extr.fetch_chapters(comic3).unwrap();
+        let comic4 = &mut Comic::from_url("https://www.dm5.com/manhua-biaoren/");
+        extr.fetch_chapters(comic4).unwrap();
         assert_eq!(34, comic3.chapters.len());
         let comics = extr.paginated_search("风云全集", 1).unwrap();
         assert!(comics.len() > 0);
