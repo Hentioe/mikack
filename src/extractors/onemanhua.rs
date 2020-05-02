@@ -137,7 +137,6 @@ fn test_extr() {
         assert_eq!(15, chapter1.pages.len());
         let chapter2 = &mut Chapter::from_url("https://www.ohmanhua.com/10449/1/177.html");
         extr.fetch_pages_unsafe(chapter2).unwrap();
-        println!("{:?}", chapter2);
         assert_eq!("一拳超人 第174话 还没输！", chapter2.title);
         assert_eq!(24, chapter2.pages.len());
         let comics = extr.search("最后的召唤师").unwrap();
