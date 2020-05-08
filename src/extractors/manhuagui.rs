@@ -65,7 +65,8 @@ def_extractor! {
                 imgData: function(data) {{
                     DATA = {{
                         cid: data.cid,
-                        md5: data.sl.md5,
+                        e: data.sl.e,
+                        m: data.sl.m,
                         name: `${{data.bname + data.cname}}`,
                         path: data.path,
                         files: data.files
@@ -76,9 +77,11 @@ def_extractor! {
             try {{ eval({}) }} catch (error) {{}}
             DATA
         ", &crypty_code));
+
         let obj = eval_as_obj(&wrap_code)?;
-        let cid = obj.get_as_int("cid")?.clone();
-        let md5 = obj.get_as_string("md5")?.clone();
+        // let cid = obj.get_as_int("cid")?.clone();
+        let e = obj.get_as_int("e")?.clone();
+        let m = obj.get_as_string("m")?.clone();
         let name = obj.get_as_string("name")?.clone();
         let path = obj.get_as_string("path")?.clone();
         let files = obj.get_as_array("files")?.clone();
@@ -87,7 +90,7 @@ def_extractor! {
         chapter.set_title(name);
         let fetch = Box::new(move |current_page: usize| {
             let file = files[current_page - 1].as_string()?;
-            let address = format!("https://i.hamreus.com{}{}?cid={}&md5={}", path, file, cid, md5);
+            let address = format!("https://i.hamreus.com{}{}?e={}&m={}", path, file, e, m);
             Ok(vec![Page::new(current_page - 1, address)])
         });
 
