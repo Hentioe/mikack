@@ -2,7 +2,7 @@ use super::*;
 use serde::Deserialize;
 
 def_regex2![
-    IMGS    => r#"comicImages:(\[[^]]+\])"#,
+    SCRIPT    => r#"window\.(__NUXT__=\S?\(.+\);)</script>"#,
 ];
 
 #[derive(Debug, Deserialize)]
@@ -40,11 +40,11 @@ impl Topic {
 
 // 对 www.kuaikanmanhua.com 内容的抓取实现
 def_extractor! {
-	status	=> [
-		usable: true, searchable: true, pageable: true, https: true,
-		favicon: "https://www.kuaikanmanhua.com/favicon.ico"
-	],
-	tags	=> [Chinese],
+    status	=> [
+        usable: true, searchable: true, pageable: true, https: true,
+        favicon: "https://www.kuaikanmanhua.com/favicon.ico"
+    ],
+    tags	=> [Chinese],
 
     fn index(&self, page: u32) -> Result<Vec<Comic>> {
         let url = format!(
@@ -93,11 +93,12 @@ def_extractor! {
                 document.dom_text("title")?.split("|").next().ok_or(err_msg("No title found"))?
             )
         );
-        let imgs = match_content2!(&html, &*IMGS_RE)?;
+        let script_code = match_content2!(&html, &*SCRIPT_RE)?;
         let wrap_code = format!("
-            var a,b,c,d,e,f,g,h,i,j,k,l,m,n,o,p,q,r,s,t,u,v,w,x,y,z,A,B,C,D,E,F,G,H,I,J,K,L,M,N,O;
-            {imgs}.map(img => img.url)
-        ", imgs = imgs);
+            {script}
+            __NUXT__.data[0].comicInfo.comicImages.map((c) => c.url)
+        ", script = script_code);
+
         let value = eval_value(&wrap_code)?;
         let mut addresses = vec![];
         for addr in value.as_array()? {
@@ -117,7 +118,7 @@ fn test_extr() {
         let comic1 =
             &mut Comic::from_link("整容游戏", "https://www.kuaikanmanhua.com/web/topic/544/");
         extr.fetch_chapters(comic1).unwrap();
-        assert_eq!(17, comic1.chapters.len());
+        assert_eq!(18, comic1.chapters.len());
         let chapter1 = &mut comic1.chapters[0];
         extr.fetch_pages_unsafe(chapter1).unwrap();
         assert_eq!("整容游戏 第1话 整容游戏APP", chapter1.title);
