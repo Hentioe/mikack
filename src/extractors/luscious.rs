@@ -3,7 +3,7 @@ use serde::Deserialize;
 use serde_json::Value;
 
 def_regex2![
-    ID      => r#"https?://www\.luscious\.net/albums/[^_]+_(\d+)/"#
+    ID      => r#"https?://www\.luscious\.net/albums/[^/]+_(\d+)/"#
 ];
 
 #[derive(Debug, Deserialize)]
@@ -95,7 +95,11 @@ def_extractor! {
 
         let mut addresses = vec![];
         for item in items {
-            addresses.push(item["url_to_original"].as_str().ok_or(err_msg("No picture url found"))?.to_owned());
+            let mut address = item["url_to_original"].as_str().ok_or(err_msg("No picture url found"))?.to_owned();
+            if address.starts_with("//") {
+                address = format!("https:{}", address);
+            }
+            addresses.push(address);
         }
 
         Ok(ChapterPages::full(chapter, addresses))
@@ -119,6 +123,24 @@ fn test_extr() {
         chapter1.title
     );
     assert_eq!(26, chapter1.pages.len());
+
+    let chapter2 = &mut Chapter::from_url(
+        "https://www.luscious.net/albums/oreimo-selection-2016-fuyu_371269/",
+    );
+    extr.fetch_pages_unsafe(chapter2).unwrap();
+    assert_eq!("Oreimo Selection 2016 Fuyu", chapter2.title);
+    assert_eq!(9, chapter2.pages.len());
+
+    let chapter3 = &mut Chapter::from_url(
+        "https://www.luscious.net/albums/koibashira_no_oneesan_to_issh_353457/",
+    );
+    extr.fetch_pages_unsafe(chapter3).unwrap();
+    assert_eq!(
+        "Koibashira no Onee-san to Isshoni Shugyou Shiyou + SP",
+        chapter3.title
+    );
+    assert_eq!(22, chapter3.pages.len());
+
     let comics = extr
         .paginated_search("Teitoku wa Semai Toko Suki", 1)
         .unwrap();
