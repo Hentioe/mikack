@@ -72,6 +72,7 @@ def_extractor! {
             .map(|addr| {
                 addr
                     .replace("t.jpg", ".jpg")
+                    .replace("t.png", ".png")
                     .replace("t.nhentai.net", "i.nhentai.net")
                     .to_string()
             })
@@ -99,7 +100,18 @@ fn test_extr() {
             chapter1.title
         );
         assert_eq!(22, chapter1.pages.len());
-        let comics = extr.paginated_search("Touhou Deisuikan 1 Usami Renko", 1).unwrap();
+
+        let chapter2 = &mut Chapter::from_url("https://nhentai.net/g/311366/");
+        extr.fetch_pages_unsafe(chapter2).unwrap();
+        assert_eq!(
+            "(COMITIA127) [Kirintei (Kirin Kakeru)] Tanetsuke Oji-san no JK Kozukuri SEX [English] [Doujins.com]",
+            chapter2.title
+        );
+        assert_eq!(24, chapter2.pages.len());
+
+        let comics = extr
+            .paginated_search("Touhou Deisuikan 1 Usami Renko", 1)
+            .unwrap();
         assert!(comics.len() > 0);
         assert_eq!(comics[0].title, comic1.title);
         assert_eq!(comics[0].url, comic1.url);
