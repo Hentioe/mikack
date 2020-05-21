@@ -103,15 +103,16 @@ fn test_extr() {
         let comics = extr.index(1).unwrap();
         assert_eq!(60, comics.len());
         let comic1 =
-            &mut Comic::from_link("魔導少年", "https://www.cartoonmad.com/comic/1153.html");
+            &mut Comic::from_link("妖精的尾巴 番外", "https://www.cartoonmad.com/comic/2908.html");
         extr.fetch_chapters(comic1).unwrap();
-        assert_eq!(411, comic1.chapters.len());
+        assert_eq!(19, comic1.chapters.len());
         let chapter1 =
-            &mut Chapter::from_link("", "https://www.cartoonmad.com/comic/115301532018001.html");
+            &mut Chapter::from_url("https://www.cartoonmad.com/comic/290800072009001.html");
         extr.fetch_pages_unsafe(chapter1).unwrap();
-        assert_eq!("魔導少年 - 153 話", chapter1.title);
-        assert_eq!(18, chapter1.pages.len());
-        let comics = extr.search("魔導少年").unwrap();
+        assert_eq!("妖精的尾巴 番外篇 - 7 話", chapter1.title);
+        assert_eq!(9, chapter1.pages.len());
+
+        let comics = extr.search("妖精的尾巴 番外").unwrap();
         assert!(comics.len() > 0);
         assert_eq!(comics[0].title, comic1.title);
         assert_eq!(comics[0].url, comic1.url);

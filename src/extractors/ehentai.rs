@@ -90,6 +90,11 @@ fn test_extr() {
         extr.fetch_pages_unsafe(chapter1).unwrap();
         assert_eq!(comic1_title, chapter1.title);
         assert_eq!(42, chapter1.pages.len());
+        let chapter2 = &mut Chapter::from_url("https://e-hentai.org/g/1642042/69246df340/");
+        extr.fetch_pages_unsafe(chapter2).unwrap();
+        assert_eq!("Artist Galleries ❤️❤️ Vempire", chapter2.title);
+        assert_eq!(1873, chapter2.pages.len());
+
         let comics = extr
             .paginated_search("[Super Melons] Carnal debts (Dragon Ball Z)", 1)
             .unwrap();
